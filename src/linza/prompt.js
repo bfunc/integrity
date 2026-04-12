@@ -1,19 +1,16 @@
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const taxonomy = JSON.parse(readFileSync(resolve(__dirname, '../../external/taxonomy.json'), 'utf-8'));
+import taxonomy from "../../external/taxonomy.json" with { type: "json" };
 
 function buildTaxonomyBlock(taxonomy) {
-  return taxonomy.levels.map(level => {
-    const categories = Object.entries(level.categories)
-      .map(([id, cat]) => `  - ${id}: ${cat.description}`)
-      .join('\n');
+  return taxonomy.levels
+    .map((level) => {
+      const categories = Object.entries(level.categories)
+        .map(([id, cat]) => `  - ${id}: ${cat.description}`)
+        .join("\n");
 
-    return `### ${level.name} (severity ${level.severity_range[0]}–${level.severity_range[1]})
-${level.legal_basis.length ? `Legal basis: ${level.legal_basis.join(', ')}\n` : ''}${categories}`;
-  }).join('\n\n');
+      return `### ${level.name} (severity ${level.severity_range[0]}–${level.severity_range[1]})
+${level.legal_basis.length ? `Legal basis: ${level.legal_basis.join(", ")}\n` : ""}${categories}`;
+    })
+    .join("\n\n");
 }
 
 export function buildSystemPrompt() {
