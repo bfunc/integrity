@@ -248,7 +248,5 @@
     flex: 1;
     padding: 20px 24px 28px;
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
   }
 </style>

@@ -20,12 +20,10 @@ export async function GET() {
           id: v.id,
           date: v.analyzed_at,
           title: v.speech_title || v.source_id,
-          pattern: (() => {
-            const patterns = typeof v.patterns === 'string' ? JSON.parse(v.patterns) : v.patterns || [];
-            return patterns[0]?.name || '';
-          })(),
+          patterns: typeof v.patterns === 'string' ? JSON.parse(v.patterns) : v.patterns || [],
           summary_md: v.summary_md,
           severity: v.severity,
+          severity_label: v.severity_label,
         })),
       };
     })

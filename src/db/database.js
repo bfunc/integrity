@@ -87,6 +87,12 @@ export async function initDb() {
     )
   `);
 
+  // Prevent duplicate analyses for the same source (safe to run multiple times)
+  await _run(`
+    CREATE UNIQUE INDEX IF NOT EXISTS uniq_analysis_source
+    ON analyses(source_id, source_type)
+  `);
+
   for (const leader of leadersData) {
     await _run(
       `INSERT INTO leaders (id, name, role, country)
@@ -162,7 +168,8 @@ export async function updateArticleStatus(id, status, fullText = null) {
 export async function insertAnalysis(analysis) {
   await run(
     `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (source_id, source_type) DO NOTHING`,
     [
       analysis.id || randomUUID(),
       analysis.source_type,
@@ -252,7 +259,7 @@ export async function getFeedAnalyses(tab) {
 export async function getLeaderStats() {
   const rows = await all(`
     SELECT l.id, l.name, l.role, l.country,
-           COUNT(CASE WHEN a.severity >= 2 THEN 1 END) as violation_count,
+           COUNT(CASE WHEN a.severity >= 1 THEN 1 END) as violation_count,
            MAX(a.severity) as max_severity,
            MAX(CASE WHEN a.severity >= 2 THEN a.analyzed_at END) as last_violation_date
     FROM leaders l

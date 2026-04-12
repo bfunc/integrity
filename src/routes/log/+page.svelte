@@ -1,30 +1,37 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
-  let stats = { lastRun: null, nextRun: null, queueSize: 0, sitesCount: 0, articlesCount: 0, threatsCount: 0 };
+  let stats = {
+    lastRun: null,
+    nextRun: null,
+    queueSize: 0,
+    sitesCount: 0,
+    articlesCount: 0,
+    threatsCount: 0,
+  };
   let events = [];
   let loading = true;
   let error = null;
 
-  let password = '';
+  let password = "";
   let runStatus = null;
   let runLoading = false;
   let resetLoading = false;
 
   function formatDateTime(ts) {
-    if (!ts) return '—';
-    return new Date(ts).toLocaleString('ru-RU');
+    if (!ts) return "—";
+    return new Date(ts).toLocaleString("ru-RU");
   }
 
   function eventColor(type) {
-    if (type === 'error')   return '#f87171';
-    if (type === 'warning') return '#fbbf24';
-    return 'var(--text3)';
+    if (type === "error") return "#f87171";
+    if (type === "warning") return "#fbbf24";
+    return "var(--text3)";
   }
 
   async function fetchData() {
     try {
-      const res = await fetch('/api/log');
+      const res = await fetch("/api/log");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       stats = data.stats;
@@ -40,17 +47,17 @@
     runLoading = true;
     runStatus = null;
     try {
-      const res = await fetch('/api/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        runStatus = { ok: false, message: data.error || 'Ошибка' };
+        runStatus = { ok: false, message: data.error || "Ошибка" };
       } else {
         runStatus = { ok: true, message: data.message };
-        password = '';
+        password = "";
         setTimeout(fetchData, 2000);
       }
     } catch (e) {
@@ -61,18 +68,24 @@
   }
 
   async function triggerReset() {
-    if (!confirm('Очистить всю базу данных?')) return;
+    if (!confirm("Очистить всю базу данных?")) return;
     resetLoading = true;
     runStatus = null;
     try {
-      const res = await fetch('/api/reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
-      runStatus = { ok: res.ok, message: data.message || data.error || 'Ошибка' };
-      if (res.ok) { password = ''; setTimeout(fetchData, 500); }
+      runStatus = {
+        ok: res.ok,
+        message: data.message || data.error || "Ошибка",
+      };
+      if (res.ok) {
+        password = "";
+        setTimeout(fetchData, 500);
+      }
     } catch (e) {
       runStatus = { ok: false, message: e.message };
     } finally {
@@ -80,7 +93,7 @@
     }
   }
 
-  $: errorCount = events.filter(e => e.type === 'error').length;
+  $: errorCount = events.filter((e) => e.type === "error").length;
 
   onMount(() => {
     fetchData();
@@ -89,84 +102,106 @@
   });
 </script>
 
-<div class="page-header">
-  <h2>Лог</h2>
-</div>
-
-{#if loading}
-  <div class="empty">Загрузка...</div>
-{:else if error}
-  <div class="empty error">{error}</div>
-{:else}
-  <div class="dashboard">
-    <div class="stat-card">
-      <div class="stat-label">Последний запуск</div>
-      <div class="stat-value">{formatDateTime(stats.lastRun)}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Следующий запуск</div>
-      <div class="stat-value">{formatDateTime(stats.nextRun)}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">В очереди</div>
-      <div class="stat-value">{stats.queueSize}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Ошибок</div>
-      <div class="stat-value" class:red={errorCount > 0}>{errorCount}</div>
-    </div>
+<div class="container">
+  <div class="page-header">
+    <h2>Лог</h2>
   </div>
 
-  <section class="run-section">
-    <div class="section-label">Ручной запуск</div>
-    <div class="run-form">
-      <input
-        type="password"
-        bind:value={password}
-        placeholder="Пароль"
-        class="inp"
-        on:keydown={(e) => e.key === 'Enter' && triggerRun()}
-      />
-      <button class="btn-run" on:click={triggerRun} disabled={runLoading || !password}>
-        {runLoading ? 'Запуск...' : '▶ Запустить'}
-      </button>
-      <button class="btn-reset" on:click={triggerReset} disabled={resetLoading || !password}>
-        {resetLoading ? 'Очистка...' : '✕ Очистить базу'}
-      </button>
-    </div>
-    {#if runStatus}
-      <div class="run-status" class:ok={runStatus.ok} class:fail={!runStatus.ok}>
-        {runStatus.message}
+  {#if loading}
+    <div class="empty">Загрузка...</div>
+  {:else if error}
+    <div class="empty error">{error}</div>
+  {:else}
+    <div class="dashboard">
+      <div class="stat-card">
+        <div class="stat-label">Последний запуск</div>
+        <div class="stat-value">{formatDateTime(stats.lastRun)}</div>
       </div>
-    {/if}
-  </section>
-
-  <section>
-    <div class="section-label">События</div>
-    <div class="log-table-wrap">
-      <table>
-        <thead>
-          <tr><th>Время</th><th>Тип</th><th>Сообщение</th></tr>
-        </thead>
-        <tbody>
-          {#each events as ev (ev.id)}
-            <tr>
-              <td class="ts">{formatDateTime(ev.created_at)}</td>
-              <td class="type" style="color:{eventColor(ev.type)}">{ev.type}</td>
-              <td class="msg">{ev.message}</td>
-            </tr>
-          {/each}
-          {#if events.length === 0}
-            <tr><td colspan="3" class="empty-row">Нет событий</td></tr>
-          {/if}
-        </tbody>
-      </table>
+      <div class="stat-card">
+        <div class="stat-label">Следующий запуск</div>
+        <div class="stat-value">{formatDateTime(stats.nextRun)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">В очереди</div>
+        <div class="stat-value">{stats.queueSize}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ошибок</div>
+        <div class="stat-value" class:red={errorCount > 0}>{errorCount}</div>
+      </div>
     </div>
-  </section>
-{/if}
+
+    <section class="run-section">
+      <div class="section-label">Ручной запуск</div>
+      <div class="run-form">
+        <input
+          type="password"
+          bind:value={password}
+          placeholder="Пароль"
+          class="inp"
+          on:keydown={(e) => e.key === "Enter" && triggerRun()}
+        />
+        <button
+          class="btn-run"
+          on:click={triggerRun}
+          disabled={runLoading || !password}
+        >
+          {runLoading ? "Запуск..." : "▶ Запустить"}
+        </button>
+        <button
+          class="btn-reset"
+          on:click={triggerReset}
+          disabled={resetLoading || !password}
+        >
+          {resetLoading ? "Очистка..." : "✕ Очистить базу"}
+        </button>
+      </div>
+      {#if runStatus}
+        <div
+          class="run-status"
+          class:ok={runStatus.ok}
+          class:fail={!runStatus.ok}
+        >
+          {runStatus.message}
+        </div>
+      {/if}
+    </section>
+
+    <section>
+      <div class="section-label">События</div>
+      <div class="log-table-wrap">
+        <table>
+          <thead>
+            <tr><th>Время</th><th>Тип</th><th>Сообщение</th></tr>
+          </thead>
+          <tbody>
+            {#each events as ev (ev.id)}
+              <tr>
+                <td class="ts">{formatDateTime(ev.created_at)}</td>
+                <td class="type" style="color:{eventColor(ev.type)}"
+                  >{ev.type}</td
+                >
+                <td class="msg">{ev.message}</td>
+              </tr>
+            {/each}
+            {#if events.length === 0}
+              <tr><td colspan="3" class="empty-row">Нет событий</td></tr>
+            {/if}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {/if}
+</div>
 
 <style>
-  .page-header { margin-bottom: 16px; }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .page-header {
+    margin-bottom: 16px;
+  }
   h2 {
     font-size: 0.85rem;
     font-weight: 700;
@@ -202,7 +237,9 @@
     font-weight: 700;
     color: var(--text);
   }
-  .stat-value.red { color: #f87171; }
+  .stat-value.red {
+    color: #f87171;
+  }
 
   .section-label {
     font-size: 0.72rem;
@@ -213,9 +250,15 @@
     margin-bottom: 10px;
   }
 
-  .run-section { margin-bottom: 24px; }
+  .run-section {
+    margin-bottom: 24px;
+  }
 
-  .run-form { display: flex; gap: 8px; margin-bottom: 8px; }
+  .run-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
 
   .inp {
     background: var(--bg2);
@@ -228,7 +271,9 @@
     outline: none;
     transition: border-color 0.15s;
   }
-  .inp:focus { border-color: var(--text3); }
+  .inp:focus {
+    border-color: var(--text3);
+  }
 
   .btn-run {
     padding: 6px 14px;
@@ -238,10 +283,18 @@
     border-radius: 5px;
     color: var(--text3);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
   }
-  .btn-run:hover:not(:disabled) { border-color: #5ab45a; color: #5ab45a; }
-  .btn-run:disabled { opacity: 0.4; cursor: default; }
+  .btn-run:hover:not(:disabled) {
+    border-color: #5ab45a;
+    color: #5ab45a;
+  }
+  .btn-run:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
 
   .btn-reset {
     padding: 6px 14px;
@@ -251,16 +304,33 @@
     border-radius: 5px;
     color: var(--text3);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
   }
-  .btn-reset:hover:not(:disabled) { border-color: #f87171; color: #f87171; }
-  .btn-reset:disabled { opacity: 0.4; cursor: default; }
+  .btn-reset:hover:not(:disabled) {
+    border-color: #f87171;
+    color: #f87171;
+  }
+  .btn-reset:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
 
-  .run-status { font-size: 0.8rem; padding: 4px 0; }
-  .run-status.ok   { color: var(--green); }
-  .run-status.fail { color: #f87171; }
+  .run-status {
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+  .run-status.ok {
+    color: var(--green);
+  }
+  .run-status.fail {
+    color: #f87171;
+  }
 
-  section { margin-bottom: 28px; }
+  section {
+    margin-bottom: 28px;
+  }
 
   .log-table-wrap {
     background: var(--bg2);
@@ -269,7 +339,11 @@
     overflow: hidden;
   }
 
-  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
 
   th {
     text-align: left;
@@ -282,13 +356,34 @@
     background: var(--bg3);
   }
 
-  td { padding: 7px 14px; border-bottom: 1px solid var(--border2); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
+  td {
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border2);
+    vertical-align: top;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
 
-  .ts  { color: var(--text3); white-space: nowrap; font-size: 0.72rem; }
-  .type { font-weight: 700; text-transform: uppercase; font-size: 0.68rem; white-space: nowrap; }
-  .msg { color: var(--text2); }
-  .empty-row { color: var(--text3); text-align: center; padding: 24px; }
+  .ts {
+    color: var(--text3);
+    white-space: nowrap;
+    font-size: 0.72rem;
+  }
+  .type {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+  .msg {
+    color: var(--text2);
+  }
+  .empty-row {
+    color: var(--text3);
+    text-align: center;
+    padding: 24px;
+  }
 
   .empty {
     text-align: center;
@@ -296,5 +391,7 @@
     color: var(--text3);
     font-size: 0.95rem;
   }
-  .empty.error { color: #f87171; }
+  .empty.error {
+    color: #f87171;
+  }
 </style>
