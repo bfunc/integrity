@@ -1,0 +1,84 @@
+{
+  "version": "0.2.0",
+  "levels": [
+    {
+      "id": "incitement",
+      "name": "Incitement",
+      "severity_range": [4, 5],
+      "description": "Speech directly prohibited under international law. Increases risk of mass violence against a group.",
+      "legal_basis": [
+        "ICCPR Art. 20",
+        "Genocide Convention Art. 3",
+        "Rome Statute Art. 25"
+      ],
+      "categories": {
+        "call_to_violence": {
+          "name": "Call to Violence",
+          "description": "Explicit or implicit call for physical harm against a group. May be framed as defensive necessity or historical justice."
+        },
+        "dehumanization": {
+          "name": "Dehumanization",
+          "description": "Stripping human qualities from a group by comparing them to animals, insects, diseases, or objects. Makes violence or exclusion seem acceptable."
+        },
+        "demonization": {
+          "name": "Demonization",
+          "description": "Portraying a group as absolute evil with no redeeming qualities. Often uses words like 'regime', 'terrorists', 'enemies of the people'."
+        },
+        "existential_threat_accusation": {
+          "name": "Existential Threat Accusation",
+          "description": "Framing a group as planning genocide, civilizational destruction, or demographic replacement. Creates perceived justification for preemptive action."
+        }
+      }
+    },
+    {
+      "id": "toxification",
+      "name": "Toxification",
+      "severity_range": [2, 3],
+      "description": "Speech that poisons perception of a group without explicit incitement. Creates social conditions that enable violence over time.",
+      "legal_basis": ["ICCPR Art. 19", "Rabat Plan of Action (2012)"],
+      "categories": {
+        "scapegoating": {
+          "name": "Scapegoating",
+          "description": "Blaming a specific group for complex social, economic, or political problems. Redirects anger and avoids systemic analysis."
+        },
+        "us_vs_them": {
+          "name": "Us vs. Them",
+          "description": "Framing events as a conflict between a virtuous in-group and a threatening out-group. Suppresses internal diversity and complexity."
+        },
+        "appeal_to_fear": {
+          "name": "Appeal to Fear",
+          "description": "Exaggerating threats posed by a group without evidence to provoke fear-based reactions. Often uses urgent or catastrophic language."
+        },
+        "conspiracy_targeting": {
+          "name": "Conspiracy Targeting",
+          "description": "Attributing coordinated hidden malicious intent to a specific group without evidence. Example: ethnic or religious group framed as secretly controlling institutions or planning demographic replacement."
+        }
+      }
+    },
+    {
+      "id": "rhetorical_manipulation",
+      "name": "Rhetorical Manipulation",
+      "severity_range": [1, 2],
+      "description": "Structural patterns that distort reasoning and epistemic judgment. Degrade public discourse quality and lower resistance to higher-level manipulation.",
+      "legal_basis": [],
+      "categories": {
+        "false_dilemma": {
+          "name": "False Dilemma",
+          "description": "Presenting only two options when more exist. Forces the audience to choose sides and hides nuance or middle ground."
+        },
+        "whataboutism": {
+          "name": "Whataboutism",
+          "description": "Deflecting criticism by pointing to unrelated wrongdoing elsewhere. Avoids accountability without refuting the original claim."
+        },
+        "emotional_manipulation": {
+          "name": "Emotional Manipulation",
+          "description": "Using emotionally charged language, imagery, or anecdotes instead of facts and evidence to drive conclusions."
+        },
+        "group_discrediting": {
+          "name": "Group Discrediting",
+          "description": "Attacking the credibility, motives, or legitimacy of an entire group rather than addressing their arguments. Distinct from legitimate criticism of individuals."
+        }
+      }
+    }
+  ]
+}

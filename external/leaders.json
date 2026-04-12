@@ -1,0 +1,148 @@
+[
+  {
+    "id": "putin",
+    "name": "Vladimir Putin",
+    "role": "President",
+    "country": "Russia",
+    "speeches": [
+      {
+        "id": "putin_federal_assembly_2024",
+        "url": "http://en.kremlin.ru/events/president/news/73585",
+        "description": "Путин — обращение к Федеральному собранию, февраль 2024."
+      },
+      {
+        "id": "putin_federal_assembly_2023",
+        "url": "http://en.kremlin.ru/events/president/news/70565",
+        "description": "Путин — обращение к Федеральному собранию, февраль 2023."
+      },
+      {
+        "id": "putin_ukraine_statement_nov2024",
+        "url": "http://www.en.kremlin.ru/events/president/transcripts/75614",
+        "description": "Путин — заявление по применению западного дальнобойного оружия, ноябрь 2024."
+      },
+      {
+        "id": "putin_new_year_2025",
+        "url": "http://en.kremlin.ru/events/president/news/76073",
+        "description": "Путин — новогоднее обращение к нации, 31 декабря 2024."
+      }
+    ]
+  },
+  {
+    "id": "trump",
+    "name": "Donald Trump",
+    "role": "President",
+    "country": "USA",
+    "speeches": [
+      {
+        "id": "trump_congress_2025",
+        "url": "https://www.rev.com/transcripts/donald-trump-speaks-to-congress",
+        "description": "Трамп — обращение к Конгрессу, март 2025."
+      },
+      {
+        "id": "trump_rnc_2024",
+        "url": "https://www.rev.com/transcripts/donald-trump-speaks-at-2024-republican-national-convention",
+        "description": "Трамп — речь на съезде Республиканской партии, июль 2024."
+      },
+      {
+        "id": "trump_victory_2024",
+        "url": "https://www.rev.com/transcripts/trump-victory-speech",
+        "description": "Трамп — речь после победы на выборах, ноябрь 2024."
+      },
+      {
+        "id": "trump_davos_2025",
+        "url": "https://www.rev.com/transcripts/trump-at-wef",
+        "description": "Трамп — выступление на Всемирном экономическом форуме в Давосе, январь 2025."
+      },
+      {
+        "id": "trump_saudi_fii_2025",
+        "url": "https://www.rev.com/transcripts/donald-trump-speaks-at-fii-investment-summit",
+        "description": "Трамп — выступление на инвестиционном форуме FII в Саудовской Аравии, 2025."
+      },
+      {
+        "id": "trump_super_tuesday_2024",
+        "url": "https://www.rev.com/transcripts/trump-delivers-remarks-after-dominant-super-tuesday-performance",
+        "description": "Трамп — речь после победы в Super Tuesday, март 2024."
+      },
+      {
+        "id": "trump_waco_2024",
+        "url": "https://www.rev.com/transcripts/donald-trump-hosts-first-2024-presidential-campaign-rally-in-waco-texas-transcript",
+        "description": "Трамп — первый предвыборный митинг в Вако, Техас, март 2023."
+      },
+      {
+        "id": "trump_macron_nato_2025",
+        "url": "https://www.rev.com/transcripts/trump-and-macron-q-a",
+        "description": "Трамп и Макрон — совместная пресс-конференция по НАТО и Украине, 2025."
+      }
+    ]
+  },
+  {
+    "id": "xi",
+    "name": "Xi Jinping",
+    "role": "President",
+    "country": "China",
+    "speeches": [
+      {
+        "id": "xi_apec_lima_2024",
+        "url": "https://www.fmprc.gov.cn/eng./xw/zyxw/202412/t20241217_11495853.html",
+        "description": "Си Цзиньпин — выступление на саммите АТЭС в Лиме, ноябрь 2024."
+      },
+      {
+        "id": "fmprc_2023_new_year_china",
+        "url": "https://www.fmprc.gov.cn/rus/zxxx/202301/t20230101_10999545.html",
+        "description": "Си Цзиньпин — новогоднее обращение, 2023."
+      },
+      {
+        "id": "xi_new_year_2025",
+        "url": "https://www.fmprc.gov.cn/mfa_eng/xw/zyxw/202412/t20241231_11524948.html",
+        "description": "Си Цзиньпин — новогоднее обращение, декабрь 2024."
+      },
+
+      {
+        "id": "xi_apec_gyeongju_2025",
+        "url": "http://www.xinhuanet.com/english/20251031/9228ecc24fe140a09c07304d184f01d8/c.html",
+        "description": "Си Цзиньпин — обращение на саммите АТЭС в Кёнджу, октябрь 2025."
+      }
+    ]
+  },
+  {
+    "id": "netanyahu",
+    "name": "Benjamin Netanyahu",
+    "role": "Prime Minister",
+    "country": "Israel",
+    "speeches": [
+      {
+        "id": "netanyahu_un_2025_timesofisrael",
+        "url": "https://www.timesofisrael.com/full-text-of-netanyahus-speech-we-wont-let-the-world-shove-a-terror-state-down-our-throat/",
+        "description": "Нетаньяху — речь на Генассамблее ООН, сентябрь 2025."
+      },
+      {
+        "id": "netanyahu_rubio_2025",
+        "url": "https://www.americanrhetoric.com/speeches/marcorubiojointpressconfnetanyahu2025.htm",
+        "description": "Нетаньяху и Рубио — совместная пресс-конференция, сентябрь 2025."
+      }
+    ]
+  },
+  {
+    "id": "zelenskyy",
+    "name": "Volodymyr Zelensky",
+    "role": "President",
+    "country": "Ukraine",
+    "speeches": [
+      {
+        "id": "zelenskyy_unga_2025",
+        "url": "https://www.americanrhetoric.com/speeches/volodymyrzelenskyunga2025.htm",
+        "description": "Зеленский — речь на Генассамблее ООН, сентябрь 2025."
+      },
+      {
+        "id": "zelenskyy_munich_2025",
+        "url": "https://www.americanrhetoric.com/speeches/volodymyrzelensky2025munichsecurityconference.htm",
+        "description": "Зеленский — выступление на Мюнхенской конференции по безопасности, февраль 2025."
+      },
+      {
+        "id": "zelenskyy_trump_oval_2025",
+        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
+        "description": "Зеленский и Трамп — переговоры в Овальном кабинете, 2025."
+      }
+    ]
+  }
+]

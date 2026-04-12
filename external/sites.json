@@ -1,0 +1,62 @@
+[
+  {
+    "id": "meduza",
+    "name": "Meduza",
+    "url": "https://meduza.io/rss/all",
+    "selectors": null
+  },
+  {
+    "id": "ria",
+    "name": "RIA Novosti",
+    "url": "https://ria.ru/export/rss2/archive/index.xml",
+    "selectors": null
+  },
+  {
+    "id": "rt",
+    "name": "RT",
+    "url": "https://www.rt.com/rss/",
+    "selectors": null
+  },
+  {
+    "id": "bbc",
+    "name": "BBC World",
+    "url": "https://feeds.bbci.co.uk/news/rss.xml",
+    "selectors": null
+  },
+  {
+    "id": "dw",
+    "name": "Deutsche Welle",
+    "url": "https://rss.dw.com/rdf/rss-en-all",
+    "selectors": null
+  },
+  {
+    "id": "reuters",
+    "name": "Reuters",
+    "url": "https://feeds.reuters.com/reuters/topNews",
+    "selectors": null
+  },
+  {
+    "id": "ap",
+    "name": "AP",
+    "url": "https://feeds.apnews.com/rss/apf-topnews",
+    "selectors": null
+  },
+  {
+    "id": "foxnews",
+    "name": "Fox News",
+    "url": "https://moxie.foxnews.com/google-publisher/latest.xml",
+    "selectors": null
+  },
+  {
+    "id": "axios",
+    "name": "Axios",
+    "url": "https://api.axios.com/feed/",
+    "selectors": null
+  },
+  {
+    "id": "euronews",
+    "name": "Euronews",
+    "url": "https://www.euronews.com/rss",
+    "selectors": null
+  }
+]
