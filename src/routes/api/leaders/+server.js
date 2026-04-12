@@ -1,11 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getLeaderStats, getLeaderViolations, getSpeechesAnalyzedByLeader } from '../../../db/database.js';
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const leadersData = JSON.parse(readFileSync(resolve(__dirname, '../../../../external/leaders.json'), 'utf-8'));
+import leadersData from '../../../../external/leaders.json' with { type: 'json' };
 const speechTotals = Object.fromEntries(leadersData.map((l) => [l.id, l.speeches.length]));
 
 export async function GET() {

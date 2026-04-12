@@ -1,12 +1,7 @@
 import duckdb from 'duckdb';
 import { config } from '../lib/config.js';
 import { randomUUID } from 'crypto';
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const leadersData = JSON.parse(readFileSync(resolve(__dirname, '../../external/leaders.json'), 'utf-8'));
+import leadersData from '../../external/leaders.json' with { type: 'json' };
 
 // Store on globalThis so Vite's module re-imports don't reset the connection
 if (!globalThis.__duckdb) {
