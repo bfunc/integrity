@@ -1,5 +1,9 @@
 import "dotenv/config";
 
+console.log(
+  `App is in local mode:${process.env.LOCAL_MODEL}:${!!process.env.ANTHROPIC_API_KEY?.startsWith("sk-")}`,
+);
+
 export const config = {
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY,
