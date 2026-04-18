@@ -37,3 +37,6 @@ __db__
 
 .svelte-kit
 build
+
+data/integrity.duckdb
+data/integrity.duckdb.wal

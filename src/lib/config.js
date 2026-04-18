@@ -13,7 +13,7 @@ export const config = {
 
   cron: {
     // 07:00 and 17:00 UTC daily
-    schedules: ["0 7 * * *", "0 17 * * *"],
+    schedules: [],
   },
 
   analysis: {
