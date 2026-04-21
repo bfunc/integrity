@@ -37,27 +37,37 @@ export async function initDb() {
       mkdirSync(dir, { recursive: true });
       console.log(`[initDb] directory ready: ${JSON.stringify(dir)}`);
     } catch (dirErr) {
-      console.error(`[initDb] failed to create directory ${JSON.stringify(dir)}:`, dirErr);
+      console.error(
+        `[initDb] failed to create directory ${JSON.stringify(dir)}:`,
+        dirErr,
+      );
       throw dirErr;
     }
   }
 
-  console.log(`[initDb] opening DuckDB at absolute path: ${JSON.stringify(resolve(dbPath))}`);
+  console.log(
+    `[initDb] opening DuckDB at absolute path: ${JSON.stringify(resolve(dbPath))}`,
+  );
 
   await new Promise((resolve, reject) => {
     state.db = new duckdb.Database(dbPath, (err) => {
       if (err) {
-        console.error(`[initDb] DuckDB open error for path ${JSON.stringify(dbPath)}:`, err);
+        console.error(
+          `[initDb] DuckDB open error for path ${JSON.stringify(dbPath)}:`,
+          err,
+        );
         reject(err);
       } else {
-        console.log(`[initDb] DuckDB opened successfully at: ${JSON.stringify(dbPath)}`);
+        console.log(
+          `[initDb] DuckDB opened successfully at: ${JSON.stringify(dbPath)}`,
+        );
         resolve();
       }
     });
   });
 
   if (isFileBacked) {
-    console.log('[initDb] file exists after DuckDB open:', existsSync(dbPath));
+    console.log("[initDb] file exists after DuckDB open:", existsSync(dbPath));
   }
 
   state.conn = state.db.connect();
@@ -686,11 +696,11 @@ export async function importData(data) {
 
 export async function closeDb() {
   const dbPath = config.db.path;
-  const isFileBacked = dbPath && dbPath !== ':memory:';
+  const isFileBacked = dbPath && dbPath !== ":memory:";
 
   if (state.conn) {
     if (isFileBacked) {
-      console.log('[closeDb] file exists before closing:', existsSync(dbPath));
+      console.log("[closeDb] file exists before closing:", existsSync(dbPath));
     }
     state.conn.close();
     state.conn = null;
@@ -699,7 +709,7 @@ export async function closeDb() {
     await new Promise((resolve) => state.db.close(resolve));
     state.db = null;
     if (isFileBacked) {
-      console.log('[closeDb] file exists after closing:', existsSync(dbPath));
+      console.log("[closeDb] file exists after closing:", existsSync(dbPath));
     }
   }
   state.initPromise = null;
