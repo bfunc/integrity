@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import { BUILD } from "$lib/build.js";
 
   let stats = {
     sitesCount: 0,
@@ -19,18 +18,18 @@
   let pipelineRunning = false;
 
   const PATTERN_NAMES_RU = {
-    call_to_violence:              'Призыв к насилию',
-    dehumanization:                'Дегуманизация',
-    demonization:                  'Демонизация',
-    existential_threat_accusation: 'Экзистенциальная угроза',
-    scapegoating:                  'Козёл отпущения',
-    us_vs_them:                    'Мы против них',
-    appeal_to_fear:                'Апелляция к страху',
-    conspiracy_targeting:          'Конспирология',
-    false_dilemma:                 'Ложная дилемма',
-    whataboutism:                  'Вотэбаутизм',
-    emotional_manipulation:        'Эмоциональная манипуляция',
-    group_discrediting:            'Дискредитация группы',
+    call_to_violence: "Призыв к насилию",
+    dehumanization: "Дегуманизация",
+    demonization: "Демонизация",
+    existential_threat_accusation: "Экзистенциальная угроза",
+    scapegoating: "Козёл отпущения",
+    us_vs_them: "Мы против них",
+    appeal_to_fear: "Апелляция к страху",
+    conspiracy_targeting: "Конспирология",
+    false_dilemma: "Ложная дилемма",
+    whataboutism: "Вотэбаутизм",
+    emotional_manipulation: "Эмоциональная манипуляция",
+    group_discrediting: "Дискредитация группы",
   };
 
   async function fetchStats() {
@@ -66,7 +65,6 @@
   }
 
   onMount(() => {
-    console.log(`Build #${BUILD}`);
     fetchStats();
     const interval = setInterval(fetchStats, pipelineRunning ? 4000 : 30000);
     return () => clearInterval(interval);
@@ -77,12 +75,15 @@
     const d = new Date(ts);
     const now = new Date();
     const isToday = d.toDateString() === now.toDateString();
-    const timeStr = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    const timeStr = d.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return isToday ? `сегодня ${timeStr}` : timeStr;
   }
 
   $: systemActive = headerData.last_run
-    ? (Date.now() - new Date(headerData.last_run).getTime()) < 24 * 60 * 60 * 1000
+    ? Date.now() - new Date(headerData.last_run).getTime() < 24 * 60 * 60 * 1000
     : false;
 
   const tabs = [
@@ -111,7 +112,6 @@
           Анализ манипуляций
         {/if}
       </span>
-      <span id="build-badge">#{BUILD}</span>
     </div>
 
     <!-- PIPELINE COUNTS BAR -->
@@ -144,7 +144,10 @@
       {#if headerData.top_pattern_today}
         <div class="cnt top-pat">
           <span class="tri">▲</span>
-          <span>{PATTERN_NAMES_RU[headerData.top_pattern_today.name] ?? headerData.top_pattern_today.name}</span>
+          <span
+            >{PATTERN_NAMES_RU[headerData.top_pattern_today.name] ??
+              headerData.top_pattern_today.name}</span
+          >
           <b>·&nbsp;{headerData.top_pattern_today.count}</b>
         </div>
       {/if}
@@ -163,7 +166,9 @@
       <!-- System status -->
       <div class="cnt status-dot-wrap">
         <span class="status-dot {systemActive ? 'active' : 'waiting'}"></span>
-        <span class="status-lbl">{systemActive ? 'Система активна' : 'Ожидание'}</span>
+        <span class="status-lbl"
+          >{systemActive ? "Система активна" : "Ожидание"}</span
+        >
       </div>
     </div>
 
@@ -289,13 +294,6 @@
     color: var(--text3);
   }
 
-  #build-badge {
-    margin-left: auto;
-    font-size: 0.7rem;
-    color: var(--text3);
-    font-variant-numeric: tabular-nums;
-  }
-
   /* PIPELINE BAR */
   #pipeline-bar {
     display: flex;
@@ -339,16 +337,30 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
-  .sev-dot.high { background: #ef4444; }
-  .sev-dot.mod  { background: #f97316; margin-left: 6px; }
-  .sev-lbl { color: var(--text3); }
-  .sev-n   { color: var(--text2); }
+  .sev-dot.high {
+    background: #ef4444;
+  }
+  .sev-dot.mod {
+    background: #f97316;
+    margin-left: 6px;
+  }
+  .sev-lbl {
+    color: var(--text3);
+  }
+  .sev-n {
+    color: var(--text2);
+  }
   .top-pat {
     gap: 4px;
     color: var(--text3);
   }
-  .top-pat .tri { color: #f97316; font-size: 0.65rem; }
-  .top-pat b    { color: var(--text2); }
+  .top-pat .tri {
+    color: #f97316;
+    font-size: 0.65rem;
+  }
+  .top-pat b {
+    color: var(--text2);
+  }
   .status-dot-wrap {
     margin-left: auto;
     gap: 5px;
@@ -359,17 +371,38 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
-  .status-dot.active  { background: var(--green); box-shadow: 0 0 5px var(--green); animation: pulse 2s infinite; }
-  .status-dot.waiting { background: var(--amber); }
-  .status-lbl { color: var(--text3); font-size: 0.7rem; }
+  .status-dot.active {
+    background: var(--green);
+    box-shadow: 0 0 5px var(--green);
+    animation: pulse 2s infinite;
+  }
+  .status-dot.waiting {
+    background: var(--amber);
+  }
+  .status-lbl {
+    color: var(--text3);
+    font-size: 0.7rem;
+  }
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.5; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
   @media (max-width: 640px) {
-    #pipeline-bar { flex-wrap: wrap; row-gap: 6px; }
-    .bar-sep { display: none; }
-    .status-dot-wrap { margin-left: 0; }
+    #pipeline-bar {
+      flex-wrap: wrap;
+      row-gap: 6px;
+    }
+    .bar-sep {
+      display: none;
+    }
+    .status-dot-wrap {
+      margin-left: 0;
+    }
   }
 
   /* TABS */
