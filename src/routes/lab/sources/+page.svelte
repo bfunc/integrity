@@ -18,15 +18,23 @@
   }
 
   async function fetchData() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
     try {
-      const res = await fetch("/api/sources");
+      const res = await fetch("/api/sources", { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       sites = data.sites;
       leaders = data.leaders;
+      error = data.warning || null;
     } catch (e) {
-      error = e.message;
+      error =
+        e?.name === "AbortError"
+          ? "Таймаут запроса API /api/sources"
+          : e.message;
     } finally {
+      clearTimeout(timeout);
       loading = false;
     }
   }
@@ -45,9 +53,11 @@
 
   {#if loading}
     <div class="empty">Загрузка...</div>
-  {:else if error}
-    <div class="empty error">{error}</div>
   {:else}
+    {#if error}
+      <div class="empty error">{error}</div>
+    {/if}
+
     <section>
       <div class="section-label">RSS Sites</div>
       <div class="sites-grid">

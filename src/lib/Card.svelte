@@ -2,69 +2,85 @@
   export let item;
 
   const SEV_COLOR = {
-    1: { bg: '#0f172a', border: '#1e232e', text: '#818cf8' },
-    2: { bg: '#0f172a', border: '#1e232e', text: '#818cf8' },
-    3: { bg: '#1c0f00', border: '#4a2500', text: '#fb923c' },
-    4: { bg: '#1a0808', border: '#3d1010', text: '#fca5a5' },
-    5: { bg: '#1a0808', border: '#5a0e0e', text: '#ef4444' },
+    1: { bg: "#0f172a", border: "#1e232e", text: "#818cf8" },
+    2: { bg: "#0f172a", border: "#1e232e", text: "#818cf8" },
+    3: { bg: "#1c0f00", border: "#4a2500", text: "#fb923c" },
+    4: { bg: "#1a0808", border: "#3d1010", text: "#fca5a5" },
+    5: { bg: "#1a0808", border: "#5a0e0e", text: "#ef4444" },
   };
 
   const PATTERN_NAMES = {
-    call_to_violence:              'Призыв к насилию',
-    dehumanization:                'Дегуманизация',
-    demonization:                  'Демонизация',
-    existential_threat_accusation: 'Обвинение в экзистенциальной угрозе',
-    scapegoating:                  'Поиск козла отпущения',
-    us_vs_them:                    'Мы против них',
-    appeal_to_fear:                'Апелляция к страху',
-    conspiracy_targeting:          'Конспирологическое обвинение',
-    false_dilemma:                 'Ложная дилемма',
-    whataboutism:                  'Вотэбаутизм',
-    emotional_manipulation:        'Эмоциональная манипуляция',
-    group_discrediting:            'Дискредитация группы',
+    call_to_violence: "Призыв к насилию",
+    dehumanization: "Дегуманизация",
+    demonization: "Демонизация",
+    existential_threat_accusation: "Обвинение в экзистенциальной угрозе",
+    scapegoating: "Поиск козла отпущения",
+    us_vs_them: "Мы против них",
+    appeal_to_fear: "Апелляция к страху",
+    conspiracy_targeting: "Конспирологическое обвинение",
+    false_dilemma: "Ложная дилемма",
+    whataboutism: "Вотэбаутизм",
+    emotional_manipulation: "Эмоциональная манипуляция",
+    group_discrediting: "Дискредитация группы",
   };
 
   const LEVEL_LABELS = {
-    incitement:              'Подстрекательство',
-    toxification:            'Токсификация',
-    rhetorical_manipulation: 'Риторическая манипуляция',
+    incitement: "Подстрекательство",
+    toxification: "Токсификация",
+    rhetorical_manipulation: "Риторическая манипуляция",
   };
 
   const CONF_COLOR = {
-    high:   '#ef4444',
-    medium: '#facc15',
-    low:    '#4ade80',
+    high: "#ef4444",
+    medium: "#facc15",
+    low: "#4ade80",
   };
 
-  const CONF_ORDER  = { high: 0, medium: 1, low: 2 };
-  const LEVEL_ORDER = { incitement: 0, toxification: 1, rhetorical_manipulation: 2 };
+  const CONF_ORDER = { high: 0, medium: 1, low: 2 };
+  const LEVEL_ORDER = {
+    incitement: 0,
+    toxification: 1,
+    rhetorical_manipulation: 2,
+  };
 
   // Left border color per violation confidence
   const VIOL_BORDER = {
-    high:   '#E5383B',
-    medium: '#F5A623',
+    high: "#E5383B",
+    medium: "#F5A623",
   };
 
   function sevStyle(s) {
-    const c = SEV_COLOR[s] || { bg: '#0f172a', border: '#1e293b', text: '#818cf8' };
+    const c = SEV_COLOR[s] || {
+      bg: "#0f172a",
+      border: "#1e293b",
+      text: "#818cf8",
+    };
     return `background:${c.bg};border-color:${c.border};color:${c.text}`;
   }
 
+  function cleanStyle() {
+    return "background:#052e1a;border-color:#166534;color:#86efac";
+  }
+
   function violBorderStyle(p) {
-    const color = VIOL_BORDER[p.confidence] || 'var(--border2)';
+    const color = VIOL_BORDER[p.confidence] || "var(--border2)";
     return `border-left: 3px solid ${color}`;
   }
 
   function formatDate(ts) {
-    if (!ts) return '—';
-    return new Date(ts).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    if (!ts) return "—";
+    return new Date(ts).toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
   }
 
   let open = false;
   let disputeOpen = false;
 
   function openModal(e) {
-    if (e.target.closest('a')) return;
+    if (e.target.closest("a")) return;
     open = true;
   }
 
@@ -74,15 +90,21 @@
   }
 
   function handleKey(e) {
-    if (e.key === 'Escape') {
-      if (disputeOpen) { disputeOpen = false; }
-      else { closeModal(); }
+    if (e.key === "Escape") {
+      if (disputeOpen) {
+        disputeOpen = false;
+      } else {
+        closeModal();
+      }
     }
   }
 
   $: topPattern = Array.isArray(item.patterns) ? item.patterns[0] : null;
-  $: label = item.severity_label || '';
+  $: label = item.severity_label || "";
   $: patterns = Array.isArray(item.patterns) ? item.patterns : [];
+  $: hasSeverity = Number.isFinite(Number(item.severity));
+  $: hasViolations = hasSeverity && patterns.length > 0;
+  $: showCleanBadge = !hasViolations;
   $: sortedPatterns = patterns.slice().sort((a, b) => {
     const ca = CONF_ORDER[a.confidence] ?? 3;
     const cb = CONF_ORDER[b.confidence] ?? 3;
@@ -92,15 +114,16 @@
 
   // Attribution line
   $: attributionSource = item.leader_name || item.source || null;
-  $: attributionRole   = item.leader_role || null;
+  $: attributionRole = item.leader_role || null;
 
-  $: attrBadgeRole = item.attribution_role && item.attribution_role !== 'reporter'
-    ? item.attribution_role
-    : null;
+  $: attrBadgeRole =
+    item.attribution_role && item.attribution_role !== "reporter"
+      ? item.attribution_role
+      : null;
 
   // Lock body scroll while modal is open
-  $: if (typeof document !== 'undefined') {
-    document.body.style.overflow = open ? 'hidden' : '';
+  $: if (typeof document !== "undefined") {
+    document.body.style.overflow = open ? "hidden" : "";
   }
 </script>
 
@@ -112,28 +135,33 @@
   on:click={openModal}
   role="button"
   tabindex="0"
-  on:keypress={(e) => e.key === 'Enter' && openModal(e)}
+  on:keypress={(e) => e.key === "Enter" && openModal(e)}
   aria-label="Открыть детали"
 >
   <div class="threat-top">
     <span class="src-badge">{item.source}</span>
     {#if attrBadgeRole}
       <span class="attr-badge attr-{attrBadgeRole}">
-        {attrBadgeRole === 'originator' ? 'МАНИПУЛЯТОР' : 'УСИЛИТЕЛЬ'}
+        {attrBadgeRole === "originator" ? "МАНИПУЛЯТОР" : "УСИЛИТЕЛЬ"}
       </span>
     {/if}
-    <span
-      class="threat-tag"
-      style={sevStyle(item.severity)}
-    >{label} {item.severity}/5</span>
+    {#if hasViolations}
+      <span class="threat-tag" style={sevStyle(item.severity)}
+        >{label} {item.severity}/5</span
+      >
+    {:else if showCleanBadge}
+      <span class="threat-tag" style={cleanStyle()}>CLEAN</span>
+    {/if}
   </div>
 
-  <a class="threat-title" href={item.url || '#'} target="_blank" rel="noopener">
+  <a class="threat-title" href={item.url || "#"} target="_blank" rel="noopener">
     {item.title}
   </a>
 
   {#if topPattern}
-    <div class="threat-pattern">{PATTERN_NAMES[topPattern.name] ?? topPattern.name}</div>
+    <div class="threat-pattern">
+      {PATTERN_NAMES[topPattern.name] ?? topPattern.name}
+    </div>
   {/if}
 
   {#if item.summary_md}
@@ -142,7 +170,8 @@
 
   <div class="threat-meta">
     {formatDate(item.published_at || item.analyzed_at)}
-    {#if item.source_type === 'speech'} · речь{/if}
+    {#if item.source_type === "speech"}
+      · речь{/if}
     {#if patterns.length > 1}
       <span class="meta-violations"> · {patterns.length} нарушения</span>
     {/if}
@@ -152,119 +181,139 @@
 
 <!-- ── FULLSCREEN MODAL ── -->
 {#if open}
-<div
-  class="modal-overlay"
-  on:click={closeModal}
-  role="presentation"
->
-  <div
-    class="modal"
-    on:click|stopPropagation
-    role="dialog"
-    aria-modal="true"
-    aria-label={item.title}
-  >
-    <!-- Header -->
-    <div class="modal-head">
-      <div class="modal-badges">
-        <span class="src-badge">{item.source}</span>
-        <span class="threat-tag" style={sevStyle(item.severity)}>{label} {item.severity}/5</span>
-        {#if item.source_type === 'speech'}
-          <span class="type-badge">речь</span>
-        {/if}
-      </div>
-      <button class="modal-close" on:click={closeModal} aria-label="Закрыть">✕</button>
-    </div>
-
-    <!-- Title -->
-    <h2 class="modal-title">{item.title}</h2>
-
-    <!-- Attribution tuple -->
-    {#if attributionSource}
-      <p class="modal-attribution">
-        Источник: {attributionSource}{#if attributionRole} · Роль: {attributionRole}{/if}
-      </p>
-    {/if}
-
-    <!-- Summary -->
-    {#if item.summary_md}
-      <p class="modal-summary">{item.summary_md}</p>
-    {/if}
-
-    <!-- Violations list -->
-    <div class="violations-wrap">
-      <div class="violations-header">
-        Выявленные нарушения
-        <span class="violations-count">{patterns.length}</span>
+  <div class="modal-overlay" on:click={closeModal} role="presentation">
+    <div
+      class="modal"
+      on:click|stopPropagation
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title}
+    >
+      <!-- Header -->
+      <div class="modal-head">
+        <div class="modal-badges">
+          <span class="src-badge">{item.source}</span>
+          {#if hasViolations}
+            <span class="threat-tag" style={sevStyle(item.severity)}
+              >{label} {item.severity}/5</span
+            >
+          {:else if showCleanBadge}
+            <span class="threat-tag" style={cleanStyle()}>CLEAN</span>
+          {/if}
+          {#if item.source_type === "speech"}
+            <span class="type-badge">речь</span>
+          {/if}
+        </div>
+        <button class="modal-close" on:click={closeModal} aria-label="Закрыть"
+          >✕</button
+        >
       </div>
 
-      {#if patterns.length === 0}
-        <p class="no-violations">Нарушения не выявлены</p>
-      {:else}
-        {#each sortedPatterns as p, i}
-          <div class="violation" style={violBorderStyle(p)}>
-            <div class="violation-top">
-              <span class="viol-num">{i + 1}</span>
-              <span class="viol-name">{PATTERN_NAMES[p.name] ?? p.name}</span>
-              {#if p.level}
-                <span class="viol-level">{LEVEL_LABELS[p.level] ?? p.level}</span>
+      <!-- Title -->
+      <h2 class="modal-title">{item.title}</h2>
+
+      <!-- Attribution tuple -->
+      {#if attributionSource}
+        <p class="modal-attribution">
+          Источник: {attributionSource}{#if attributionRole}
+            · Роль: {attributionRole}{/if}
+        </p>
+      {/if}
+
+      <!-- Summary -->
+      {#if item.summary_md}
+        <p class="modal-summary">{item.summary_md}</p>
+      {/if}
+
+      <!-- Violations list -->
+      <div class="violations-wrap">
+        <div class="violations-header">
+          Выявленные нарушения
+          <span class="violations-count">{patterns.length}</span>
+        </div>
+
+        {#if patterns.length === 0}
+          <p class="no-violations">Нарушения не выявлены</p>
+        {:else}
+          {#each sortedPatterns as p, i}
+            <div class="violation" style={violBorderStyle(p)}>
+              <div class="violation-top">
+                <span class="viol-num">{i + 1}</span>
+                <span class="viol-name">{PATTERN_NAMES[p.name] ?? p.name}</span>
+                {#if p.level}
+                  <span class="viol-level"
+                    >{LEVEL_LABELS[p.level] ?? p.level}</span
+                  >
+                {/if}
+                {#if p.confidence}
+                  <span
+                    class="viol-conf"
+                    style="color:{CONF_COLOR[p.confidence] ?? 'var(--text3)'}"
+                  >
+                    {p.confidence}
+                  </span>
+                {/if}
+              </div>
+              {#if p.quote}
+                <blockquote class="viol-quote">«{p.quote}»</blockquote>
               {/if}
-              {#if p.confidence}
-                <span class="viol-conf" style="color:{CONF_COLOR[p.confidence] ?? 'var(--text3)'}">
-                  {p.confidence}
-                </span>
+              {#if p.explanation}
+                <p class="viol-expl">{p.explanation}</p>
               {/if}
             </div>
-            {#if p.quote}
-              <blockquote class="viol-quote">«{p.quote}»</blockquote>
-            {/if}
-            {#if p.explanation}
-              <p class="viol-expl">{p.explanation}</p>
-            {/if}
-          </div>
-        {/each}
-      {/if}
-    </div>
+          {/each}
+        {/if}
+      </div>
 
-    <!-- Footer -->
-    <div class="modal-footer">
-      <button class="dispute-btn" on:click={() => (disputeOpen = true)}>
-        Оспорить
-      </button>
-      <span class="modal-date">{formatDate(item.published_at || item.analyzed_at)}</span>
-      {#if item.url}
-        <a class="modal-link" href={item.url} target="_blank" rel="noopener">
-          Открыть источник →
-        </a>
-      {/if}
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="dispute-btn" on:click={() => (disputeOpen = true)}>
+          Оспорить
+        </button>
+        <span class="modal-date"
+          >{formatDate(item.published_at || item.analyzed_at)}</span
+        >
+        {#if item.url}
+          <a class="modal-link" href={item.url} target="_blank" rel="noopener">
+            Открыть источник →
+          </a>
+        {/if}
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Dispute notice -->
-{#if disputeOpen}
-<div
-  class="dispute-overlay"
-  on:click={() => (disputeOpen = false)}
-  role="presentation"
->
-  <div
-    class="dispute-modal"
-    on:click|stopPropagation
-    role="dialog"
-    aria-modal="true"
-  >
-    <p class="dispute-msg">Функция голосования появится в следующей версии</p>
-    <button class="dispute-close" on:click={() => (disputeOpen = false)}>Закрыть</button>
-  </div>
-</div>
-{/if}
+  <!-- Dispute notice -->
+  {#if disputeOpen}
+    <div
+      class="dispute-overlay"
+      on:click={() => (disputeOpen = false)}
+      role="presentation"
+    >
+      <div
+        class="dispute-modal"
+        on:click|stopPropagation
+        role="dialog"
+        aria-modal="true"
+      >
+        <p class="dispute-msg">
+          Функция голосования появится в следующей версии
+        </p>
+        <button class="dispute-close" on:click={() => (disputeOpen = false)}
+          >Закрыть</button
+        >
+      </div>
+    </div>
+  {/if}
 {/if}
 
 <style>
   /* ── CARD ── */
   .threat-card {
-    background: linear-gradient(180deg, rgba(22,27,38,.96) 0%, rgba(18,22,31,.96) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(22, 27, 38, 0.96) 0%,
+      rgba(18, 22, 31, 0.96) 100%
+    );
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
@@ -273,12 +322,15 @@
     flex-direction: column;
     cursor: pointer;
     animation: fadeIn 0.4s ease;
-    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
   }
 
   .threat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0,0,0,.28);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
   }
 
   .threat-top {
@@ -309,8 +361,14 @@
     letter-spacing: 0.04em;
     flex-shrink: 0;
   }
-  .attr-originator { background: #3d1010; color: #ef4444; }
-  .attr-amplifier  { background: #431407; color: #f97316; }
+  .attr-originator {
+    background: #3d1010;
+    color: #ef4444;
+  }
+  .attr-amplifier {
+    background: #431407;
+    color: #f97316;
+  }
 
   .threat-tag {
     margin-left: auto;
@@ -336,7 +394,9 @@
     margin-bottom: 10px;
   }
 
-  .threat-title:hover { text-decoration: underline; }
+  .threat-title:hover {
+    text-decoration: underline;
+  }
 
   .threat-pattern {
     font-size: 0.72rem;
@@ -369,7 +429,9 @@
     flex-wrap: wrap;
   }
 
-  .meta-violations { color: var(--text3); }
+  .meta-violations {
+    color: var(--text3);
+  }
 
   .expand-hint {
     margin-left: auto;
@@ -378,11 +440,19 @@
     opacity: 0;
     transition: opacity 0.15s;
   }
-  .threat-card:hover .expand-hint { opacity: 1; }
+  .threat-card:hover .expand-hint {
+    opacity: 1;
+  }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* ── MODAL OVERLAY ── */
@@ -401,8 +471,12 @@
   }
 
   @keyframes overlayIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   /* ── MODAL PANEL ── */
@@ -413,13 +487,19 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 24px 28px 28px;
-    animation: modalIn 0.22s cubic-bezier(.16,1,.3,1);
+    animation: modalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     flex-shrink: 0;
   }
 
   @keyframes modalIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .modal-head {
@@ -460,7 +540,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    transition:
+      color 0.15s,
+      border-color 0.15s,
+      background 0.15s;
     flex-shrink: 0;
   }
   .modal-close:hover {
@@ -535,7 +618,9 @@
     margin-bottom: 10px;
     border-left-width: 3px;
   }
-  .violation:last-child { margin-bottom: 0; }
+  .violation:last-child {
+    margin-bottom: 0;
+  }
 
   .violation-top {
     display: flex;
@@ -610,14 +695,16 @@
   /* Feature 1: dispute button */
   .dispute-btn {
     background: none;
-    border: 1px solid var(--orange, #F5A623);
+    border: 1px solid var(--orange, #f5a623);
     border-radius: 6px;
-    color: var(--orange, #F5A623);
+    color: var(--orange, #f5a623);
     font-size: 0.75rem;
     font-weight: 600;
     padding: 5px 14px;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition:
+      background 0.15s,
+      color 0.15s;
     flex-shrink: 0;
   }
   .dispute-btn:hover {
@@ -638,7 +725,10 @@
     transition: opacity 0.15s;
     flex-shrink: 0;
   }
-  .modal-link:hover { opacity: 0.75; text-decoration: underline; }
+  .modal-link:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+  }
 
   /* ── DISPUTE NOTICE ── */
   .dispute-overlay {
@@ -661,7 +751,7 @@
     max-width: 380px;
     width: 100%;
     text-align: center;
-    animation: modalIn 0.2s cubic-bezier(.16,1,.3,1);
+    animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .dispute-msg {
@@ -680,7 +770,9 @@
     font-weight: 600;
     padding: 7px 20px;
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
   }
   .dispute-close:hover {
     border-color: var(--text3);

@@ -463,7 +463,7 @@
     "update_frequency": "high"
   },
   {
-    "id": "chinadaily",
+    "id": "chinadaily_china",
     "name": "China Daily – World",
     "url": "https://www.chinadaily.com.cn/rss/world_rss.xml",
     "region": "China",
@@ -481,7 +481,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "scmp",
+    "id": "scmp_china",
     "name": "South China Morning Post",
     "url": "https://www.scmp.com/rss/91/feed",
     "region": "China",
@@ -490,7 +490,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "thehindu",
+    "id": "thehindu_india",
     "name": "The Hindu – International",
     "url": "https://www.thehindu.com/news/international/feeder/default.rss",
     "region": "India",
@@ -499,7 +499,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "timesofindia",
+    "id": "timesofindia_india",
     "name": "Times of India – World",
     "url": "https://timesofindia.indiatimes.com/rss.cms",
     "region": "India",
@@ -562,7 +562,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "aljazeera",
+    "id": "aljazeera_me",
     "name": "Al Jazeera – All News",
     "url": "https://www.aljazeera.com/xml/rss/all.xml",
     "region": "Middle East",
@@ -580,7 +580,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "arabnews",
+    "id": "arabnews_me",
     "name": "Arab News",
     "url": "https://www.arabnews.com/rss.xml",
     "region": "Middle East",
@@ -589,7 +589,7 @@
     "update_frequency": "medium"
   },
   {
-    "id": "middleeasteye",
+    "id": "middleeasteye_me",
     "name": "Middle East Eye",
     "url": "https://www.middleeasteye.net/rss",
     "region": "Middle East",
