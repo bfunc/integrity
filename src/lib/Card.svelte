@@ -2,6 +2,8 @@
   export let item;
 
   const SEV_COLOR = {
+    1: { bg: '#0f172a', border: '#1e232e', text: '#818cf8' },
+    2: { bg: '#0f172a', border: '#1e232e', text: '#818cf8' },
     3: { bg: '#1c0f00', border: '#4a2500', text: '#fb923c' },
     4: { bg: '#1a0808', border: '#3d1010', text: '#fca5a5' },
     5: { bg: '#1a0808', border: '#5a0e0e', text: '#ef4444' },
@@ -34,9 +36,23 @@
     low:    '#4ade80',
   };
 
+  const CONF_ORDER  = { high: 0, medium: 1, low: 2 };
+  const LEVEL_ORDER = { incitement: 0, toxification: 1, rhetorical_manipulation: 2 };
+
+  // Left border color per violation confidence
+  const VIOL_BORDER = {
+    high:   '#E5383B',
+    medium: '#F5A623',
+  };
+
   function sevStyle(s) {
     const c = SEV_COLOR[s] || { bg: '#0f172a', border: '#1e293b', text: '#818cf8' };
     return `background:${c.bg};border-color:${c.border};color:${c.text}`;
+  }
+
+  function violBorderStyle(p) {
+    const color = VIOL_BORDER[p.confidence] || 'var(--border2)';
+    return `border-left: 3px solid ${color}`;
   }
 
   function formatDate(ts) {
@@ -45,6 +61,7 @@
   }
 
   let open = false;
+  let disputeOpen = false;
 
   function openModal(e) {
     if (e.target.closest('a')) return;
@@ -53,15 +70,29 @@
 
   function closeModal() {
     open = false;
+    disputeOpen = false;
   }
 
   function handleKey(e) {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      if (disputeOpen) { disputeOpen = false; }
+      else { closeModal(); }
+    }
   }
 
   $: topPattern = Array.isArray(item.patterns) ? item.patterns[0] : null;
   $: label = item.severity_label || '';
   $: patterns = Array.isArray(item.patterns) ? item.patterns : [];
+  $: sortedPatterns = patterns.slice().sort((a, b) => {
+    const ca = CONF_ORDER[a.confidence] ?? 3;
+    const cb = CONF_ORDER[b.confidence] ?? 3;
+    if (ca !== cb) return ca - cb;
+    return (LEVEL_ORDER[a.level] ?? 3) - (LEVEL_ORDER[b.level] ?? 3);
+  });
+
+  // Attribution line
+  $: attributionSource = item.leader_name || item.source || null;
+  $: attributionRole   = item.leader_role || null;
 
   // Lock body scroll while modal is open
   $: if (typeof document !== 'undefined') {
@@ -139,6 +170,13 @@
     <!-- Title -->
     <h2 class="modal-title">{item.title}</h2>
 
+    <!-- Attribution tuple -->
+    {#if attributionSource}
+      <p class="modal-attribution">
+        Источник: {attributionSource}{#if attributionRole} · Роль: {attributionRole}{/if}
+      </p>
+    {/if}
+
     <!-- Summary -->
     {#if item.summary_md}
       <p class="modal-summary">{item.summary_md}</p>
@@ -154,8 +192,8 @@
       {#if patterns.length === 0}
         <p class="no-violations">Нарушения не выявлены</p>
       {:else}
-        {#each patterns as p, i}
-          <div class="violation">
+        {#each sortedPatterns as p, i}
+          <div class="violation" style={violBorderStyle(p)}>
             <div class="violation-top">
               <span class="viol-num">{i + 1}</span>
               <span class="viol-name">{PATTERN_NAMES[p.name] ?? p.name}</span>
@@ -181,6 +219,9 @@
 
     <!-- Footer -->
     <div class="modal-footer">
+      <button class="dispute-btn" on:click={() => (disputeOpen = true)}>
+        Оспорить
+      </button>
       <span class="modal-date">{formatDate(item.published_at || item.analyzed_at)}</span>
       {#if item.url}
         <a class="modal-link" href={item.url} target="_blank" rel="noopener">
@@ -190,6 +231,25 @@
     </div>
   </div>
 </div>
+
+<!-- Dispute notice -->
+{#if disputeOpen}
+<div
+  class="dispute-overlay"
+  on:click={() => (disputeOpen = false)}
+  role="presentation"
+>
+  <div
+    class="dispute-modal"
+    on:click|stopPropagation
+    role="dialog"
+    aria-modal="true"
+  >
+    <p class="dispute-msg">Функция голосования появится в следующей версии</p>
+    <button class="dispute-close" on:click={() => (disputeOpen = false)}>Закрыть</button>
+  </div>
+</div>
+{/if}
 {/if}
 
 <style>
@@ -199,6 +259,8 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
+    height: 240px;
+    overflow: hidden;
     cursor: pointer;
     animation: fadeIn 0.4s ease;
     transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
@@ -249,7 +311,6 @@
     font-weight: 650;
     line-height: 1.4;
     color: #eef2fb;
-    min-height: 4.1em;
     margin-bottom: 10px;
   }
 
@@ -264,7 +325,12 @@
     margin-bottom: 6px;
   }
 
+  /* Feature 5: 2-line clamp on grid card summary */
   .threat-status {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     font-size: 0.79rem;
     line-height: 1.4;
     color: var(--text2);
@@ -386,7 +452,15 @@
     font-weight: 700;
     line-height: 1.4;
     color: #eef2fb;
+    margin-bottom: 6px;
+  }
+
+  /* Feature 2: attribution tuple */
+  .modal-attribution {
+    font-size: 0.74rem;
+    color: var(--text3);
     margin-bottom: 14px;
+    line-height: 1.4;
   }
 
   .modal-summary {
@@ -400,7 +474,7 @@
 
   /* ── VIOLATIONS ── */
   .violations-wrap {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .violations-header {
@@ -430,12 +504,14 @@
     font-style: italic;
   }
 
+  /* Feature 4: left border on violation cards */
   .violation {
     background: var(--bg3);
     border: 1px solid var(--border2);
     border-radius: 8px;
     padding: 14px 16px;
     margin-bottom: 10px;
+    border-left-width: 3px;
   }
   .violation:last-child { margin-bottom: 0; }
 
@@ -504,15 +580,32 @@
   .modal-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     padding-top: 18px;
     border-top: 1px solid var(--border2);
-    gap: 12px;
+  }
+
+  /* Feature 1: dispute button */
+  .dispute-btn {
+    background: none;
+    border: 1px solid var(--orange, #F5A623);
+    border-radius: 6px;
+    color: var(--orange, #F5A623);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .dispute-btn:hover {
+    background: rgba(245, 166, 35, 0.1);
   }
 
   .modal-date {
     font-size: 0.72rem;
     color: var(--text3);
+    margin-left: auto;
   }
 
   .modal-link {
@@ -521,6 +614,54 @@
     color: var(--blue);
     text-decoration: none;
     transition: opacity 0.15s;
+    flex-shrink: 0;
   }
   .modal-link:hover { opacity: 0.75; text-decoration: underline; }
+
+  /* ── DISPUTE NOTICE ── */
+  .dispute-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    background: rgba(5, 7, 12, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: overlayIn 0.15s ease;
+  }
+
+  .dispute-modal {
+    background: #1a1f2e;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    animation: modalIn 0.2s cubic-bezier(.16,1,.3,1);
+  }
+
+  .dispute-msg {
+    font-size: 0.95rem;
+    color: var(--text2);
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+
+  .dispute-close {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 20px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .dispute-close:hover {
+    border-color: var(--text3);
+    color: var(--text);
+  }
 </style>

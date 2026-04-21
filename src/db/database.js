@@ -236,19 +236,23 @@ export async function getFeedAnalyses(tab) {
   if (tab === 'threats') {
     return all(`
       SELECT a.*, ar.title as article_title, ar.source, ar.url as article_url, ar.published_at,
-             s.title as speech_title, s.leader_id
+             s.title as speech_title, s.leader_id, s.url as speech_url,
+             l.name as leader_name, l.role as leader_role
       FROM analyses a
       LEFT JOIN articles ar ON a.source_type = 'article' AND a.source_id = ar.id
       LEFT JOIN speeches s ON a.source_type = 'speech' AND a.source_id = s.id
+      LEFT JOIN leaders l ON a.leader_id = l.id
       WHERE a.severity >= 3
       ORDER BY a.analyzed_at DESC
       LIMIT 100
     `);
   } else {
     return all(`
-      SELECT a.*, ar.title as article_title, ar.source, ar.url as article_url, ar.published_at
+      SELECT a.*, ar.title as article_title, ar.source, ar.url as article_url, ar.published_at,
+             l.name as leader_name, l.role as leader_role
       FROM analyses a
       JOIN articles ar ON a.source_id = ar.id
+      LEFT JOIN leaders l ON a.leader_id = l.id
       WHERE a.source_type = 'article' AND a.severity >= 2
       ORDER BY a.analyzed_at DESC
       LIMIT 100

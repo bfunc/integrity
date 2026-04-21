@@ -57,7 +57,7 @@ export const config = {
   ],
 
   // Manual pipeline trigger password (UI → Лог tab)
-  manualRunPassword: "TODO",
+  manualRunPassword: "k1iak$A",
 
   polling: {
     // Frontend polling interval in milliseconds

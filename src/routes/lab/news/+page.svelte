@@ -40,7 +40,7 @@
 {:else if items.length === 0}
   <div class="empty">Нет статей. Pipeline ещё не запускался.</div>
 {:else}
-  <div class="fluid-grid">
+  <div class="fluid-grid news-grid">
     {#each items as item (item.id)}
       <Card {item} />
     {/each}
@@ -82,4 +82,9 @@
     font-size: 0.95rem;
   }
   .empty.error { color: #f87171; }
+
+  .news-grid :global(.threat-card) {
+    border-width: 3px;
+    border-radius: 9px;
+  }
 </style>
