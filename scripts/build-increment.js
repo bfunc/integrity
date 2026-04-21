@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import duckdb from 'duckdb';
+import { mkdirSync } from 'fs';
+import { dirname } from 'path';
 
 const dbPath = process.env.DB_PATH || 'data/integrity.duckdb';
+
+mkdirSync(dirname(dbPath), { recursive: true });
 
 const db = new duckdb.Database(dbPath, (err) => {
   if (err) { console.error('build-increment: cannot open db:', err.message); process.exit(1); }
