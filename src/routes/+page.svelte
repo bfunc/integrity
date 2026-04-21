@@ -1,6 +1,6 @@
 <script>
   let lang = "ru";
-  console.log("version 2026-04-21.4");
+  console.log("version 2026-04-21.5");
 </script>
 
 <svelte:head>
