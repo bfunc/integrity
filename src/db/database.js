@@ -1,7 +1,7 @@
 import duckdb from 'duckdb';
 import { config } from '../lib/config.js';
 import { randomUUID } from 'crypto';
-import leadersData from '../../external/leaders.json' with { type: 'json' };
+import leadersData from '../data-sources/leaders.json' with { type: 'json' };
 
 // Store on globalThis so Vite's module re-imports don't reset the connection
 if (!globalThis.__duckdb) {
@@ -329,6 +329,39 @@ export async function clearDatabase() {
       [leader.id, leader.name, leader.role, leader.country]
     );
   }
+}
+
+export async function exportData() {
+  await ensureConn();
+  const articles = await _all('SELECT * FROM articles');
+  const analyses = await _all('SELECT * FROM analyses');
+  return { version: 1, exported_at: new Date().toISOString(), articles, analyses };
+}
+
+export async function importData(data) {
+  await ensureConn();
+  for (const a of (data.articles || [])) {
+    await _run(
+      `INSERT INTO articles (id, url, source, title, excerpt, full_text, published_at, fetched_at, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT DO NOTHING`,
+      [a.id, a.url, a.source, a.title, a.excerpt, a.full_text ?? null,
+       a.published_at ?? null, a.fetched_at ?? null, a.status ?? 'analyzed']
+    );
+  }
+  for (const a of (data.analyses || [])) {
+    await _run(
+      `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT (source_id, source_type) DO NOTHING`,
+      [a.id, a.source_type, a.source_id, a.leader_id ?? null, a.analyzed_at,
+       a.severity, a.severity_label,
+       typeof a.patterns === 'string' ? a.patterns : JSON.stringify(a.patterns),
+       a.summary_md,
+       typeof a.raw_response === 'string' ? a.raw_response : JSON.stringify(a.raw_response)]
+    );
+  }
+  return { articles: (data.articles || []).length, analyses: (data.analyses || []).length };
 }
 
 export async function closeDb() {

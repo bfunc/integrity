@@ -17,6 +17,8 @@
   let runStatus = null;
   let runLoading = false;
   let resetLoading = false;
+  let importLoading = false;
+  let fileInput;
 
   function formatDateTime(ts) {
     if (!ts) return "—";
@@ -93,6 +95,33 @@
     }
   }
 
+  function downloadAll() {
+    if (!password) return;
+    const url = `/api/export?password=${encodeURIComponent(password)}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.click();
+  }
+
+  async function uploadAll() {
+    if (!password || !fileInput?.files?.length) return;
+    importLoading = true;
+    runStatus = null;
+    try {
+      const form = new FormData();
+      form.append('password', password);
+      form.append('file', fileInput.files[0]);
+      const res = await fetch('/api/import', { method: 'POST', body: form });
+      const data = await res.json();
+      runStatus = { ok: res.ok, message: data.message || data.error || 'Ошибка' };
+      if (res.ok) { fileInput.value = ''; setTimeout(fetchData, 500); }
+    } catch (e) {
+      runStatus = { ok: false, message: e.message };
+    } finally {
+      importLoading = false;
+    }
+  }
+
   $: errorCount = events.filter((e) => e.type === "error").length;
 
   onMount(() => {
@@ -155,6 +184,24 @@
         >
           {resetLoading ? "Очистка..." : "✕ Очистить базу"}
         </button>
+        <button
+          class="btn-export"
+          on:click={downloadAll}
+          disabled={!password}
+        >
+          ↓ Скачать всё
+        </button>
+        <label class="btn-export" class:disabled={!password || importLoading}>
+          {importLoading ? "Загрузка..." : "↑ Загрузить всё"}
+          <input
+            bind:this={fileInput}
+            type="file"
+            accept=".json"
+            style="display:none"
+            on:change={uploadAll}
+            disabled={!password || importLoading}
+          />
+        </label>
       </div>
       {#if runStatus}
         <div
@@ -313,6 +360,28 @@
     color: #f87171;
   }
   .btn-reset:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .btn-export {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text3);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+  }
+  .btn-export:hover:not(.disabled) {
+    border-color: #60a5fa;
+    color: #60a5fa;
+  }
+  .btn-export.disabled {
     opacity: 0.4;
     cursor: default;
   }

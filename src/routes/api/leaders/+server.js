@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getLeaderStats, getLeaderViolations, getSpeechesAnalyzedByLeader } from '../../../db/database.js';
-import leadersData from '../../../../external/leaders.json' with { type: 'json' };
+import leadersData from '../../../data-sources/leaders.json' with { type: 'json' };
 const speechTotals = Object.fromEntries(leadersData.map((l) => [l.id, l.speeches.length]));
 
 export async function GET() {

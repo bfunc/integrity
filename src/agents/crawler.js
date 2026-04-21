@@ -15,8 +15,8 @@ import {
   logEvent,
 } from '../db/database.js';
 import { analyzeArticle, analyzeFullText, analyzeSpeech } from './linza.js';
-import sitesData from '../../external/sites.json' with { type: 'json' };
-import leadersData from '../../external/leaders.json' with { type: 'json' };
+import sitesData from '../data-sources/sites.json' with { type: 'json' };
+import leadersData from '../data-sources/leaders.json' with { type: 'json' };
 
 const parser = new Parser({ timeout: 10000 });
 

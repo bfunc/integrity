@@ -40,3 +40,7 @@ build
 
 data/integrity.duckdb
 data/integrity.duckdb.wal
+
+# DB
+/data
+/data/**/*.*
