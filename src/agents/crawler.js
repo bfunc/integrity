@@ -1,8 +1,8 @@
-import Parser from 'rss-parser';
-import * as cheerio from 'cheerio';
-import { randomUUID } from 'crypto';
-import { CronJob } from 'cron';
-import { config } from '../lib/config.js';
+import Parser from "rss-parser";
+import * as cheerio from "cheerio";
+import { randomUUID } from "crypto";
+import { CronJob } from "cron";
+import { config } from "../lib/config.js";
 import {
   articleExists,
   insertArticle,
@@ -13,17 +13,18 @@ import {
   updateSpeechStatus,
   upsertLeader,
   logEvent,
-} from '../db/database.js';
-import { analyzeArticle, analyzeFullText, analyzeSpeech } from './linza.js';
-import sitesData from '../data-sources/sites.json' with { type: 'json' };
-import leadersData from '../data-sources/leaders.json' with { type: 'json' };
+} from "../db/database.js";
+import { analyzeArticle, analyzeFullText, analyzeSpeech } from "./linza.js";
+import sitesData from "../data-sources/sites.json" with { type: "json" };
+import leadersData from "../data-sources/leaders.json" with { type: "json" };
 
 const parser = new Parser({ timeout: 10000 });
 
 const sites = sitesData;
+let pipelinePromise = null;
 
 function isFiltered(title, excerpt) {
-  const text = `${title} ${excerpt || ''}`.toLowerCase();
+  const text = `${title} ${excerpt || ""}`.toLowerCase();
   return config.keywordFilter.some((kw) => text.includes(kw));
 }
 
@@ -35,7 +36,7 @@ async function scrapeText(url, selectors) {
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    let text = '';
+    let text = "";
     for (const sel of effectiveSelectors) {
       const content = $(sel).text().trim();
       if (content.length > text.length) text = content;
@@ -46,114 +47,160 @@ async function scrapeText(url, selectors) {
   }
 }
 
+export function isPipelineRunning() {
+  return !!pipelinePromise;
+}
+
 export async function runPipeline() {
-  await logEvent('info', 'Pipeline started');
-
-  // --- Leaders + Speeches pipeline ---
-  for (const leader of leadersData) {
-    try { await upsertLeader(leader); } catch (err) {
-      await logEvent('warning', `Could not upsert leader ${leader.id}: ${err.message}`);
-    }
-
-    for (const speech of leader.speeches) {
-      try {
-        if (await speechExists(speech.id)) continue;
-        await insertSpeech({ ...speech, leader_id: leader.id });
-
-        const fullText = await scrapeText(speech.url, null);
-        if (!fullText) {
-          await updateSpeechStatus(speech.id, 'error');
-          await logEvent('warning', `Could not scrape speech: ${speech.id}`);
-          continue;
-        }
-
-        await updateSpeechStatus(speech.id, 'analyzed', fullText);
-
-        const analysis = await analyzeSpeech({ ...speech, full_text: fullText });
-
-        await insertAnalysis({
-          source_type: 'speech',
-          source_id: speech.id,
-          leader_id: leader.id,
-          severity: analysis.severity,
-          severity_label: analysis.severity_label,
-          patterns: analysis.patterns,
-          summary_md: analysis.summary_md,
-          raw_response: analysis.raw_response,
-          attribution_role: 'originator',
-          attributed_to: leader.name,
-        });
-      } catch (err) {
-        await logEvent('warning', `Speech ${speech.id} failed: ${err.message}`);
-        try { await updateSpeechStatus(speech.id, 'error'); } catch {}
-      }
-    }
+  if (pipelinePromise) {
+    return pipelinePromise;
   }
 
-  // --- Articles pipeline ---
-  for (const site of sites) {
-    try {
-      const feed = await parser.parseURL(site.url);
-      for (const item of feed.items || []) {
-        const url = item.link;
-        if (!url) continue;
+  pipelinePromise = (async () => {
+    await logEvent("info", "Pipeline started");
 
-        const title = item.title || '';
-        const excerpt = item.contentSnippet || item.summary || '';
-        const publishedAt = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+    // --- Leaders + Speeches pipeline ---
+    for (const leader of leadersData) {
+      try {
+        await upsertLeader(leader);
+      } catch (err) {
+        await logEvent(
+          "warning",
+          `Could not upsert leader ${leader.id}: ${err.message}`,
+        );
+      }
 
-        if (isFiltered(title, excerpt)) continue;
-        if (await articleExists(url)) continue;
-
-        const id = randomUUID();
-        await insertArticle({ id, url, source: site.id, title, excerpt, published_at: publishedAt, status: 'new' });
-
-        let analysis;
+      for (const speech of leader.speeches) {
         try {
-          analysis = await analyzeArticle({ id, title, excerpt });
-        } catch {
-          await updateArticleStatus(id, 'error');
-          continue;
-        }
+          if (await speechExists(speech.id)) continue;
+          await insertSpeech({ ...speech, leader_id: leader.id });
 
-        if (analysis.severity >= config.analysis.scrapeThreshold) {
-          const fullText = await scrapeText(url, site.selectors);
-          if (fullText) {
-            await updateArticleStatus(id, 'queued', fullText);
-            try {
-              analysis = await analyzeFullText({ id, title, full_text: fullText });
-            } catch {
-              await updateArticleStatus(id, 'error');
-              continue;
+          const fullText = await scrapeText(speech.url, null);
+          if (!fullText) {
+            await updateSpeechStatus(speech.id, "error");
+            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
+            continue;
+          }
+
+          await updateSpeechStatus(speech.id, "analyzed", fullText);
+
+          const analysis = await analyzeSpeech({
+            ...speech,
+            full_text: fullText,
+          });
+
+          await insertAnalysis({
+            source_type: "speech",
+            source_id: speech.id,
+            leader_id: leader.id,
+            severity: analysis.severity,
+            severity_label: analysis.severity_label,
+            patterns: analysis.patterns,
+            summary_md: analysis.summary_md,
+            raw_response: analysis.raw_response,
+            attribution_role: "originator",
+            attributed_to: leader.name,
+          });
+        } catch (err) {
+          await logEvent(
+            "warning",
+            `Speech ${speech.id} failed: ${err.message}`,
+          );
+          try {
+            await updateSpeechStatus(speech.id, "error");
+          } catch {}
+        }
+      }
+    }
+
+    // --- Articles pipeline ---
+    for (const site of sites) {
+      try {
+        const feed = await parser.parseURL(site.url);
+        for (const item of feed.items || []) {
+          const url = item.link;
+          if (!url) continue;
+
+          const title = item.title || "";
+          const excerpt = item.contentSnippet || item.summary || "";
+          const publishedAt = item.pubDate
+            ? new Date(item.pubDate).toISOString()
+            : new Date().toISOString();
+
+          if (isFiltered(title, excerpt)) continue;
+          if (await articleExists(url)) continue;
+
+          const id = randomUUID();
+          await insertArticle({
+            id,
+            url,
+            source: site.id,
+            title,
+            excerpt,
+            published_at: publishedAt,
+            status: "new",
+          });
+
+          let analysis;
+          try {
+            analysis = await analyzeArticle({ id, title, excerpt });
+          } catch {
+            await updateArticleStatus(id, "error");
+            continue;
+          }
+
+          if (analysis.severity >= config.analysis.scrapeThreshold) {
+            const fullText = await scrapeText(url, site.selectors);
+            if (fullText) {
+              await updateArticleStatus(id, "queued", fullText);
+              try {
+                analysis = await analyzeFullText({
+                  id,
+                  title,
+                  full_text: fullText,
+                });
+              } catch {
+                await updateArticleStatus(id, "error");
+                continue;
+              }
             }
           }
+
+          const attrRole = analysis.role || "reporter";
+          await insertAnalysis({
+            source_type: "article",
+            source_id: id,
+            leader_id: null,
+            severity: analysis.severity,
+            severity_label: analysis.severity_label,
+            patterns: analysis.patterns,
+            summary_md: analysis.summary_md,
+            raw_response: analysis.raw_response,
+            attribution_role: attrRole,
+            attributed_to: site.id,
+          });
+          await updateArticleStatus(id, "analyzed");
         }
-
-        const attrRole = analysis.role || 'reporter';
-        await insertAnalysis({
-          source_type: 'article',
-          source_id: id,
-          leader_id: null,
-          severity: analysis.severity,
-          severity_label: analysis.severity_label,
-          patterns: analysis.patterns,
-          summary_md: analysis.summary_md,
-          raw_response: analysis.raw_response,
-          attribution_role: attrRole,
-          attributed_to: site.id,
-        });
-        await updateArticleStatus(id, 'analyzed');
+      } catch (err) {
+        await logEvent(
+          "warning",
+          `RSS fetch failed for ${site.id}: ${err.message}`,
+        );
       }
-    } catch (err) {
-      await logEvent('warning', `RSS fetch failed for ${site.id}: ${err.message}`);
     }
-  }
 
-  await logEvent('info', 'Pipeline completed');
+    await logEvent("info", "Pipeline completed");
+  })();
+
+  try {
+    return await pipelinePromise;
+  } finally {
+    pipelinePromise = null;
+  }
 }
 
 export function scheduleCron() {
   for (const schedule of config.cron.schedules) {
-    new CronJob(schedule, runPipeline, null, true, 'UTC');
+    new CronJob(schedule, runPipeline, null, true, "UTC");
   }
 }
