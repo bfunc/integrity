@@ -12,8 +12,12 @@ if (!process.env.PORT) {
 const PORT = process.env.PORT;
 
 async function main() {
-  await initDb();
-  console.log("Database initialized");
+  const dbState = await initDb();
+  console.log(
+    dbState?.existingFile
+      ? "Database ready (existing file reused; no re-initialization)"
+      : "Database ready (new file created)",
+  );
 
   scheduleCron();
   console.log("Cron scheduled");

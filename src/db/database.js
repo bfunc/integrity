@@ -1,7 +1,9 @@
-import duckdb from 'duckdb';
-import { config } from '../lib/config.js';
-import { randomUUID } from 'crypto';
-import leadersData from '../data-sources/leaders.json' with { type: 'json' };
+import duckdb from "duckdb";
+import { config } from "../lib/config.js";
+import { randomUUID } from "crypto";
+import { existsSync, mkdirSync } from "fs";
+import { dirname } from "path";
+import leadersData from "../data-sources/leaders.json" with { type: "json" };
 
 // Store on globalThis so Vite's module re-imports don't reset the connection
 if (!globalThis.__duckdb) {
@@ -16,10 +18,19 @@ async function ensureConn() {
 }
 
 export async function initDb() {
-  if (state.conn) return;
+  if (state.conn) return { existingFile: true };
+
+  const dbPath = config.db.path;
+  const isFileBacked = dbPath && dbPath !== ":memory:";
+  const existingFile = isFileBacked ? existsSync(dbPath) : false;
+
+  // Ensure DB directory exists for file-backed databases.
+  if (isFileBacked) {
+    mkdirSync(dirname(dbPath), { recursive: true });
+  }
 
   await new Promise((resolve, reject) => {
-    state.db = new duckdb.Database(config.db.path, (err) => {
+    state.db = new duckdb.Database(dbPath, (err) => {
       if (err) reject(err);
       else resolve();
     });
@@ -94,16 +105,35 @@ export async function initDb() {
   `);
 
   // Attribution columns — idempotent for existing databases
-  await _run(`ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attribution_role TEXT`);
-  await _run(`ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`);
+  await _run(
+    `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attribution_role TEXT`,
+  );
+  await _run(
+    `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`,
+  );
 
+  await seedLeaders(false);
+
+  return { existingFile };
+}
+
+async function seedLeaders(overwrite = true) {
   for (const leader of leadersData) {
-    await _run(
-      `INSERT INTO leaders (id, name, role, country)
-       VALUES (?, ?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
-      [leader.id, leader.name, leader.role, leader.country]
-    );
+    if (overwrite) {
+      await _run(
+        `INSERT INTO leaders (id, name, role, country)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
+        [leader.id, leader.name, leader.role, leader.country],
+      );
+    } else {
+      await _run(
+        `INSERT INTO leaders (id, name, role, country)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(id) DO NOTHING`,
+        [leader.id, leader.name, leader.role, leader.country],
+      );
+    }
   }
 }
 
@@ -138,7 +168,7 @@ async function all(sql, params = []) {
 }
 
 export async function articleExists(url) {
-  const rows = await all('SELECT id FROM articles WHERE url = ?', [url]);
+  const rows = await all("SELECT id FROM articles WHERE url = ?", [url]);
   return rows.length > 0;
 }
 
@@ -156,16 +186,20 @@ export async function insertArticle(article) {
       article.full_text || null,
       article.published_at,
       new Date().toISOString(),
-      article.status || 'new',
-    ]
+      article.status || "new",
+    ],
   );
 }
 
 export async function updateArticleStatus(id, status, fullText = null) {
   if (fullText !== null) {
-    await run('UPDATE articles SET status = ?, full_text = ? WHERE id = ?', [status, fullText, id]);
+    await run("UPDATE articles SET status = ?, full_text = ? WHERE id = ?", [
+      status,
+      fullText,
+      id,
+    ]);
   } else {
-    await run('UPDATE articles SET status = ? WHERE id = ?', [status, id]);
+    await run("UPDATE articles SET status = ? WHERE id = ?", [status, id]);
   }
 }
 
@@ -187,7 +221,7 @@ export async function insertAnalysis(analysis) {
       JSON.stringify(analysis.raw_response),
       analysis.attribution_role || null,
       analysis.attributed_to || null,
-    ]
+    ],
   );
 }
 
@@ -196,12 +230,12 @@ export async function upsertLeader(leader) {
     `INSERT INTO leaders (id, name, role, country)
      VALUES (?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
-    [leader.id, leader.name, leader.role, leader.country]
+    [leader.id, leader.name, leader.role, leader.country],
   );
 }
 
 export async function speechExists(id) {
-  const rows = await all('SELECT id FROM speeches WHERE id = ?', [id]);
+  const rows = await all("SELECT id FROM speeches WHERE id = ?", [id]);
   return rows.length > 0;
 }
 
@@ -218,28 +252,32 @@ export async function insertSpeech(speech) {
       speech.date || null,
       speech.description || null,
       speech.full_text || null,
-      'new',
-    ]
+      "new",
+    ],
   );
 }
 
 export async function updateSpeechStatus(id, status, fullText = null) {
   if (fullText !== null) {
-    await run('UPDATE speeches SET status = ?, full_text = ? WHERE id = ?', [status, fullText, id]);
+    await run("UPDATE speeches SET status = ?, full_text = ? WHERE id = ?", [
+      status,
+      fullText,
+      id,
+    ]);
   } else {
-    await run('UPDATE speeches SET status = ? WHERE id = ?', [status, id]);
+    await run("UPDATE speeches SET status = ? WHERE id = ?", [status, id]);
   }
 }
 
 export async function logEvent(type, message) {
   await run(
-    'INSERT INTO events (id, created_at, type, message) VALUES (?, ?, ?, ?)',
-    [randomUUID(), new Date().toISOString(), type, message]
+    "INSERT INTO events (id, created_at, type, message) VALUES (?, ?, ?, ?)",
+    [randomUUID(), new Date().toISOString(), type, message],
   );
 }
 
 export async function getFeedAnalyses(tab) {
-  if (tab === 'threats') {
+  if (tab === "threats") {
     return all(`
       SELECT a.*, ar.title as article_title, ar.source, ar.url as article_url, ar.published_at,
              s.title as speech_title, s.leader_id, s.url as speech_url,
@@ -276,7 +314,10 @@ export async function getLeaderStats() {
     LEFT JOIN analyses a ON a.leader_id = l.id
     GROUP BY l.id, l.name, l.role, l.country
   `);
-  return rows.map((r) => ({ ...r, violation_count: Number(r.violation_count) }));
+  return rows.map((r) => ({
+    ...r,
+    violation_count: Number(r.violation_count),
+  }));
 }
 
 export async function getSpeechesAnalyzedByLeader() {
@@ -286,17 +327,22 @@ export async function getSpeechesAnalyzedByLeader() {
     WHERE status = 'analyzed' AND leader_id IS NOT NULL
     GROUP BY leader_id
   `);
-  return Object.fromEntries(rows.map((r) => [r.leader_id, Number(r.analyzed_count)]));
+  return Object.fromEntries(
+    rows.map((r) => [r.leader_id, Number(r.analyzed_count)]),
+  );
 }
 
 export async function getLeaderViolations(leaderId) {
-  return all(`
+  return all(
+    `
     SELECT a.*, s.title as speech_title, s.date as speech_date
     FROM analyses a
     LEFT JOIN speeches s ON a.source_id = s.id
     WHERE a.leader_id = ?
     ORDER BY a.analyzed_at DESC
-  `, [leaderId]);
+  `,
+    [leaderId],
+  );
 }
 
 export async function getDashboardData() {
@@ -365,9 +411,15 @@ export async function getDashboardData() {
     ORDER BY ar.published_at DESC LIMIT 10
   `);
 
-  const [severityHigh] = await all(`SELECT COUNT(*) as count FROM analyses WHERE severity >= 4`);
-  const [severityMod] = await all(`SELECT COUNT(*) as count FROM analyses WHERE severity = 3`);
-  const [lastRunRow] = await all(`SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`);
+  const [severityHigh] = await all(
+    `SELECT COUNT(*) as count FROM analyses WHERE severity >= 4`,
+  );
+  const [severityMod] = await all(
+    `SELECT COUNT(*) as count FROM analyses WHERE severity = 3`,
+  );
+  const [lastRunRow] = await all(
+    `SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`,
+  );
 
   const [topPatternRow] = await all(`
     SELECT an.patterns
@@ -382,14 +434,24 @@ export async function getDashboardData() {
   for (const row of heatmap_raw) {
     const src = row.attributed_to;
     let patterns;
-    try { patterns = typeof row.patterns === 'string' ? JSON.parse(row.patterns) : row.patterns || []; } catch { patterns = []; }
+    try {
+      patterns =
+        typeof row.patterns === "string"
+          ? JSON.parse(row.patterns)
+          : row.patterns || [];
+    } catch {
+      patterns = [];
+    }
     for (const p of patterns) {
       const key = p.name;
       if (!patternCounts[key]) patternCounts[key] = {};
       patternCounts[key][src] = (patternCounts[key][src] || 0) + 1;
     }
   }
-  const heatmap = Object.entries(patternCounts).map(([pattern, srcs]) => ({ pattern, srcs }));
+  const heatmap = Object.entries(patternCounts).map(([pattern, srcs]) => ({
+    pattern,
+    srcs,
+  }));
 
   // Top pattern today
   const patternTodayCounts = {};
@@ -399,14 +461,23 @@ export async function getDashboardData() {
   `);
   for (const row of todayRows) {
     let patterns;
-    try { patterns = typeof row.patterns === 'string' ? JSON.parse(row.patterns) : row.patterns || []; } catch { patterns = []; }
+    try {
+      patterns =
+        typeof row.patterns === "string"
+          ? JSON.parse(row.patterns)
+          : row.patterns || [];
+    } catch {
+      patterns = [];
+    }
     for (const p of patterns) {
       patternTodayCounts[p.name] = (patternTodayCounts[p.name] || 0) + 1;
     }
   }
   let topPatternToday = null;
   if (Object.keys(patternTodayCounts).length > 0) {
-    const [name, count] = Object.entries(patternTodayCounts).sort((a, b) => b[1] - a[1])[0];
+    const [name, count] = Object.entries(patternTodayCounts).sort(
+      (a, b) => b[1] - a[1],
+    )[0];
     topPatternToday = { name, count };
   }
 
@@ -416,17 +487,39 @@ export async function getDashboardData() {
       critical: Number(kpiRow?.critical ?? 0),
       unique_speakers: Number(kpiRow?.unique_speakers ?? 0),
     },
-    top_manipulators: top_manipulators.map((r) => ({ ...r, count: Number(r.count), max_severity: Number(r.max_severity) })),
+    top_manipulators: top_manipulators.map((r) => ({
+      ...r,
+      count: Number(r.count),
+      max_severity: Number(r.max_severity),
+    })),
     top_sources: {
-      originators: top_originators_rss.map((r) => ({ ...r, count: Number(r.count), max_severity: Number(r.max_severity) })),
+      originators: top_originators_rss.map((r) => ({
+        ...r,
+        count: Number(r.count),
+        max_severity: Number(r.max_severity),
+      })),
       amplifiers: top_amplifiers.map((r) => ({ ...r, count: Number(r.count) })),
     },
-    trend: trend_raw.map((r) => ({ ...r, count: Number(r.count), severity: Number(r.severity) })),
+    trend: trend_raw.map((r) => ({
+      ...r,
+      count: Number(r.count),
+      severity: Number(r.severity),
+    })),
     heatmap,
     source_keys: sourceKeys,
     dangerous: dangerous.map((r) => ({
       ...r,
-      pattern_type: (() => { try { const p = typeof r.patterns === 'string' ? JSON.parse(r.patterns) : r.patterns; return Array.isArray(p) && p[0] ? p[0].name : null; } catch { return null; } })(),
+      pattern_type: (() => {
+        try {
+          const p =
+            typeof r.patterns === "string"
+              ? JSON.parse(r.patterns)
+              : r.patterns;
+          return Array.isArray(p) && p[0] ? p[0].name : null;
+        } catch {
+          return null;
+        }
+      })(),
     })),
     header: {
       severity_high: Number(severityHigh?.count ?? 0),
@@ -438,10 +531,16 @@ export async function getDashboardData() {
 }
 
 export async function getStats() {
-  const [sites] = await all('SELECT COUNT(DISTINCT source) as count FROM articles');
-  const [articles] = await all('SELECT COUNT(*) as count FROM articles');
-  const [threats] = await all('SELECT COUNT(*) as count FROM analyses WHERE severity >= 3');
-  const [lastRun] = await all(`SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`);
+  const [sites] = await all(
+    "SELECT COUNT(DISTINCT source) as count FROM articles",
+  );
+  const [articles] = await all("SELECT COUNT(*) as count FROM articles");
+  const [threats] = await all(
+    "SELECT COUNT(*) as count FROM analyses WHERE severity >= 3",
+  );
+  const [lastRun] = await all(
+    `SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`,
+  );
   return {
     sitesCount: Number(sites?.count ?? 0),
     articlesCount: Number(articles?.count ?? 0),
@@ -451,7 +550,7 @@ export async function getStats() {
 }
 
 export async function getEvents(limit = 200) {
-  return all('SELECT * FROM events ORDER BY created_at DESC LIMIT ?', [limit]);
+  return all("SELECT * FROM events ORDER BY created_at DESC LIMIT ?", [limit]);
 }
 
 export async function getSources() {
@@ -464,57 +563,79 @@ export async function getSources() {
 }
 
 export async function clearDatabase() {
-  await _run('DELETE FROM analyses');
-  await _run('DELETE FROM articles');
-  await _run('DELETE FROM speeches');
-  await _run('DELETE FROM events');
-  await _run('DELETE FROM leaders');
-  for (const leader of leadersData) {
-    await _run(
-      `INSERT INTO leaders (id, name, role, country)
-       VALUES (?, ?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
-      [leader.id, leader.name, leader.role, leader.country]
-    );
-  }
+  await _run("DELETE FROM analyses");
+  await _run("DELETE FROM articles");
+  await _run("DELETE FROM speeches");
+  await _run("DELETE FROM events");
+  await _run("DELETE FROM leaders");
+  await seedLeaders(true);
 }
 
 export async function exportData() {
   await ensureConn();
-  const articles = await _all('SELECT * FROM articles');
-  const analyses = await _all('SELECT * FROM analyses');
-  return { version: 1, exported_at: new Date().toISOString(), articles, analyses };
+  const articles = await _all("SELECT * FROM articles");
+  const analyses = await _all("SELECT * FROM analyses");
+  return {
+    version: 1,
+    exported_at: new Date().toISOString(),
+    articles,
+    analyses,
+  };
 }
 
 export async function importData(data) {
   await ensureConn();
-  for (const a of (data.articles || [])) {
+  for (const a of data.articles || []) {
     await _run(
       `INSERT INTO articles (id, url, source, title, excerpt, full_text, published_at, fetched_at, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT DO NOTHING`,
-      [a.id, a.url, a.source, a.title, a.excerpt, a.full_text ?? null,
-       a.published_at ?? null, a.fetched_at ?? null, a.status ?? 'analyzed']
+      [
+        a.id,
+        a.url,
+        a.source,
+        a.title,
+        a.excerpt,
+        a.full_text ?? null,
+        a.published_at ?? null,
+        a.fetched_at ?? null,
+        a.status ?? "analyzed",
+      ],
     );
   }
-  for (const a of (data.analyses || [])) {
+  for (const a of data.analyses || []) {
     await _run(
       `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response, attribution_role, attributed_to)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT (source_id, source_type) DO NOTHING`,
-      [a.id, a.source_type, a.source_id, a.leader_id ?? null, a.analyzed_at,
-       a.severity, a.severity_label,
-       typeof a.patterns === 'string' ? a.patterns : JSON.stringify(a.patterns),
-       a.summary_md,
-       typeof a.raw_response === 'string' ? a.raw_response : JSON.stringify(a.raw_response),
-       a.attribution_role ?? null, a.attributed_to ?? null]
+      [
+        a.id,
+        a.source_type,
+        a.source_id,
+        a.leader_id ?? null,
+        a.analyzed_at,
+        a.severity,
+        a.severity_label,
+        typeof a.patterns === "string"
+          ? a.patterns
+          : JSON.stringify(a.patterns),
+        a.summary_md,
+        typeof a.raw_response === "string"
+          ? a.raw_response
+          : JSON.stringify(a.raw_response),
+        a.attribution_role ?? null,
+        a.attributed_to ?? null,
+      ],
     );
   }
-  return { articles: (data.articles || []).length, analyses: (data.analyses || []).length };
+  return {
+    articles: (data.articles || []).length,
+    analyses: (data.analyses || []).length,
+  };
 }
 
 export async function closeDb() {
-  if (conn) {
+  if (state.conn) {
     state.conn.close();
     state.conn = null;
   }
