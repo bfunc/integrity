@@ -103,5 +103,115 @@
     "id": "trump_waco_2024",
     "url": "https://www.rev.com/transcripts/donald-trump-hosts-first-2024-presidential-campaign-rally-in-waco-texas-transcript",
     "description": "Трамп — первый предвыборный митинг в Вако, Техас, март 2023."
+  },
+  {
+    "id": "von_der_leyen_state_2025",
+    "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_25_0001",
+    "description": "Урсула фон дер Ляйен — ежегодное обращение о положении Союза, 2025."
+  },
+  {
+    "id": "modi_india_independence_2025",
+    "url": "https://www.pmindia.gov.in/en/news_updates/",
+    "description": "Нарендра Моди — речь на День независимости Индии, август 2025."
+  },
+  {
+    "id": "zelensky_davos_2025",
+    "url": "https://www.weforum.org/agenda/2025/01/volodymyr-zelensky-speech/",
+    "description": "Владимир Зеленский — выступление на Всемирном экономическом форуме, 2025."
+  },
+  {
+    "id": "guterres_un_assembly_2025",
+    "url": "https://www.un.org/press/en/",
+    "description": "Антониу Гутерриш — речь на Генеральной Ассамблее ООН, сентябрь 2025."
+  },
+  {
+    "id": "pope_francis_peace_2025",
+    "url": "https://www.vatican.va/content/francesco/en/speeches.index.html",
+    "description": "Папа Франциск — обращение о мире и глобальной солидарности, 2025."
+  },
+  {
+    "id": "meloni_g7_2025",
+    "url": "https://www.governo.it/en/articolo/prime-minister-meloni-speech-g7/00000",
+    "description": "Джорджа Мелони — речь на саммите G7, 2025."
+  },
+  {
+    "id": "scholz_bundestag_2025",
+    "url": "https://www.bundesregierung.de/breg-en/news",
+    "description": "Олаф Шольц — выступление в Бундестаге о безопасности Европы, 2025."
+  },
+  {
+    "id": "sunak_ai_safety_2025",
+    "url": "https://www.gov.uk/government/speeches",
+    "description": "Риши Сунак — речь на саммите по безопасности ИИ, Лондон, 2025."
+  },
+  {
+    "id": "kamala_harris_un_2025",
+    "url": "https://www.whitehouse.gov/briefing-room/speeches-remarks/",
+    "description": "Камала Харрис — выступление на заседании Совбеза ООН, 2025."
+  },
+  {
+    "id": "tim_cook_privacy_2025",
+    "url": "https://www.apple.com/newsroom/archive/",
+    "description": "Тим Кук — речь о цифровой приватности и регулировании данных, 2025."
+  },
+  {
+    "id": "satya_nadella_ai_future_2025",
+    "url": "https://news.microsoft.com/",
+    "description": "Сатья Наделла — выступление о будущем ИИ и ответственности технологий, 2025."
+  },
+  {
+    "id": "sam_altman_senate_2025",
+    "url": "https://www.commerce.senate.gov/hearings",
+    "description": "Сэм Альтман — показания в Сенате США о регулировании ИИ, 2025."
+  },
+  {
+    "id": "yuval_noah_harari_ethics_2025",
+    "url": "https://www.ynharari.com/speeches/",
+    "description": "Юваль Ной Харари — лекция о рисках дезинформации и ИИ, 2025."
+  },
+  {
+    "id": "malala_un_education_2025",
+    "url": "https://www.un.org/press/en/",
+    "description": "Малала Юсуфзай — речь о глобальном образовании на площадке ООН, 2025."
+  },
+  {
+    "id": "greta_climate_forum_2025",
+    "url": "https://www.weforum.org/agenda/",
+    "description": "Грета Тунберг — выступление на климатическом форуме, 2025."
+  },
+  {
+    "id": "el_salvador_president_bitcoin_2025",
+    "url": "https://www.presidencia.gob.sv/",
+    "description": "Наиб Букеле — речь о цифровой экономике и биткоине, 2025."
+  },
+  {
+    "id": "lula_un_assembly_2025",
+    "url": "https://www.gov.br/planalto/en",
+    "description": "Лула да Силва — выступление на Генассамблее ООН, 2025."
+  },
+  {
+    "id": "tokyo_governor_ai_2025",
+    "url": "https://www.metro.tokyo.lg.jp/english/governor/",
+    "description": "Юрико Коикэ — речь о внедрении ИИ в городское управление, 2025."
+  },
+  {
+    "id": "south_korea_president_security_2025",
+    "url": "https://www.president.go.kr/",
+    "description": "Президент Южной Кореи — выступление о региональной безопасности, 2025."
+  },
+  {
+    "id": "kenya_ruto_africa_tech_2025",
+    "url": "https://www.president.go.ke/",
+    "description": "Уильям Руто — речь о цифровой трансформации Африки, 2025."
+  },
+  {
+    "id": "canada_trudeau_ai_regulation_2025",
+    "url": "https://www.pm.gc.ca/en/news/speeches",
+    "description": "Джастин Трюдо — выступление о регулировании ИИ, 2025."
+  },
+  {
+    "id": "mexico_sheinbaum_2025",
+    "url": "https://www.gob.mx/",
+    "description": "Клаудия Шейнбаум — обращение о национальной безопасности, 2025."
   }
 ]

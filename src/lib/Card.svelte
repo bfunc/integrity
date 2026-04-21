@@ -259,7 +259,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
-    height: 240px;
+    height: 200px;
     overflow: hidden;
     cursor: pointer;
     animation: fadeIn 0.4s ease;
