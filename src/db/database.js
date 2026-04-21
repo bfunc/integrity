@@ -2,7 +2,7 @@ import duckdb from "duckdb";
 import { config } from "../lib/config.js";
 import { randomUUID } from "crypto";
 import { existsSync, mkdirSync } from "fs";
-import { dirname } from "path";
+import { dirname, resolve } from "path";
 import leadersData from "../data-sources/leaders.json" with { type: "json" };
 
 // Store on globalThis so Vite's module re-imports don't reset the connection
@@ -21,18 +21,38 @@ export async function initDb() {
   if (state.conn) return { existingFile: true };
 
   const dbPath = config.db.path;
+  console.log(`[initDb] dbPath from config: ${JSON.stringify(dbPath)}`);
+
   const isFileBacked = dbPath && dbPath !== ":memory:";
   const existingFile = isFileBacked ? existsSync(dbPath) : false;
 
+  console.log(`[initDb] isFileBacked: ${isFileBacked}`);
+  console.log(`[initDb] existsSync(dbPath): ${existingFile}`);
+
   // Ensure DB directory exists for file-backed databases.
   if (isFileBacked) {
-    mkdirSync(dirname(dbPath), { recursive: true });
+    const dir = dirname(dbPath);
+    console.log(`[initDb] ensuring directory exists: ${JSON.stringify(dir)}`);
+    try {
+      mkdirSync(dir, { recursive: true });
+      console.log(`[initDb] directory ready: ${JSON.stringify(dir)}`);
+    } catch (dirErr) {
+      console.error(`[initDb] failed to create directory ${JSON.stringify(dir)}:`, dirErr);
+      throw dirErr;
+    }
   }
+
+  console.log(`[initDb] opening DuckDB at absolute path: ${JSON.stringify(resolve(dbPath))}`);
 
   await new Promise((resolve, reject) => {
     state.db = new duckdb.Database(dbPath, (err) => {
-      if (err) reject(err);
-      else resolve();
+      if (err) {
+        console.error(`[initDb] DuckDB open error for path ${JSON.stringify(dbPath)}:`, err);
+        reject(err);
+      } else {
+        console.log(`[initDb] DuckDB opened successfully at: ${JSON.stringify(dbPath)}`);
+        resolve();
+      }
     });
   });
 
