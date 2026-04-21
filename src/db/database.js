@@ -165,7 +165,7 @@ export async function initDb() {
     Number(dbStateRow?.analyses_count ?? 0) > 0 ||
     Number(dbStateRow?.events_count ?? 0) > 0;
 
-  console.log(`[initDb] data present: ${hasData}`);
+  console.log(`[initDb] data present: ${hasData ? "yes" : "no"}`);
   if (dbStateRow?.last_run) {
     console.log(`[initDb] last pipeline run: ${dbStateRow.last_run}`);
   } else {
@@ -199,38 +199,14 @@ async function seedLeaders(overwrite = true) {
 
 // Internal helpers — conn must already be set
 function _run(sql, params = []) {
-  const startedAt = Date.now();
-  const sqlOneLine = String(sql).replace(/\s+/g, " ").trim();
-  const sqlPreview = sqlOneLine.slice(0, 180);
-  const paramsPreview = params.map((p) => {
-    if (p === null || p === undefined) return p;
-    if (typeof p === "string")
-      return p.length > 100 ? `${p.slice(0, 100)}...` : p;
-    return p;
-  });
-
   if (!state.conn) {
-    const msg = `[db:_run] no active connection before SQL: ${sqlPreview}`;
-    console.error(msg);
-    return Promise.reject(new Error(msg));
+    return Promise.reject(new Error("[db:_run] no active connection"));
   }
-
-  console.log(
-    `[db:_run] start sql="${sqlPreview}" params=${JSON.stringify(paramsPreview)}`,
-  );
 
   return new Promise((resolve, reject) => {
     state.conn.run(sql, ...params, (err) => {
-      const elapsedMs = Date.now() - startedAt;
-      if (err) {
-        console.error(
-          `[db:_run] error after ${elapsedMs}ms sql="${sqlPreview}" -> ${err.message}`,
-        );
-        reject(err);
-      } else {
-        console.log(`[db:_run] ok after ${elapsedMs}ms sql="${sqlPreview}"`);
-        resolve();
-      }
+      if (err) reject(err);
+      else resolve();
     });
   });
 }
