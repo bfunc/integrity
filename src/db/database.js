@@ -178,31 +178,45 @@ export async function initDb() {
 }
 
 async function seedLeaders(overwrite = true) {
+  console.log(`[seedLeaders] called with overwrite=${overwrite}, leaders count: ${leadersData.length}`);
   for (const leader of leadersData) {
-    if (overwrite) {
-      await _run(
-        `INSERT INTO leaders (id, name, role, country)
-         VALUES (?, ?, ?, ?)
-         ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
-        [leader.id, leader.name, leader.role, leader.country],
-      );
-    } else {
-      await _run(
-        `INSERT INTO leaders (id, name, role, country)
-         VALUES (?, ?, ?, ?)
-         ON CONFLICT(id) DO NOTHING`,
-        [leader.id, leader.name, leader.role, leader.country],
-      );
+    console.log(`[seedLeaders] seeding leader: ${leader.id} (${leader.name})`);
+    try {
+      if (overwrite) {
+        await _run(
+          `INSERT INTO leaders (id, name, role, country)
+           VALUES (?, ?, ?, ?)
+           ON CONFLICT(id) DO UPDATE SET name=excluded.name, role=excluded.role, country=excluded.country`,
+          [leader.id, leader.name, leader.role, leader.country],
+        );
+      } else {
+        await _run(
+          `INSERT INTO leaders (id, name, role, country)
+           VALUES (?, ?, ?, ?)
+           ON CONFLICT(id) DO NOTHING`,
+          [leader.id, leader.name, leader.role, leader.country],
+        );
+      }
+    } catch (err) {
+      console.error(`[seedLeaders] failed to seed leader ${leader.id}:`, err.message);
+      throw err;
     }
   }
+  console.log('[seedLeaders] done');
 }
 
 // Internal helpers — conn must already be set
 function _run(sql, params = []) {
+  console.log('[_run] executing SQL:', sql.substring(0, 100));
   return new Promise((resolve, reject) => {
     state.conn.run(sql, ...params, (err) => {
-      if (err) reject(err);
-      else resolve();
+      if (err) {
+        console.error('[_run] SQL error:', err.message, 'SQL:', sql.substring(0, 100));
+        reject(err);
+      } else {
+        console.log('[_run] SQL success');
+        resolve();
+      }
     });
   });
 }
