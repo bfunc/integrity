@@ -93,6 +93,10 @@ export async function initDb() {
     ON analyses(source_id, source_type)
   `);
 
+  // Attribution columns — idempotent for existing databases
+  await _run(`ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attribution_role TEXT`);
+  await _run(`ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`);
+
   for (const leader of leadersData) {
     await _run(
       `INSERT INTO leaders (id, name, role, country)
@@ -167,8 +171,8 @@ export async function updateArticleStatus(id, status, fullText = null) {
 
 export async function insertAnalysis(analysis) {
   await run(
-    `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response, attribution_role, attributed_to)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (source_id, source_type) DO NOTHING`,
     [
       analysis.id || randomUUID(),
@@ -181,6 +185,8 @@ export async function insertAnalysis(analysis) {
       JSON.stringify(analysis.patterns),
       analysis.summary_md,
       JSON.stringify(analysis.raw_response),
+      analysis.attribution_role || null,
+      analysis.attributed_to || null,
     ]
   );
 }
@@ -293,6 +299,144 @@ export async function getLeaderViolations(leaderId) {
   `, [leaderId]);
 }
 
+export async function getDashboardData() {
+  const [kpiRow] = await all(`
+    SELECT
+      COUNT(*) FILTER (WHERE severity >= 3) as total_threats,
+      COUNT(*) FILTER (WHERE severity = 5) as critical,
+      COUNT(DISTINCT attributed_to) FILTER (WHERE attribution_role = 'originator') as unique_speakers
+    FROM analyses
+  `);
+
+  const top_manipulators = await all(`
+    SELECT attributed_to, COUNT(*) as count, MAX(severity) as max_severity, MAX(analyzed_at) as last_seen
+    FROM analyses
+    WHERE attribution_role = 'originator' AND source_type = 'speech'
+    GROUP BY attributed_to ORDER BY count DESC LIMIT 10
+  `);
+
+  const top_originators_rss = await all(`
+    SELECT attributed_to, COUNT(*) as count, MAX(severity) as max_severity
+    FROM analyses
+    WHERE attribution_role = 'originator' AND source_type = 'article'
+    GROUP BY attributed_to ORDER BY count DESC LIMIT 10
+  `);
+
+  const top_amplifiers = await all(`
+    SELECT attributed_to, COUNT(*) as count
+    FROM analyses
+    WHERE attribution_role = 'amplifier'
+    GROUP BY attributed_to ORDER BY count DESC LIMIT 10
+  `);
+
+  const trend_raw = await all(`
+    SELECT CAST(analyzed_at AS DATE) as day, severity, COUNT(*) as count
+    FROM analyses
+    WHERE analyzed_at > NOW() - INTERVAL '30 days'
+    GROUP BY CAST(analyzed_at AS DATE), severity
+    ORDER BY day
+  `);
+
+  // For heatmap: fetch analyses with patterns for top 8 sources
+  const top8sources = await all(`
+    SELECT attributed_to
+    FROM analyses
+    WHERE attributed_to IS NOT NULL AND attribution_role != 'reporter'
+    GROUP BY attributed_to ORDER BY COUNT(*) DESC LIMIT 8
+  `);
+
+  const heatmap_raw = await all(`
+    SELECT attributed_to, patterns
+    FROM analyses
+    WHERE attributed_to IN (
+      SELECT attributed_to FROM analyses
+      WHERE attributed_to IS NOT NULL AND attribution_role != 'reporter'
+      GROUP BY attributed_to ORDER BY COUNT(*) DESC LIMIT 8
+    )
+    AND patterns IS NOT NULL
+  `);
+
+  // Dangerous articles (severity = 5)
+  const dangerous = await all(`
+    SELECT ar.title, ar.source, an.attributed_to, an.patterns, an.attribution_role, ar.published_at
+    FROM articles ar
+    JOIN analyses an ON an.source_id = ar.id AND an.source_type = 'article'
+    WHERE an.severity = 5
+    ORDER BY ar.published_at DESC LIMIT 10
+  `);
+
+  const [severityHigh] = await all(`SELECT COUNT(*) as count FROM analyses WHERE severity >= 4`);
+  const [severityMod] = await all(`SELECT COUNT(*) as count FROM analyses WHERE severity = 3`);
+  const [lastRunRow] = await all(`SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`);
+
+  const [topPatternRow] = await all(`
+    SELECT an.patterns
+    FROM analyses an
+    WHERE an.analyzed_at > NOW() - INTERVAL '24 hours'
+      AND an.patterns IS NOT NULL AND an.patterns != '[]'
+  `);
+
+  // Build heatmap matrix in JS
+  const sourceKeys = top8sources.map((r) => r.attributed_to);
+  const patternCounts = {};
+  for (const row of heatmap_raw) {
+    const src = row.attributed_to;
+    let patterns;
+    try { patterns = typeof row.patterns === 'string' ? JSON.parse(row.patterns) : row.patterns || []; } catch { patterns = []; }
+    for (const p of patterns) {
+      const key = p.name;
+      if (!patternCounts[key]) patternCounts[key] = {};
+      patternCounts[key][src] = (patternCounts[key][src] || 0) + 1;
+    }
+  }
+  const heatmap = Object.entries(patternCounts).map(([pattern, srcs]) => ({ pattern, srcs }));
+
+  // Top pattern today
+  const patternTodayCounts = {};
+  const todayRows = await all(`
+    SELECT patterns FROM analyses
+    WHERE analyzed_at > NOW() - INTERVAL '24 hours' AND patterns IS NOT NULL
+  `);
+  for (const row of todayRows) {
+    let patterns;
+    try { patterns = typeof row.patterns === 'string' ? JSON.parse(row.patterns) : row.patterns || []; } catch { patterns = []; }
+    for (const p of patterns) {
+      patternTodayCounts[p.name] = (patternTodayCounts[p.name] || 0) + 1;
+    }
+  }
+  let topPatternToday = null;
+  if (Object.keys(patternTodayCounts).length > 0) {
+    const [name, count] = Object.entries(patternTodayCounts).sort((a, b) => b[1] - a[1])[0];
+    topPatternToday = { name, count };
+  }
+
+  return {
+    kpi: {
+      total: Number(kpiRow?.total_threats ?? 0),
+      critical: Number(kpiRow?.critical ?? 0),
+      unique_speakers: Number(kpiRow?.unique_speakers ?? 0),
+    },
+    top_manipulators: top_manipulators.map((r) => ({ ...r, count: Number(r.count), max_severity: Number(r.max_severity) })),
+    top_sources: {
+      originators: top_originators_rss.map((r) => ({ ...r, count: Number(r.count), max_severity: Number(r.max_severity) })),
+      amplifiers: top_amplifiers.map((r) => ({ ...r, count: Number(r.count) })),
+    },
+    trend: trend_raw.map((r) => ({ ...r, count: Number(r.count), severity: Number(r.severity) })),
+    heatmap,
+    source_keys: sourceKeys,
+    dangerous: dangerous.map((r) => ({
+      ...r,
+      pattern_type: (() => { try { const p = typeof r.patterns === 'string' ? JSON.parse(r.patterns) : r.patterns; return Array.isArray(p) && p[0] ? p[0].name : null; } catch { return null; } })(),
+    })),
+    header: {
+      severity_high: Number(severityHigh?.count ?? 0),
+      severity_moderate: Number(severityMod?.count ?? 0),
+      last_run: lastRunRow?.ts || null,
+      top_pattern_today: topPatternToday,
+    },
+  };
+}
+
 export async function getStats() {
   const [sites] = await all('SELECT COUNT(DISTINCT source) as count FROM articles');
   const [articles] = await all('SELECT COUNT(*) as count FROM articles');
@@ -355,14 +499,15 @@ export async function importData(data) {
   }
   for (const a of (data.analyses || [])) {
     await _run(
-      `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response, attribution_role, attributed_to)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT (source_id, source_type) DO NOTHING`,
       [a.id, a.source_type, a.source_id, a.leader_id ?? null, a.analyzed_at,
        a.severity, a.severity_label,
        typeof a.patterns === 'string' ? a.patterns : JSON.stringify(a.patterns),
        a.summary_md,
-       typeof a.raw_response === 'string' ? a.raw_response : JSON.stringify(a.raw_response)]
+       typeof a.raw_response === 'string' ? a.raw_response : JSON.stringify(a.raw_response),
+       a.attribution_role ?? null, a.attributed_to ?? null]
     );
   }
   return { articles: (data.articles || []).length, analyses: (data.analyses || []).length };

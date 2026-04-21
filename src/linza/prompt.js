@@ -57,11 +57,21 @@ Look specifically for:
 
 ${buildTaxonomyBlock(taxonomy)}
 
+## ATTRIBUTION ROLE
+
+After analyzing the text, assign one of three roles to the SOURCE:
+- **originator** — the source is directly producing manipulative rhetoric (e.g. a media outlet publishing its own propaganda)
+- **amplifier** — the source is republishing, citing, or spreading manipulation originating elsewhere
+- **reporter** — the source is factually reporting on manipulation without endorsing it (e.g. investigative journalism)
+
+When in doubt, use "reporter". The role applies to the PUBLICATION, not the content it describes.
+
 ## OUTPUT FORMAT
 
 {
   "severity": <1-5>,
   "severity_label": "<none|mild|moderate|high|critical>",
+  "role": "<originator|amplifier|reporter>",
   "patterns": [
     {
       "name": "<category_id>",

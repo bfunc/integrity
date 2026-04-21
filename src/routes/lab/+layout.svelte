@@ -9,8 +9,29 @@
     threatsCount: 0,
     lastRun: null,
   };
+  let headerData = {
+    severity_high: 0,
+    severity_moderate: 0,
+    last_run: null,
+    top_pattern_today: null,
+  };
   let lastEvent = null;
   let pipelineRunning = false;
+
+  const PATTERN_NAMES_RU = {
+    call_to_violence:              'Призыв к насилию',
+    dehumanization:                'Дегуманизация',
+    demonization:                  'Демонизация',
+    existential_threat_accusation: 'Экзистенциальная угроза',
+    scapegoating:                  'Козёл отпущения',
+    us_vs_them:                    'Мы против них',
+    appeal_to_fear:                'Апелляция к страху',
+    conspiracy_targeting:          'Конспирология',
+    false_dilemma:                 'Ложная дилемма',
+    whataboutism:                  'Вотэбаутизм',
+    emotional_manipulation:        'Эмоциональная манипуляция',
+    group_discrediting:            'Дискредитация группы',
+  };
 
   async function fetchStats() {
     try {
@@ -35,6 +56,13 @@
         }
       }
     } catch {}
+    try {
+      const res2 = await fetch("/api/stats");
+      if (res2.ok) {
+        const d = await res2.json();
+        headerData = d.header || headerData;
+      }
+    } catch {}
   }
 
   onMount(() => {
@@ -46,11 +74,16 @@
 
   function formatTime(ts) {
     if (!ts) return null;
-    return new Date(ts).toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const d = new Date(ts);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const timeStr = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    return isToday ? `сегодня ${timeStr}` : timeStr;
   }
+
+  $: systemActive = headerData.last_run
+    ? (Date.now() - new Date(headerData.last_run).getTime()) < 24 * 60 * 60 * 1000
+    : false;
 
   const tabs = [
     { path: "/lab/threats", label: "Угрозы" },
@@ -94,12 +127,43 @@
         <span class="agg-label">Угроз:</span>
         <b>{stats.threatsCount}</b>
       </div>
+
+      <div class="bar-sep"></div>
+
+      <!-- Severity bar -->
+      {#if headerData.severity_high > 0 || headerData.severity_moderate > 0}
+        <div class="cnt sev-bar">
+          <span class="sev-dot high"></span><span class="sev-lbl">HIGH</span>
+          <b class="sev-n">{headerData.severity_high}</b>
+          <span class="sev-dot mod"></span><span class="sev-lbl">MOD</span>
+          <b class="sev-n">{headerData.severity_moderate}</b>
+        </div>
+      {/if}
+
+      <!-- Top pattern today -->
+      {#if headerData.top_pattern_today}
+        <div class="cnt top-pat">
+          <span class="tri">▲</span>
+          <span>{PATTERN_NAMES_RU[headerData.top_pattern_today.name] ?? headerData.top_pattern_today.name}</span>
+          <b>·&nbsp;{headerData.top_pattern_today.count}</b>
+        </div>
+      {/if}
+
+      <!-- Last run -->
       <div class="cnt agg-fresh">
-        {#if formatTime(stats.lastRun)}
+        {#if headerData.last_run}
+          Последний запуск: {formatTime(headerData.last_run)}
+        {:else if formatTime(stats.lastRun)}
           обновлено: {formatTime(stats.lastRun)}
         {:else}
           pipeline ожидает запуск
         {/if}
+      </div>
+
+      <!-- System status -->
+      <div class="cnt status-dot-wrap">
+        <span class="status-dot {systemActive ? 'active' : 'waiting'}"></span>
+        <span class="status-lbl">{systemActive ? 'Система активна' : 'Ожидание'}</span>
       </div>
     </div>
 
@@ -258,8 +322,54 @@
     color: var(--text3);
   }
   .agg-fresh {
-    margin-left: auto;
     color: var(--text2);
+  }
+  .bar-sep {
+    width: 1px;
+    height: 14px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+  .sev-bar {
+    gap: 4px;
+  }
+  .sev-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sev-dot.high { background: #ef4444; }
+  .sev-dot.mod  { background: #f97316; margin-left: 6px; }
+  .sev-lbl { color: var(--text3); }
+  .sev-n   { color: var(--text2); }
+  .top-pat {
+    gap: 4px;
+    color: var(--text3);
+  }
+  .top-pat .tri { color: #f97316; font-size: 0.65rem; }
+  .top-pat b    { color: var(--text2); }
+  .status-dot-wrap {
+    margin-left: auto;
+    gap: 5px;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-dot.active  { background: var(--green); box-shadow: 0 0 5px var(--green); animation: pulse 2s infinite; }
+  .status-dot.waiting { background: var(--amber); }
+  .status-lbl { color: var(--text3); font-size: 0.7rem; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+  @media (max-width: 640px) {
+    #pipeline-bar { flex-wrap: wrap; row-gap: 6px; }
+    .bar-sep { display: none; }
+    .status-dot-wrap { margin-left: 0; }
   }
 
   /* TABS */

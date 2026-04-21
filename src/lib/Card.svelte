@@ -94,6 +94,10 @@
   $: attributionSource = item.leader_name || item.source || null;
   $: attributionRole   = item.leader_role || null;
 
+  $: attrBadgeRole = item.attribution_role && item.attribution_role !== 'reporter'
+    ? item.attribution_role
+    : null;
+
   // Lock body scroll while modal is open
   $: if (typeof document !== 'undefined') {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -113,6 +117,11 @@
 >
   <div class="threat-top">
     <span class="src-badge">{item.source}</span>
+    {#if attrBadgeRole}
+      <span class="attr-badge attr-{attrBadgeRole}">
+        {attrBadgeRole === 'originator' ? 'МАНИПУЛЯТОР' : 'УСИЛИТЕЛЬ'}
+      </span>
+    {/if}
     <span
       class="threat-tag"
       style={sevStyle(item.severity)}
@@ -259,8 +268,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
-    height: 200px;
-    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     cursor: pointer;
     animation: fadeIn 0.4s ease;
     transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
@@ -289,6 +299,18 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
+
+  .attr-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .attr-originator { background: #3d1010; color: #ef4444; }
+  .attr-amplifier  { background: #431407; color: #f97316; }
 
   .threat-tag {
     margin-left: auto;

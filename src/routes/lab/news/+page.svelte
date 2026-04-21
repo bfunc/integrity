@@ -110,9 +110,8 @@
   }
   .fluid-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 12px;
-    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
   }
   .empty {
     display: flex;

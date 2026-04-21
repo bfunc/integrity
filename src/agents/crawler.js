@@ -80,6 +80,8 @@ export async function runPipeline() {
           patterns: analysis.patterns,
           summary_md: analysis.summary_md,
           raw_response: analysis.raw_response,
+          attribution_role: 'originator',
+          attributed_to: leader.name,
         });
       } catch (err) {
         await logEvent('warning', `Speech ${speech.id} failed: ${err.message}`);
@@ -127,6 +129,7 @@ export async function runPipeline() {
           }
         }
 
+        const attrRole = analysis.role || 'reporter';
         await insertAnalysis({
           source_type: 'article',
           source_id: id,
@@ -136,6 +139,8 @@ export async function runPipeline() {
           patterns: analysis.patterns,
           summary_md: analysis.summary_md,
           raw_response: analysis.raw_response,
+          attribution_role: attrRole,
+          attributed_to: site.id,
         });
         await updateArticleStatus(id, 'analyzed');
       }

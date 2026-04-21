@@ -21,6 +21,8 @@ export async function GET({ url }) {
     patterns: typeof r.patterns === 'string' ? JSON.parse(r.patterns) : r.patterns || [],
     summary_md: r.summary_md,
     advocate_status: r.advocate_status || null,
+    attribution_role: r.attribution_role || null,
+    attributed_to: r.attributed_to || null,
   }));
 
   return json({ items });
