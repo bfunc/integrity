@@ -56,6 +56,10 @@ export async function initDb() {
     });
   });
 
+  if (isFileBacked) {
+    console.log('[initDb] file exists after DuckDB open:', existsSync(dbPath));
+  }
+
   state.conn = state.db.connect();
 
   await _run(`
@@ -655,13 +659,22 @@ export async function importData(data) {
 }
 
 export async function closeDb() {
+  const dbPath = config.db.path;
+  const isFileBacked = dbPath && dbPath !== ':memory:';
+
   if (state.conn) {
+    if (isFileBacked) {
+      console.log('[closeDb] file exists before closing:', existsSync(dbPath));
+    }
     state.conn.close();
     state.conn = null;
   }
   if (state.db) {
     await new Promise((resolve) => state.db.close(resolve));
     state.db = null;
+    if (isFileBacked) {
+      console.log('[closeDb] file exists after closing:', existsSync(dbPath));
+    }
   }
   state.initPromise = null;
 }
