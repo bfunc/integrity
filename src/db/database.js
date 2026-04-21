@@ -136,6 +136,32 @@ export async function initDb() {
     `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`,
   );
 
+  const [dbStateRow] = await _all(`
+    SELECT
+      (SELECT COUNT(*) FROM articles) AS articles_count,
+      (SELECT COUNT(*) FROM speeches) AS speeches_count,
+      (SELECT COUNT(*) FROM analyses) AS analyses_count,
+      (SELECT COUNT(*) FROM events) AS events_count,
+      (
+        SELECT MAX(created_at)
+        FROM events
+        WHERE type = 'info' AND message LIKE 'Pipeline%'
+      ) AS last_run
+  `);
+
+  const hasData =
+    Number(dbStateRow?.articles_count ?? 0) > 0 ||
+    Number(dbStateRow?.speeches_count ?? 0) > 0 ||
+    Number(dbStateRow?.analyses_count ?? 0) > 0 ||
+    Number(dbStateRow?.events_count ?? 0) > 0;
+
+  console.log(`[initDb] data present: ${hasData}`);
+  if (dbStateRow?.last_run) {
+    console.log(`[initDb] last pipeline run: ${dbStateRow.last_run}`);
+  } else {
+    console.log("[initDb] last pipeline run: none");
+  }
+
   await seedLeaders(false);
 
   return { existingFile };
