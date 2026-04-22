@@ -59,61 +59,6 @@ export async function runPipeline() {
   pipelinePromise = (async () => {
     await logEvent("info", "Pipeline started");
 
-    // --- Leaders + Speeches pipeline ---
-    for (const leader of leadersData) {
-      try {
-        await upsertLeader(leader);
-      } catch (err) {
-        await logEvent(
-          "warning",
-          `Could not upsert leader ${leader.id}: ${err.message}`,
-        );
-      }
-
-      for (const speech of leader.speeches) {
-        try {
-          if (await speechExists(speech.id)) continue;
-          await insertSpeech({ ...speech, leader_id: leader.id });
-
-          const fullText = await scrapeText(speech.url, null);
-          if (!fullText) {
-            await updateSpeechStatus(speech.id, "error");
-            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
-            continue;
-          }
-
-          await updateSpeechStatus(speech.id, "analyzed", fullText);
-
-          const analysis = await analyzeSpeech({
-            ...speech,
-            full_text: fullText,
-          });
-
-          await insertAnalysis({
-            source_type: "speech",
-            source_id: speech.id,
-            leader_id: leader.id,
-            severity: analysis.severity,
-            severity_label: analysis.severity_label,
-            patterns: analysis.patterns,
-            summary_md: analysis.summary_md,
-            subtext: analysis.subtext,
-            raw_response: analysis.raw_response,
-            attribution_role: "originator",
-            attributed_to: leader.name,
-          });
-        } catch (err) {
-          await logEvent(
-            "warning",
-            `Speech ${speech.id} failed: ${err.message}`,
-          );
-          try {
-            await updateSpeechStatus(speech.id, "error");
-          } catch {}
-        }
-      }
-    }
-
     // --- Articles pipeline ---
     for (const site of sites) {
       try {
@@ -188,6 +133,61 @@ export async function runPipeline() {
           "warning",
           `RSS fetch failed for ${site.id}: ${err.message}`,
         );
+      }
+    }
+
+    // --- Leaders + Speeches pipeline ---
+    for (const leader of leadersData) {
+      try {
+        await upsertLeader(leader);
+      } catch (err) {
+        await logEvent(
+          "warning",
+          `Could not upsert leader ${leader.id}: ${err.message}`,
+        );
+      }
+
+      for (const speech of leader.speeches) {
+        try {
+          if (await speechExists(speech.id)) continue;
+          await insertSpeech({ ...speech, leader_id: leader.id });
+
+          const fullText = await scrapeText(speech.url, null);
+          if (!fullText) {
+            await updateSpeechStatus(speech.id, "error");
+            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
+            continue;
+          }
+
+          await updateSpeechStatus(speech.id, "analyzed", fullText);
+
+          const analysis = await analyzeSpeech({
+            ...speech,
+            full_text: fullText,
+          });
+
+          await insertAnalysis({
+            source_type: "speech",
+            source_id: speech.id,
+            leader_id: leader.id,
+            severity: analysis.severity,
+            severity_label: analysis.severity_label,
+            patterns: analysis.patterns,
+            summary_md: analysis.summary_md,
+            subtext: analysis.subtext,
+            raw_response: analysis.raw_response,
+            attribution_role: "originator",
+            attributed_to: leader.name,
+          });
+        } catch (err) {
+          await logEvent(
+            "warning",
+            `Speech ${speech.id} failed: ${err.message}`,
+          );
+          try {
+            await updateSpeechStatus(speech.id, "error");
+          } catch {}
+        }
       }
     }
 

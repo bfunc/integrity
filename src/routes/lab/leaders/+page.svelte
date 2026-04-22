@@ -95,7 +95,11 @@
     <div class="list">
       {#each leaders as leader (leader.id)}
         <div class="card">
-          <button class="card-head" on:click={() => toggle(leader.id)}>
+          <button
+            class="card-head"
+            class:no-expand={leader.violation_count === 0}
+            on:click={() => leader.violation_count > 0 && toggle(leader.id)}
+          >
             <div class="leader-info">
               <span class="leader-name">{leader.name}</span>
               <span class="leader-role">{leader.role} · {leader.country}</span>
@@ -109,13 +113,15 @@
                 <span class="v-date"
                   >{formatDate(leader.last_violation_date)}</span
                 >
-              {:else if leader.speeches_analyzed >= leader.speeches_total && leader.speeches_total > 0}
-                <span class="clean">чисто</span>
+              {:else if leader.speeches_analyzed > 0}
+                <span class="clean">манипуляций не найдено</span>
               {/if}
               <span class="speech-progress"
                 >{leader.speeches_analyzed}/{leader.speeches_total} речей</span
               >
-              <span class="chevron">{expanded[leader.id] ? "▲" : "▼"}</span>
+              {#if leader.violation_count > 0}
+                <span class="chevron">{expanded[leader.id] ? "▲" : "▼"}</span>
+              {/if}
             </div>
           </button>
 
@@ -240,6 +246,9 @@
     padding: 14px 18px;
     text-align: left;
     transition: background 0.15s;
+  }
+  .card-head.no-expand {
+    cursor: default;
   }
   .card-head:hover {
     background: var(--bg3);
