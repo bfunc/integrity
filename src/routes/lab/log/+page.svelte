@@ -95,12 +95,31 @@
     }
   }
 
-  function downloadAll() {
+  async function downloadAll() {
+    console.log('[downloadAll] called, password set:', !!password);
     if (!password) return;
     const url = `/api/export?password=${encodeURIComponent(password)}`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.click();
+    console.log('[downloadAll] fetching:', url);
+    try {
+      const res = await fetch(url);
+      console.log('[downloadAll] status:', res.status, res.headers.get('content-disposition'));
+      if (!res.ok) {
+        const err = await res.json();
+        console.error('[downloadAll] error response:', err);
+        return;
+      }
+      const blob = await res.blob();
+      console.log('[downloadAll] blob size:', blob.size);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `integrity-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    } catch (e) {
+      console.error('[downloadAll] exception:', e);
+    }
   }
 
   async function uploadAll() {
