@@ -54,16 +54,6 @@
         "description": "Трамп — выступление на Всемирном экономическом форуме в Давосе, январь 2025."
       },
       {
-        "id": "trump_saudi_fii_2025",
-        "url": "https://www.rev.com/transcripts/donald-trump-speaks-at-fii-investment-summit",
-        "description": "Трамп — выступление на инвестиционном форуме FII в Саудовской Аравии, 2025."
-      },
-      {
-        "id": "trump_super_tuesday_2024",
-        "url": "https://www.rev.com/transcripts/trump-delivers-remarks-after-dominant-super-tuesday-performance",
-        "description": "Трамп — речь после победы в Super Tuesday, март 2024."
-      },
-      {
         "id": "trump_waco_2024",
         "url": "https://www.rev.com/transcripts/donald-trump-hosts-first-2024-presidential-campaign-rally-in-waco-texas-transcript",
         "description": "Трамп — первый предвыборный митинг в Вако, Техас, март 2023."
@@ -72,6 +62,34 @@
         "id": "trump_macron_nato_2025",
         "url": "https://www.rev.com/transcripts/trump-and-macron-q-a",
         "description": "Трамп и Макрон — совместная пресс-конференция по НАТО и Украине, 2025."
+      },
+      {
+        "id": "trump_zelenskyy_oval_2025",
+        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
+        "description": "Трамп и Зеленский — переговоры в Овальном кабинете, 2025."
+      }
+    ]
+  },
+  {
+    "id": "zelenskyy",
+    "name": "Volodymyr Zelenskyy",
+    "role": "President",
+    "country": "Ukraine",
+    "speeches": [
+      {
+        "id": "zelenskyy_unga_2025",
+        "url": "https://www.president.gov.ua/en/news/vistup-prezidenta-ukrayini-na-zagalnih-debatah-80-yi-sesiyi-1-103270",
+        "description": "Зеленский — речь на Генассамблее ООН, сентябрь 2025."
+      },
+      {
+        "id": "zelenskyy_munich_2026",
+        "url": "https://www.president.gov.ua/en/news/vistup-prezidenta-ukrayini-na-myunhenskij-bezpekovij-konfere-102861",
+        "description": "Зеленский — выступление на Мюнхенской конференции по безопасности, февраль 2026."
+      },
+      {
+        "id": "zelenskyy_trump_oval_2025",
+        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
+        "description": "Зеленский и Трамп — переговоры в Овальном кабинете, 2025."
       }
     ]
   },
@@ -87,7 +105,7 @@
         "description": "Си Цзиньпин — выступление на саммите АТЭС в Лиме, ноябрь 2024."
       },
       {
-        "id": "fmprc_2023_new_year_china",
+        "id": "xi_new_year_2023",
         "url": "https://www.fmprc.gov.cn/rus/zxxx/202301/t20230101_10999545.html",
         "description": "Си Цзиньпин — новогоднее обращение, 2023."
       },
@@ -96,7 +114,6 @@
         "url": "https://www.fmprc.gov.cn/mfa_eng/xw/zyxw/202412/t20241231_11524948.html",
         "description": "Си Цзиньпин — новогоднее обращение, декабрь 2024."
       },
-
       {
         "id": "xi_apec_gyeongju_2025",
         "url": "http://www.xinhuanet.com/english/20251031/9228ecc24fe140a09c07304d184f01d8/c.html",
@@ -111,42 +128,102 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "netanyahu_un_2025_timesofisrael",
-        "url": "https://www.timesofisrael.com/full-text-of-netanyahus-speech-we-wont-let-the-world-shove-a-terror-state-down-our-throat/",
-        "description": "Нетаньяху — речь на Генассамблее ООН, сентябрь 2025."
-      },
-      {
-        "id": "netanyahu_rubio_2025",
-        "url": "https://www.americanrhetoric.com/speeches/marcorubiojointpressconfnetanyahu2025.htm",
-        "description": "Нетаньяху и Рубио — совместная пресс-конференция, сентябрь 2025."
+        "id": "netanyahu_unga_2025",
+        "url": "https://embassies.gov.il/dubai/en/news/pm-netanyahu-s-statement-president-donald-trump-white-house-29-sep-2025",
+        "description": "Нетаньяху — заявление после встречи с Трампом в Белом доме, сентябрь 2025."
       }
     ]
   },
   {
-    "id": "zelenskyy",
-    "name": "Volodymyr Zelensky",
+    "id": "macron",
+    "name": "Emmanuel Macron",
     "role": "President",
-    "country": "Ukraine",
+    "country": "France",
     "speeches": [
       {
-        "id": "zelenskyy_unga_2025",
-        "url": "https://www.americanrhetoric.com/speeches/volodymyrzelenskyunga2025.htm",
-        "description": "Зеленский — речь на Генассамблее ООН, сентябрь 2025."
+        "id": "macron_address_french_2025",
+        "url": "https://www.elysee.fr/en/emmanuel-macron/2025/03/05/address-to-the-french-people",
+        "description": "Макрон — обращение к французскому народу о войне в Украине и позиции США, март 2025."
       },
       {
-        "id": "zelenskyy_munich_2025",
-        "url": "https://www.americanrhetoric.com/speeches/volodymyrzelensky2025munichsecurityconference.htm",
-        "description": "Зеленский — выступление на Мюнхенской конференции по безопасности, февраль 2025."
+        "id": "macron_unga_palestine_2025",
+        "url": "https://www.elysee.fr/en/emmanuel-macron/2025/09/22/80th-session-of-the-united-nations-general-assembly-in-new-york-opening-day",
+        "description": "Макрон — речь на UNGA о признании Палестины и мирном урегулировании, сентябрь 2025."
       },
       {
-        "id": "zelenskyy_trump_oval_2025",
-        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
-        "description": "Зеленский и Трамп — переговоры в Овальном кабинете, 2025."
+        "id": "macron_europe_sorbonne_2024",
+        "url": "https://www.elysee.fr/en/emmanuel-macron/2024/04/24/europe-speech",
+        "description": "Макрон — речь о суверенитете Европы в Сорбонне, апрель 2024."
+      }
+    ]
+  },
+  {
+    "id": "mbs",
+    "name": "Mohammed bin Salman",
+    "role": "Crown Prince and Prime Minister",
+    "country": "Saudi Arabia",
+    "speeches": [
+      {
+        "id": "mbs_arab_summit_2024",
+        "url": "https://www.spa.gov.sa/en/w2104220",
+        "description": "МБС — речь на 33-м Арабском саммите в Манаме, май 2024."
       },
       {
-        "id": "zelensky_davos_2025",
-        "url": "https://www.weforum.org/agenda/2025/01/volodymyr-zelensky-speech/",
-        "description": "Владимир Зеленский — выступление на Всемирном экономическом форуме, 2025."
+        "id": "mbs_us_investment_forum_2025",
+        "url": "https://www.spa.gov.sa/en/N2448767",
+        "description": "МБС — выступление на саудовско-американском инвестиционном форуме в Вашингтоне, ноябрь 2025."
+      }
+    ]
+  },
+  {
+    "id": "erdogan",
+    "name": "Recep Tayyip Erdogan",
+    "role": "President",
+    "country": "Turkey",
+    "speeches": [
+      {
+        "id": "erdogan_unga_2025",
+        "url": "https://www.tccb.gov.tr/en/speeches-statements/558/159564/president-erdogan-s-address-to-the-80th-session-of-the-united-nations-general-assembly",
+        "description": "Эрдоган — речь на Генассамблее ООН, сентябрь 2025."
+      }
+    ]
+  },
+  {
+    "id": "orban",
+    "name": "Viktor Orban",
+    "role": "Prime Minister",
+    "country": "Hungary",
+    "speeches": [
+      {
+        "id": "orban_cpac_2024",
+        "url": "https://www.rev.com/transcripts/hungarian-prime-minister-viktor-orban-speaks-at-cpac",
+        "description": "Орбан — речь на CPAC, февраль 2024."
+      }
+    ]
+  },
+  {
+    "id": "al_sharaa",
+    "name": "Ahmad al-Sharaa",
+    "role": "President",
+    "country": "Syria",
+    "speeches": [
+      {
+        "id": "al_sharaa_unga_2025",
+        "url": "https://gadebate.un.org/en/80/syrian-arab-republic",
+        "description": "Аль-Шараа — первая речь на Генассамблее ООН, сентябрь 2025."
+      }
+    ]
+  },
+  {
+    "id": "pezeshkian",
+    "name": "Masoud Pezeshkian",
+    "role": "President",
+    "country": "Iran",
+    "speeches": [
+      {
+        "id": "pezeshkian_unga_2025",
+        "url": "https://gadebate.un.org/en/80/iran-islamic-republic",
+        "description": "Пезешкиан — речь на Генассамблее ООН, критика Израиля и США, сентябрь 2025."
       }
     ]
   },
@@ -157,191 +234,22 @@
     "country": "European Union",
     "speeches": [
       {
-        "id": "von_der_leyen_state_2025",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_25_0001",
+        "id": "von_der_leyen_state_union_2025",
+        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_25_2333",
         "description": "Урсула фон дер Ляйен — ежегодное обращение о положении Союза, 2025."
       }
     ]
   },
   {
-    "id": "modi",
-    "name": "Narendra Modi",
-    "role": "Prime Minister",
-    "country": "India",
-    "speeches": [
-      {
-        "id": "modi_india_independence_2025",
-        "url": "https://www.pmindia.gov.in/en/news_updates/",
-        "description": "Нарендра Моди — речь на День независимости Индии, август 2025."
-      }
-    ]
-  },
-  {
-    "id": "guterres",
-    "name": "Antonio Guterres",
-    "role": "Secretary-General",
-    "country": "United Nations",
-    "speeches": [
-      {
-        "id": "guterres_un_assembly_2025",
-        "url": "https://www.un.org/press/en/",
-        "description": "Антониу Гутерриш — речь на Генеральной Ассамблее ООН, сентябрь 2025."
-      }
-    ]
-  },
-  {
-    "id": "pope_francis",
-    "name": "Pope Francis",
-    "role": "Pope",
-    "country": "Vatican City",
-    "speeches": [
-      {
-        "id": "pope_francis_peace_2025",
-        "url": "https://www.vatican.va/content/francesco/en/speeches.index.html",
-        "description": "Папа Франциск — обращение о мире и глобальной солидарности, 2025."
-      }
-    ]
-  },
-  {
-    "id": "meloni",
-    "name": "Giorgia Meloni",
-    "role": "Prime Minister",
-    "country": "Italy",
-    "speeches": [
-      {
-        "id": "meloni_g7_2025",
-        "url": "https://www.governo.it/en/articolo/prime-minister-meloni-speech-g7/00000",
-        "description": "Джорджа Мелони — речь на саммите G7, 2025."
-      }
-    ]
-  },
-  {
-    "id": "scholz",
-    "name": "Olaf Scholz",
-    "role": "Chancellor",
-    "country": "Germany",
-    "speeches": [
-      {
-        "id": "scholz_bundestag_2025",
-        "url": "https://www.bundesregierung.de/breg-en/news",
-        "description": "Олаф Шольц — выступление в Бундестаге о безопасности Европы, 2025."
-      }
-    ]
-  },
-  {
-    "id": "sunak",
-    "name": "Rishi Sunak",
+    "id": "starmer",
+    "name": "Keir Starmer",
     "role": "Prime Minister",
     "country": "United Kingdom",
     "speeches": [
       {
-        "id": "sunak_ai_safety_2025",
-        "url": "https://www.gov.uk/government/speeches",
-        "description": "Риши Сунак — речь на саммите по безопасности ИИ, Лондон, 2025."
-      }
-    ]
-  },
-  {
-    "id": "kamala_harris",
-    "name": "Kamala Harris",
-    "role": "Vice President",
-    "country": "USA",
-    "speeches": [
-      {
-        "id": "kamala_harris_un_2025",
-        "url": "https://www.whitehouse.gov/briefing-room/speeches-remarks/",
-        "description": "Камала Харрис — выступление на заседании Совбеза ООН, 2025."
-      }
-    ]
-  },
-  {
-    "id": "tim_cook",
-    "name": "Tim Cook",
-    "role": "CEO",
-    "country": "USA",
-    "speeches": [
-      {
-        "id": "tim_cook_privacy_2025",
-        "url": "https://www.apple.com/newsroom/archive/",
-        "description": "Тим Кук — речь о цифровой приватности и регулировании данных, 2025."
-      }
-    ]
-  },
-  {
-    "id": "satya_nadella",
-    "name": "Satya Nadella",
-    "role": "CEO",
-    "country": "USA",
-    "speeches": [
-      {
-        "id": "satya_nadella_ai_future_2025",
-        "url": "https://news.microsoft.com/",
-        "description": "Сатья Наделла — выступление о будущем ИИ и ответственности технологий, 2025."
-      }
-    ]
-  },
-  {
-    "id": "sam_altman",
-    "name": "Sam Altman",
-    "role": "CEO",
-    "country": "USA",
-    "speeches": [
-      {
-        "id": "sam_altman_senate_2025",
-        "url": "https://www.commerce.senate.gov/hearings",
-        "description": "Сэм Альтман — показания в Сенате США о регулировании ИИ, 2025."
-      }
-    ]
-  },
-  {
-    "id": "yuval_noah_harari",
-    "name": "Yuval Noah Harari",
-    "role": "Historian",
-    "country": "Israel",
-    "speeches": [
-      {
-        "id": "yuval_noah_harari_ethics_2025",
-        "url": "https://www.ynharari.com/speeches/",
-        "description": "Юваль Ной Харари — лекция о рисках дезинформации и ИИ, 2025."
-      }
-    ]
-  },
-  {
-    "id": "malala",
-    "name": "Malala Yousafzai",
-    "role": "Education Activist",
-    "country": "Pakistan",
-    "speeches": [
-      {
-        "id": "malala_un_education_2025",
-        "url": "https://www.un.org/press/en/",
-        "description": "Малала Юсуфзай — речь о глобальном образовании на площадке ООН, 2025."
-      }
-    ]
-  },
-  {
-    "id": "greta_thunberg",
-    "name": "Greta Thunberg",
-    "role": "Climate Activist",
-    "country": "Sweden",
-    "speeches": [
-      {
-        "id": "greta_climate_forum_2025",
-        "url": "https://www.weforum.org/agenda/",
-        "description": "Грета Тунберг — выступление на климатическом форуме, 2025."
-      }
-    ]
-  },
-  {
-    "id": "bukele",
-    "name": "Nayib Bukele",
-    "role": "President",
-    "country": "El Salvador",
-    "speeches": [
-      {
-        "id": "el_salvador_president_bitcoin_2025",
-        "url": "https://www.presidencia.gob.sv/",
-        "description": "Наиб Букеле — речь о цифровой экономике и биткоине, 2025."
+        "id": "starmer_unga_2025",
+        "url": "https://gadebate.un.org/en/80/united-kingdom-great-britain-and-northern-ireland",
+        "description": "Стармер — речь на Генассамблее ООН, сентябрь 2025."
       }
     ]
   },
@@ -352,74 +260,9 @@
     "country": "Brazil",
     "speeches": [
       {
-        "id": "lula_un_assembly_2025",
-        "url": "https://www.gov.br/planalto/en",
-        "description": "Лула да Силва — выступление на Генассамблее ООН, 2025."
-      }
-    ]
-  },
-  {
-    "id": "yuriko_koike",
-    "name": "Yuriko Koike",
-    "role": "Governor of Tokyo",
-    "country": "Japan",
-    "speeches": [
-      {
-        "id": "tokyo_governor_ai_2025",
-        "url": "https://www.metro.tokyo.lg.jp/english/governor/",
-        "description": "Юрико Коикэ — речь о внедрении ИИ в городское управление, 2025."
-      }
-    ]
-  },
-  {
-    "id": "south_korea_president",
-    "name": "President of South Korea",
-    "role": "President",
-    "country": "South Korea",
-    "speeches": [
-      {
-        "id": "south_korea_president_security_2025",
-        "url": "https://www.president.go.kr/",
-        "description": "Президент Южной Кореи — выступление о региональной безопасности, 2025."
-      }
-    ]
-  },
-  {
-    "id": "ruto",
-    "name": "William Ruto",
-    "role": "President",
-    "country": "Kenya",
-    "speeches": [
-      {
-        "id": "kenya_ruto_africa_tech_2025",
-        "url": "https://www.president.go.ke/",
-        "description": "Уильям Руто — речь о цифровой трансформации Африки, 2025."
-      }
-    ]
-  },
-  {
-    "id": "trudeau",
-    "name": "Justin Trudeau",
-    "role": "Prime Minister",
-    "country": "Canada",
-    "speeches": [
-      {
-        "id": "canada_trudeau_ai_regulation_2025",
-        "url": "https://www.pm.gc.ca/en/news/speeches",
-        "description": "Джастин Трюдо — выступление о регулировании ИИ, 2025."
-      }
-    ]
-  },
-  {
-    "id": "sheinbaum",
-    "name": "Claudia Sheinbaum",
-    "role": "President",
-    "country": "Mexico",
-    "speeches": [
-      {
-        "id": "mexico_sheinbaum_2025",
-        "url": "https://www.gob.mx/",
-        "description": "Клаудия Шейнбаум — обращение о национальной безопасности, 2025."
+        "id": "lula_unga_2025",
+        "url": "https://gadebate.un.org/en/80/brazil",
+        "description": "Лула да Силва — выступление на Генассамблее ООН, традиционно открывает дебаты, сентябрь 2025."
       }
     ]
   }

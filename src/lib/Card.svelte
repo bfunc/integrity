@@ -156,16 +156,10 @@
   </div>
 
   <a class="threat-title" href={item.url || "#"} target="_blank" rel="noopener">
-    {item.title}
+    {item.title}{#if topPattern}<span class="title-pattern-tag">{PATTERN_NAMES[topPattern.name] ?? topPattern.name}</span>{/if}
   </a>
 
-  {#if topPattern}
-    <div class="threat-pattern">
-      {PATTERN_NAMES[topPattern.name] ?? topPattern.name}
-    </div>
-  {/if}
-
-  {#if item.summary_md}
+  {#if item.subtext || item.summary_md}
     <div
       class="summary-wrap"
       class:expanded={summaryExpanded}
@@ -174,12 +168,11 @@
       tabindex="0"
       on:keypress={(e) => e.key === 'Enter' && (summaryExpanded = !summaryExpanded)}
     >
-      <p class="threat-status">{item.summary_md}</p>
-      {#if summaryExpanded && item.subtext}
-        <div class="subtext-section">
-          <span class="subtext-label">Что скрыто между строк</span>
-          <p class="subtext-body">{item.subtext}</p>
-        </div>
+      {#if item.subtext}
+        <span class="subtext-label">Что скрыто между строк</span>
+        <p class="threat-status">{item.subtext}</p>
+      {:else}
+        <p class="threat-status">{item.summary_md}</p>
       {/if}
       <span class="summary-chevron">{summaryExpanded ? '▴' : '▾'}</span>
     </div>
@@ -409,7 +402,7 @@
 
   .threat-title {
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-size: 0.96rem;
@@ -423,13 +416,20 @@
     text-decoration: underline;
   }
 
-  .threat-pattern {
-    font-size: 0.72rem;
+  .title-pattern-tag {
+    display: inline;
+    margin-left: 6px;
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--orange);
+    background: rgba(251, 146, 60, 0.1);
+    border: 1px solid rgba(251, 146, 60, 0.25);
+    border-radius: 4px;
+    padding: 1px 6px;
+    vertical-align: middle;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   .summary-wrap {
@@ -467,12 +467,12 @@
 
   .subtext-label {
     display: block;
-    font-size: 0.65rem;
-    font-weight: 700;
+    font-size: 0.62rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #5b7fa6;
-    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+    color: #3d5470;
+    margin-bottom: 4px;
   }
 
   .subtext-body {

@@ -8,6 +8,7 @@
   let items = [];
   let loading = true;
   let error = null;
+  let sortByDate = false;
 
   async function fetchData() {
     try {
@@ -28,7 +29,7 @@
     return () => clearInterval(interval);
   });
 
-  $: filteredItems = applyFilters(items, $filterState);
+  $: filteredItems = applyFilters(items, $filterState, sortByDate);
 
   $: hasFilters =
     $filterState.source !== null ||
@@ -37,17 +38,19 @@
     $filterState.sourceTypes.length > 0 ||
     $filterState.regions.length > 0;
 
-  function applyFilters(items, f) {
-    return items
-      .filter(item => {
-        if (f.source && item.source !== f.source) return false;
-        if (f.severities.length > 0 && !f.severities.includes(item.severity_label)) return false;
-        if (f.types.length > 0 && !item.patterns?.some(p => f.types.includes(p.name))) return false;
-        if (f.sourceTypes.length > 0 && !f.sourceTypes.includes(item.source_type)) return false;
-        if (f.regions.length > 0 && !f.regions.includes(regionMap[item.source])) return false;
-        return true;
-      })
-      .sort((a, b) => b.severity - a.severity);
+  function applyFilters(items, f, byDate) {
+    const filtered = items.filter(item => {
+      if (f.source && item.source !== f.source) return false;
+      if (f.severities.length > 0 && !f.severities.includes(item.severity_label)) return false;
+      if (f.types.length > 0 && !item.patterns?.some(p => f.types.includes(p.name))) return false;
+      if (f.sourceTypes.length > 0 && !f.sourceTypes.includes(item.source_type)) return false;
+      if (f.regions.length > 0 && !f.regions.includes(regionMap[item.source])) return false;
+      return true;
+    });
+    if (byDate) {
+      return filtered.sort((a, b) => new Date(b.analyzed_at) - new Date(a.analyzed_at));
+    }
+    return filtered.sort((a, b) => b.severity - a.severity);
   }
 </script>
 
@@ -64,6 +67,11 @@
       {/if}
     </span>
   {/if}
+  <button
+    class="sort-btn"
+    class:active={sortByDate}
+    on:click={() => (sortByDate = !sortByDate)}
+  >Последние</button>
 </div>
 
 {#if loading}
@@ -136,6 +144,26 @@
     transition: background 0.12s;
   }
   .reset-btn:hover { background: #1e2d4a; }
+
+  .sort-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 3px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .sort-btn:hover { color: var(--text2); border-color: var(--text3); }
+  .sort-btn.active {
+    background: #1e2d4a;
+    border-color: var(--blue);
+    color: var(--blue);
+  }
 
   .news-grid :global(.threat-card) {
     border-width: 3px;
