@@ -371,9 +371,9 @@ export async function getFeedAnalyses(tab) {
 export async function getLeaderStats() {
   const rows = await all(`
     SELECT l.id, l.name, l.role, l.country,
-           COUNT(CASE WHEN a.severity >= 1 THEN 1 END) as violation_count,
-           MAX(a.severity) as max_severity,
-           MAX(CASE WHEN a.severity >= 2 THEN a.analyzed_at END) as last_violation_date
+           COUNT(CASE WHEN a.severity >= 1 AND a.severity_label != 'NONE' THEN 1 END) as violation_count,
+           MAX(CASE WHEN a.severity_label != 'NONE' THEN a.severity END) as max_severity,
+           MAX(CASE WHEN a.severity >= 2 AND a.severity_label != 'NONE' THEN a.analyzed_at END) as last_violation_date
     FROM leaders l
     LEFT JOIN analyses a ON a.leader_id = l.id
     GROUP BY l.id, l.name, l.role, l.country
@@ -402,7 +402,7 @@ export async function getLeaderViolations(leaderId) {
     SELECT a.*, s.title as speech_title, s.date as speech_date
     FROM analyses a
     LEFT JOIN speeches s ON a.source_id = s.id
-    WHERE a.leader_id = ?
+    WHERE a.leader_id = ? AND a.severity_label != 'NONE'
     ORDER BY a.analyzed_at DESC
   `,
     [leaderId],
