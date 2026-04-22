@@ -22,6 +22,7 @@ export async function GET() {
           title: v.speech_title || v.source_id,
           patterns: typeof v.patterns === 'string' ? JSON.parse(v.patterns) : v.patterns || [],
           summary_md: v.summary_md,
+          subtext: v.subtext || null,
           severity: v.severity,
           severity_label: v.severity_label,
         })),

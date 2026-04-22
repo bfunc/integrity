@@ -20,6 +20,7 @@ export async function GET({ url }) {
     severity_label: r.severity_label,
     patterns: typeof r.patterns === 'string' ? JSON.parse(r.patterns) : r.patterns || [],
     summary_md: r.summary_md,
+    subtext: r.subtext || null,
     advocate_status: r.advocate_status || null,
     attribution_role: r.attribution_role || null,
     attributed_to: r.attributed_to || null,

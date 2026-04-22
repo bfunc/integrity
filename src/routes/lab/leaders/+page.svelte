@@ -5,6 +5,7 @@
   let loading = true;
   let error = null;
   let expanded = {};
+  let summaryExpanded = {};
 
   const SEV_STYLE = {
     3: "background:#1c0f00;border:1px solid #4a2500;color:#fb923c",
@@ -132,7 +133,23 @@
                     {/if}
                   </div>
                   {#if v.summary_md}
-                    <p class="v-s">{v.summary_md}</p>
+                    <div
+                      class="v-summary-wrap"
+                      class:expanded={summaryExpanded[v.id]}
+                      on:click|stopPropagation={() => (summaryExpanded = { ...summaryExpanded, [v.id]: !summaryExpanded[v.id] })}
+                      role="button"
+                      tabindex="0"
+                      on:keypress={(e) => e.key === 'Enter' && (summaryExpanded = { ...summaryExpanded, [v.id]: !summaryExpanded[v.id] })}
+                    >
+                      <p class="v-s">{v.summary_md}</p>
+                      {#if summaryExpanded[v.id] && v.subtext}
+                        <div class="v-subtext-section">
+                          <span class="v-subtext-label">Что скрыто между строк</span>
+                          <p class="v-subtext-body">{v.subtext}</p>
+                        </div>
+                      {/if}
+                      <span class="v-summary-chevron">{summaryExpanded[v.id] ? '▴' : '▾'}</span>
+                    </div>
                   {/if}
                   {#if v.patterns?.length > 0}
                     <div class="v-patterns">
@@ -316,6 +333,53 @@
     flex: 1;
     min-width: 0;
   }
+  .v-summary-wrap {
+    cursor: pointer;
+  }
+
+  .v-summary-wrap:not(.expanded) .v-s {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .v-summary-wrap.expanded .v-s {
+    display: block;
+    overflow: visible;
+  }
+
+  .v-summary-chevron {
+    display: block;
+    font-size: 0.58rem;
+    color: var(--text3);
+    margin-top: 3px;
+    opacity: 0.7;
+  }
+
+  .v-subtext-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border2);
+  }
+
+  .v-subtext-label {
+    display: block;
+    font-size: 0.63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #5b7fa6;
+    margin-bottom: 5px;
+  }
+
+  .v-subtext-body {
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: #8a96a8;
+  }
+
   .v-s {
     font-size: 0.78rem;
     color: var(--text2);

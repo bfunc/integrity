@@ -81,7 +81,8 @@ When in doubt, use "reporter". The role applies to the PUBLICATION, not the cont
       "explanation": "<one sentence>"
     }
   ],
-  "summary_md": "<2-3 sentences>"
+  "summary_md": "<2-3 sentences>",
+  "subtext": "<2-4 sentences — what is really happening behind the words. Not a retelling of patterns, but interpretation: whose rhetoric this is, what the real goal is, what is hidden behind the formulations.>"
 }`;
 }
 

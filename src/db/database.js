@@ -145,6 +145,9 @@ export async function initDb() {
   await _run(
     `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`,
   );
+  await _run(
+    `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS subtext TEXT`,
+  );
 
   const [dbStateRow] = await _all(`
     SELECT
@@ -269,8 +272,8 @@ export async function updateArticleStatus(id, status, fullText = null) {
 
 export async function insertAnalysis(analysis) {
   await run(
-    `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response, attribution_role, attributed_to)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, subtext, raw_response, attribution_role, attributed_to)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (source_id, source_type) DO NOTHING`,
     [
       analysis.id || randomUUID(),
@@ -282,6 +285,7 @@ export async function insertAnalysis(analysis) {
       analysis.severity_label,
       JSON.stringify(analysis.patterns),
       analysis.summary_md,
+      analysis.subtext || null,
       JSON.stringify(analysis.raw_response),
       analysis.attribution_role || null,
       analysis.attributed_to || null,
@@ -669,8 +673,8 @@ export async function importData(data) {
   }
   for (const a of data.analyses || []) {
     await _run(
-      `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, raw_response, attribution_role, attributed_to)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO analyses (id, source_type, source_id, leader_id, analyzed_at, severity, severity_label, patterns, summary_md, subtext, raw_response, attribution_role, attributed_to)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT (source_id, source_type) DO NOTHING`,
       [
         a.id,
@@ -684,6 +688,7 @@ export async function importData(data) {
           ? a.patterns
           : JSON.stringify(a.patterns),
         a.summary_md,
+        a.subtext ?? null,
         typeof a.raw_response === "string"
           ? a.raw_response
           : JSON.stringify(a.raw_response),

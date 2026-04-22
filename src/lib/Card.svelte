@@ -78,6 +78,7 @@
 
   let open = false;
   let disputeOpen = false;
+  let summaryExpanded = false;
 
   function openModal(e) {
     if (e.target.closest("a")) return;
@@ -165,7 +166,23 @@
   {/if}
 
   {#if item.summary_md}
-    <p class="threat-status">{item.summary_md}</p>
+    <div
+      class="summary-wrap"
+      class:expanded={summaryExpanded}
+      on:click|stopPropagation={() => (summaryExpanded = !summaryExpanded)}
+      role="button"
+      tabindex="0"
+      on:keypress={(e) => e.key === 'Enter' && (summaryExpanded = !summaryExpanded)}
+    >
+      <p class="threat-status">{item.summary_md}</p>
+      {#if summaryExpanded && item.subtext}
+        <div class="subtext-section">
+          <span class="subtext-label">Что скрыто между строк</span>
+          <p class="subtext-body">{item.subtext}</p>
+        </div>
+      {/if}
+      <span class="summary-chevron">{summaryExpanded ? '▴' : '▾'}</span>
+    </div>
   {/if}
 
   <div class="threat-meta">
@@ -223,6 +240,14 @@
       <!-- Summary -->
       {#if item.summary_md}
         <p class="modal-summary">{item.summary_md}</p>
+      {/if}
+
+      <!-- Subtext -->
+      {#if item.subtext}
+        <div class="modal-subtext-section">
+          <span class="modal-subtext-label">Что скрыто между строк</span>
+          <p class="modal-subtext-body">{item.subtext}</p>
+        </div>
       {/if}
 
       <!-- Violations list -->
@@ -407,16 +432,61 @@
     margin-bottom: 6px;
   }
 
-  /* Feature 5: 2-line clamp on grid card summary */
-  .threat-status {
+  .summary-wrap {
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 6px;
+  }
+
+  .summary-wrap:not(.expanded) .threat-status {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .summary-wrap.expanded .threat-status {
+    display: block;
+    overflow: visible;
+  }
+
+  .summary-chevron {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--text3);
+    margin-top: 2px;
+    opacity: 0.7;
+  }
+
+  .subtext-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border2);
+  }
+
+  .subtext-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #5b7fa6;
+    margin-bottom: 5px;
+  }
+
+  .subtext-body {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #8a96a8;
+  }
+
+  /* Feature 5: 2-line clamp on grid card summary */
+  .threat-status {
     font-size: 0.79rem;
     line-height: 1.4;
     color: var(--text2);
-    margin-bottom: 6px;
+    margin-bottom: 0;
   }
 
   .threat-meta {
@@ -575,6 +645,30 @@
     margin-bottom: 24px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border2);
+  }
+
+  .modal-subtext-section {
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    background: #0d1420;
+    border: 1px solid #1e2d42;
+    border-radius: 8px;
+  }
+
+  .modal-subtext-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #5b7fa6;
+    margin-bottom: 8px;
+  }
+
+  .modal-subtext-body {
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: #8a96a8;
   }
 
   /* ── VIOLATIONS ── */
