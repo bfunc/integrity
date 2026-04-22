@@ -57,21 +57,28 @@ Look specifically for:
 
 ${buildTaxonomyBlock(taxonomy)}
 
-## ATTRIBUTION ROLE
+## ATTRIBUTION
 
-After analyzing the text, assign one of three roles to the SOURCE:
-- **originator** — the source is directly producing manipulative rhetoric (e.g. a media outlet publishing its own propaganda)
-- **amplifier** — the source is republishing, citing, or spreading manipulation originating elsewhere
-- **reporter** — the source is factually reporting on manipulation without endorsing it (e.g. investigative journalism)
+Identify:
+1. **speaker** — who actually said the manipulative words (name/role, e.g. "IDF spokesperson", "Vladimir Putin"). If the publication itself authored the manipulation with no external speaker, set to null.
+2. **speaker_role** — the speaker's relationship to the manipulation:
+   - **originator** — speaker created/initiated the manipulative framing
+   - (if speaker is null, this is always "originator" — the outlet is the originator)
+3. **source_role** — how the SOURCE (the publication) handles the content:
+   - **amplifier** — republishes manipulative framing without critical distance (no "according to X", no alternative context, no qualification)
+   - **reporter** — republishes with clear attribution and/or critical context
+   - **originator** — the publication itself authored the manipulation (speaker is null)
 
-When in doubt, use "reporter". The role applies to the PUBLICATION, not the content it describes.
+CRITICAL: Never assign source_role based on the outlet's reputation alone. Judge by the actual text: does it distance itself from the claims or present them as facts?
 
 ## OUTPUT FORMAT
 
 {
   "severity": <1-5>,
   "severity_label": "<none|mild|moderate|high|critical>",
-  "role": "<originator|amplifier|reporter>",
+  "speaker": "<name/role of who said the manipulative words, or null>",
+  "speaker_role": "<originator>",
+  "source_role": "<originator|amplifier|reporter>",
   "patterns": [
     {
       "name": "<category_id>",

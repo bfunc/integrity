@@ -112,7 +112,8 @@ export async function runPipeline() {
             }
           }
 
-          const attrRole = analysis.role || "reporter";
+          const attrRole = analysis.source_role || analysis.role || "reporter";
+          const speaker = analysis.speaker || null;
           await insertAnalysis({
             source_type: "article",
             source_id: id,
@@ -124,7 +125,7 @@ export async function runPipeline() {
             subtext: analysis.subtext,
             raw_response: analysis.raw_response,
             attribution_role: attrRole,
-            attributed_to: site.id,
+            attributed_to: speaker,
           });
           await updateArticleStatus(id, "analyzed");
         }
