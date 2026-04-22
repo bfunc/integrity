@@ -21,30 +21,38 @@ const localModel = process.env.LOCAL_MODEL_NAME || "local-model";
 
 const systemPrompt = buildSystemPrompt();
 
+const LLM_TIMEOUT_MS = 60_000;
+
 async function callLLM(text) {
   if (isLocal) {
-    const response = await localClient.chat.completions.create({
-      model: localModel,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: buildUserPrompt(text) },
-      ],
-      temperature: 0.3,
-    });
+    const response = await localClient.chat.completions.create(
+      {
+        model: localModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: buildUserPrompt(text) },
+        ],
+        temperature: 0.3,
+      },
+      { signal: AbortSignal.timeout(LLM_TIMEOUT_MS) },
+    );
     return response.choices[0].message.content;
   } else {
-    const response = await anthropicClient.messages.create({
-      model: config.anthropic.model,
-      max_tokens: config.anthropic.maxTokens,
-      system: [
-        {
-          type: "text",
-          text: systemPrompt,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [{ role: "user", content: buildUserPrompt(text) }],
-    });
+    const response = await anthropicClient.messages.create(
+      {
+        model: config.anthropic.model,
+        max_tokens: config.anthropic.maxTokens,
+        system: [
+          {
+            type: "text",
+            text: systemPrompt,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+        messages: [{ role: "user", content: buildUserPrompt(text) }],
+      },
+      { timeout: LLM_TIMEOUT_MS },
+    );
     return response.content[0].text;
   }
 }

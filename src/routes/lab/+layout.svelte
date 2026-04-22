@@ -65,9 +65,15 @@
   }
 
   onMount(() => {
-    fetchStats();
-    const interval = setInterval(fetchStats, pipelineRunning ? 4000 : 30000);
-    return () => clearInterval(interval);
+    let timer;
+
+    async function tick() {
+      await fetchStats();
+      timer = setTimeout(tick, pipelineRunning ? 4000 : 30000);
+    }
+
+    tick();
+    return () => clearTimeout(timer);
   });
 
   function formatTime(ts) {

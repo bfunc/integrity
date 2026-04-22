@@ -1,8 +1,40 @@
 import "dotenv/config";
 import { createServer } from "http";
+import os from "os";
 import { handler } from "./build/handler.js";
 import { initDb, closeDb } from "./src/db/database.js";
 import { scheduleCron } from "./src/agents/crawler.js";
+
+function cpuPercent() {
+  return new Promise((resolve) => {
+    const sample = () => {
+      let idle = 0, total = 0;
+      for (const cpu of os.cpus()) {
+        for (const v of Object.values(cpu.times)) total += v;
+        idle += cpu.times.idle;
+      }
+      return { idle, total };
+    };
+    const a = sample();
+    setTimeout(() => {
+      const b = sample();
+      const used = (b.total - a.total) - (b.idle - a.idle);
+      resolve(Math.round((used / (b.total - a.total)) * 100));
+    }, 200);
+  });
+}
+
+function memPercent() {
+  return Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100);
+}
+
+async function logResources() {
+  const cpu = await cpuPercent();
+  const mem = memPercent();
+  console.log(`[resources] CPU: ${cpu}%  MEM: ${mem}%`);
+}
+
+setInterval(logResources, 2 * 60 * 1000);
 
 if (!process.env.PORT) {
   console.error("PORT environment variable is not set");

@@ -344,6 +344,15 @@ export async function logEvent(type, message) {
   );
 }
 
+export async function trimEvents(keep = 1000) {
+  await run(
+    `DELETE FROM events WHERE id NOT IN (
+       SELECT id FROM events ORDER BY created_at DESC LIMIT ?
+     )`,
+    [keep],
+  );
+}
+
 export async function getFeedAnalyses(tab) {
   if (tab === "threats") {
     return all(`
@@ -375,9 +384,9 @@ export async function getFeedAnalyses(tab) {
 export async function getLeaderStats() {
   const rows = await all(`
     SELECT l.id, l.name, l.role, l.country,
-           COUNT(CASE WHEN a.severity >= 1 AND a.severity_label != 'NONE' THEN 1 END) as violation_count,
-           MAX(CASE WHEN a.severity_label != 'NONE' THEN a.severity END) as max_severity,
-           MAX(CASE WHEN a.severity >= 2 AND a.severity_label != 'NONE' THEN a.analyzed_at END) as last_violation_date
+           COUNT(CASE WHEN a.severity >= 2 AND lower(a.severity_label) != 'none' THEN 1 END) as violation_count,
+           MAX(CASE WHEN a.severity >= 2 AND lower(a.severity_label) != 'none' THEN a.severity END) as max_severity,
+           MAX(CASE WHEN a.severity >= 2 AND lower(a.severity_label) != 'none' THEN a.analyzed_at END) as last_violation_date
     FROM leaders l
     LEFT JOIN analyses a ON a.leader_id = l.id
     GROUP BY l.id, l.name, l.role, l.country
@@ -402,14 +411,22 @@ export async function getSpeechesAnalyzedByLeader() {
 
 export async function getLeaderViolations(leaderId) {
   return all(
-    `
-    SELECT a.*, s.title as speech_title, s.date as speech_date
-    FROM analyses a
-    LEFT JOIN speeches s ON a.source_id = s.id
-    WHERE a.leader_id = ? AND a.severity_label != 'NONE'
-    ORDER BY a.analyzed_at DESC
-  `,
+    `SELECT a.*, s.title as speech_title, s.date as speech_date
+     FROM analyses a
+     LEFT JOIN speeches s ON a.source_id = s.id
+     WHERE a.leader_id = ? AND lower(a.severity_label) != 'none' AND a.severity >= 2
+     ORDER BY a.analyzed_at DESC`,
     [leaderId],
+  );
+}
+
+export async function getAllLeaderViolations() {
+  return all(
+    `SELECT a.*, s.title as speech_title, s.date as speech_date
+     FROM analyses a
+     LEFT JOIN speeches s ON a.source_id = s.id
+     WHERE a.leader_id IS NOT NULL AND lower(a.severity_label) != 'none' AND a.severity >= 2
+     ORDER BY a.leader_id, a.analyzed_at DESC`,
   );
 }
 
@@ -488,13 +505,6 @@ export async function getDashboardData() {
   const [lastRunRow] = await all(
     `SELECT MAX(created_at) as ts FROM events WHERE type = 'info' AND message LIKE 'Pipeline%'`,
   );
-
-  const [topPatternRow] = await all(`
-    SELECT an.patterns
-    FROM analyses an
-    WHERE an.analyzed_at > NOW() - INTERVAL '24 hours'
-      AND an.patterns IS NOT NULL AND an.patterns != '[]'
-  `);
 
   // Build heatmap matrix in JS
   const sourceKeys = top8sources.map((r) => r.attributed_to);

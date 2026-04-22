@@ -13,10 +13,12 @@ import {
   updateSpeechStatus,
   upsertLeader,
   logEvent,
+  trimEvents,
 } from "../db/database.js";
 import { analyzeArticle, analyzeFullText, analyzeSpeech } from "./linza.js";
 import sitesData from "../data-sources/sites.json" with { type: "json" };
 import leadersData from "../data-sources/leaders.json" with { type: "json" };
+import { invalidateStatsCache } from "../lib/statsCache.js";
 
 const parser = new Parser({ timeout: 10000 });
 
@@ -57,6 +59,7 @@ export async function runPipeline() {
   }
 
   pipelinePromise = (async () => {
+    await trimEvents();
     await logEvent("info", "Pipeline started");
 
     // --- Articles pipeline ---
@@ -193,6 +196,7 @@ export async function runPipeline() {
     }
 
     await logEvent("info", "Pipeline completed");
+    invalidateStatsCache();
   })();
 
   try {
