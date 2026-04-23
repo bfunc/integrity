@@ -34,7 +34,7 @@
     crossorigin="anonymous"
   />
   <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
 </svelte:head>
@@ -61,13 +61,12 @@
     <article class="content" lang="ru">
       <section class="hero">
         <h1>
-          Вам никогда не казалось странным, что в детском саду детей учат
-          делиться, не обижать слабых и не обманывать — а потом что-то меняется?
+          Маленьких детей учат делиться, не обижать слабых и не обманывать, а
+          потом что-то меняется?
         </h1>
         <p class="subheadline">
-          В школе об этом говорят всё реже. Зато появляются «правильные» версии
-          истории. А во взрослой жизни правила и вовсе другие: конкурируй и
-          побеждай.
+          В школе об этом говорят всё реже, а во взрослой жизни правила и вовсе
+          другие: конкурируй и побеждай.
         </p>
       </section>
 
@@ -124,7 +123,7 @@
         <p>
           Парадокс в том, что именно кооперативные ценности — доверие,
           взаимопомощь, честность — это то, на чём держатся здоровые институты.
-          То самое, что ты защищает Project Integrity.
+          То самое, что защищает Project Integrity.
         </p>
 
         <p>
@@ -173,6 +172,15 @@
 </div>
 
 <style>
+  :global(:root) {
+    --bg: #f3f0e8;
+    --ink: #1f2328;
+    --ink-soft: #3b4047;
+    --line: #d9d1bf;
+    --brand: #1f4b7f;
+    --brand-soft: #335f95;
+  }
+
   *,
   *::before,
   *::after {
@@ -186,12 +194,19 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  :global(body) {
+    margin: 0;
+    background: radial-gradient(circle at 12% 0%, #fff8df 0%, transparent 42%),
+      radial-gradient(circle at 88% 8%, #dde7f3 0%, transparent 35%), var(--bg);
+    color: var(--ink);
+    font-family: "Manrope", "Segoe UI", sans-serif;
+  }
+
   .site {
-    background: #f7f6f2;
-    color: #1a1a1a;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
-      Arial, sans-serif;
-    line-height: 1.7;
+    background: transparent;
+    color: var(--ink);
+    font-family: "Manrope", "Segoe UI", sans-serif;
+    line-height: 1.72;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -202,18 +217,19 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
+    padding: 20px 24px 16px;
     max-width: 760px;
     margin: 0 auto;
     width: 100%;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   }
 
   .wordmark {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.1rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.3rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    color: #1b3a6b;
+    letter-spacing: 0.11em;
+    color: var(--brand);
     text-decoration: none;
     text-transform: uppercase;
   }
@@ -224,103 +240,102 @@
   }
 
   .lang-nav button {
-    background: none;
+    background: transparent;
     border: 1px solid transparent;
-    border-radius: 4px;
-    color: #888;
+    border-radius: 999px;
+    color: #6c727a;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    padding: 4px 8px;
+    letter-spacing: 0.12em;
+    padding: 5px 10px;
     transition:
       color 0.15s,
-      border-color 0.15s;
+      border-color 0.15s,
+      background-color 0.15s;
   }
 
   .lang-nav button:hover {
-    color: #1a1a1a;
-    border-color: #ccc;
+    color: var(--brand);
+    border-color: #b7c5d7;
+    background-color: #eff3f8;
   }
 
   .lang-nav button.active {
-    color: #1b3a6b;
-    border-color: #1b3a6b;
+    color: var(--brand);
+    border-color: var(--brand-soft);
+    background-color: #ecf1f8;
   }
 
   /* CONTENT */
   .content {
     flex: 1;
-    max-width: 720px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 48px 24px 80px;
+    padding: 44px 24px 84px;
     width: 100%;
   }
 
   /* HERO */
   .hero {
-    padding-bottom: 56px;
+    padding-bottom: 48px;
   }
 
   h1 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: clamp(2rem, 5vw, 2.25rem);
-    font-weight: 700;
-    line-height: 1.2;
-    color: #1a1a1a;
-    letter-spacing: -0.01em;
-    margin-bottom: 2rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(2rem, 4.2vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1.16;
+    color: #20242b;
+    letter-spacing: -0.006em;
+    margin-bottom: 1.5rem;
+    max-width: 13ch;
+    text-wrap: balance;
   }
 
   .subheadline {
-    font-size: 1.15rem;
-    line-height: 1.65;
-    color: #444;
+    font-size: clamp(1.04rem, 2.1vw, 1.18rem);
+    line-height: 1.7;
+    color: var(--ink-soft);
     font-style: italic;
-    max-width: 600px;
+    max-width: 58ch;
   }
 
   /* SECTIONS */
   section {
-    padding-bottom: 56px;
+    padding-bottom: 52px;
   }
 
   h2 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: #1b3a6b;
-    margin-bottom: 24px;
-    letter-spacing: -0.01em;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.55rem, 2.2vw, 1.95rem);
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: 18px;
+    letter-spacing: 0;
+    line-height: 1.2;
+    max-width: 32ch;
+    text-wrap: balance;
   }
 
   p {
-    margin-bottom: 20px;
-    font-size: 1rem;
-    line-height: 1.75;
-    color: #222;
+    margin-bottom: 18px;
+    font-size: 1.03rem;
+    line-height: 1.78;
+    color: #232730;
   }
 
   p:last-child {
     margin-bottom: 0;
   }
 
-  .sources {
-    color: #999;
-    font-size: 0.8rem;
-    line-height: 1.55;
-    padding-left: 1rem;
-    border-left: 2px solid #e0dbd2;
-    margin-top: -10px;
-    margin-bottom: 24px;
-  }
-
   /* DIVIDER */
   .divider {
     border: none;
-    border-top: 1px solid #ddd8cf;
-    margin-bottom: 56px;
+    border-top: 1px solid var(--line);
+    margin-bottom: 52px;
+    opacity: 0.95;
   }
 
   /* CLOSING */
@@ -329,27 +344,28 @@
   }
 
   .honest {
-    color: #555;
+    color: #5f6570;
     font-style: italic;
     margin-bottom: 16px;
   }
 
   .working {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.2rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.4rem;
     font-weight: 700;
-    color: #1b3a6b;
+    color: var(--brand);
     margin-bottom: 48px;
   }
 
   /* UNDER CONSTRUCTION */
   .under-construction h1 {
     font-size: 2rem;
-    color: #888;
+    color: #7b7f85;
+    max-width: none;
   }
 
   .under-construction .subheadline {
-    color: #999;
+    color: #8a8f97;
   }
 
   /* FOOTER */
@@ -357,13 +373,40 @@
     padding: 24px;
     text-align: center;
     font-size: 0.8rem;
-    color: #aaa;
+    color: #8e959f;
     letter-spacing: 0.04em;
-    border-top: 1px solid #e8e4de;
+    border-top: 1px solid #e1d9ca;
   }
 
   .footer-sep {
     margin: 0 8px;
+  }
+
+  .hero h1,
+  .hero .subheadline,
+  section h2,
+  section p,
+  .divider {
+    animation: reveal-up 420ms ease both;
+  }
+
+  .hero .subheadline {
+    animation-delay: 90ms;
+  }
+
+  section h2 {
+    animation-delay: 130ms;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* MOBILE */
@@ -377,7 +420,18 @@
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      max-width: 100%;
+      line-height: 1.18;
+    }
+
+    h2 {
+      font-size: 1.45rem;
+      max-width: 100%;
+    }
+
+    p {
+      font-size: 0.99rem;
     }
   }
 </style>
