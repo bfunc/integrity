@@ -1,8 +1,8 @@
 <svelte:head>
-  <title>Integrity — О проекте</title>
+  <title>aigregator — О проекте</title>
   <meta
     name="description"
-    content="Project Integrity — инфраструктура общественной устойчивости: обнаружение риторических манипуляций и маршрутизация публичной подотчетности."
+    content="Project aigregator — инфраструктура общественной устойчивости: обнаружение риторических манипуляций и маршрутизация публичной подотчетности."
   />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta property="og:type" content="website" />
@@ -20,12 +20,12 @@
 
 <div class="site">
   <header class="site-header">
-    <a href="/" class="wordmark">Integrity</a>
+    <a href="/" class="wordmark">aigregator</a>
   </header>
 
   <article class="content" lang="ru">
     <section class="hero">
-      <h1>Project Integrity — инфраструктура общественной устойчивости.</h1>
+      <h1>Project aigregator — инфраструктура общественной устойчивости.</h1>
       <p class="subheadline">
         Это система автоматического обнаружения риторических манипуляций и
         маршрутизации публичной подотчётности.
@@ -43,7 +43,7 @@
       </p>
       <p>
         Общество не имеет надёжной защиты от такой эксплуатации — и именно этот
-        пробел закрывает Integrity.
+        пробел закрывает aigregator.
       </p>
     </section>
 
@@ -65,10 +65,10 @@
     <div class="divider" aria-hidden="true"></div>
 
     <section aria-labelledby="unique-heading">
-      <h2 id="unique-heading">Что делает Integrity уникальным</h2>
+      <h2 id="unique-heading">Что делает aigregator уникальным</h2>
 
       <p>
-        Integrity — это система, которая автоматически выявляет информационные
+        aigregator — это система, которая автоматически выявляет информационные
         манипуляции и объясняет их работу.
       </p>
 
@@ -89,7 +89,7 @@
       </p>
 
       <p>
-        Integrity делает это автоматически и прозрачно, фиксируя воспроизводимые
+        aigregator делает это автоматически и прозрачно, фиксируя воспроизводимые
         признаки манипуляции, а не мнения.
       </p>
 
@@ -105,14 +105,14 @@
       </p>
 
       <p>
-        Итог: Integrity — это не фильтр и не модератор, а инфраструктура для
+        Итог: aigregator — это не фильтр и не модератор, а инфраструктура для
         восстановления информационной целостности.
       </p>
     </section>
   </article>
 
   <footer class="site-footer">
-    <span>integrity.how</span>
+    <span>aigregator.how</span>
     <span class="footer-sep">—</span>
     <span>2026</span>
   </footer>

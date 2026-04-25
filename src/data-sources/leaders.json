@@ -1,127 +1,5 @@
 [
   {
-    "id": "putin",
-    "name": "Vladimir Putin",
-    "role": "President",
-    "country": "Russia",
-    "speeches": [
-      {
-        "id": "putin_federal_assembly_2024",
-        "url": "http://en.kremlin.ru/events/president/news/73585",
-        "description": "Путин — обращение к Федеральному собранию, февраль 2024."
-      },
-      {
-        "id": "putin_federal_assembly_2023",
-        "url": "http://en.kremlin.ru/events/president/news/70565",
-        "description": "Путин — обращение к Федеральному собранию, февраль 2023."
-      },
-      {
-        "id": "putin_ukraine_statement_nov2024",
-        "url": "http://www.en.kremlin.ru/events/president/transcripts/75614",
-        "description": "Путин — заявление по применению западного дальнобойного оружия, ноябрь 2024."
-      },
-      {
-        "id": "putin_new_year_2025",
-        "url": "http://en.kremlin.ru/events/president/news/76073",
-        "description": "Путин — новогоднее обращение к нации, 31 декабря 2024."
-      }
-    ]
-  },
-  {
-    "id": "trump",
-    "name": "Donald Trump",
-    "role": "President",
-    "country": "USA",
-    "speeches": [
-      {
-        "id": "trump_congress_2025",
-        "url": "https://www.rev.com/transcripts/donald-trump-speaks-to-congress",
-        "description": "Трамп — обращение к Конгрессу, март 2025."
-      },
-      {
-        "id": "trump_rnc_2024",
-        "url": "https://www.rev.com/transcripts/donald-trump-speaks-at-2024-republican-national-convention",
-        "description": "Трамп — речь на съезде Республиканской партии, июль 2024."
-      },
-      {
-        "id": "trump_victory_2024",
-        "url": "https://www.rev.com/transcripts/trump-victory-speech",
-        "description": "Трамп — речь после победы на выборах, ноябрь 2024."
-      },
-      {
-        "id": "trump_davos_2025",
-        "url": "https://www.rev.com/transcripts/trump-at-wef",
-        "description": "Трамп — выступление на Всемирном экономическом форуме в Давосе, январь 2025."
-      },
-      {
-        "id": "trump_waco_2024",
-        "url": "https://www.rev.com/transcripts/donald-trump-hosts-first-2024-presidential-campaign-rally-in-waco-texas-transcript",
-        "description": "Трамп — первый предвыборный митинг в Вако, Техас, март 2023."
-      },
-      {
-        "id": "trump_macron_nato_2025",
-        "url": "https://www.rev.com/transcripts/trump-and-macron-q-a",
-        "description": "Трамп и Макрон — совместная пресс-конференция по НАТО и Украине, 2025."
-      },
-      {
-        "id": "trump_zelenskyy_oval_2025",
-        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
-        "description": "Трамп и Зеленский — переговоры в Овальном кабинете, 2025."
-      }
-    ]
-  },
-  {
-    "id": "zelenskyy",
-    "name": "Volodymyr Zelenskyy",
-    "role": "President",
-    "country": "Ukraine",
-    "speeches": [
-      {
-        "id": "zelenskyy_unga_2025",
-        "url": "https://www.president.gov.ua/en/news/vistup-prezidenta-ukrayini-na-zagalnih-debatah-80-yi-sesiyi-1-103270",
-        "description": "Зеленский — речь на Генассамблее ООН, сентябрь 2025."
-      },
-      {
-        "id": "zelenskyy_munich_2026",
-        "url": "https://www.president.gov.ua/en/news/vistup-prezidenta-ukrayini-na-myunhenskij-bezpekovij-konfere-102861",
-        "description": "Зеленский — выступление на Мюнхенской конференции по безопасности, февраль 2026."
-      },
-      {
-        "id": "zelenskyy_trump_oval_2025",
-        "url": "https://www.rev.com/transcripts/trump-and-zelenskyy-in-the-oval-office",
-        "description": "Зеленский и Трамп — переговоры в Овальном кабинете, 2025."
-      }
-    ]
-  },
-  {
-    "id": "xi",
-    "name": "Xi Jinping",
-    "role": "President",
-    "country": "China",
-    "speeches": [
-      {
-        "id": "xi_apec_lima_2024",
-        "url": "https://www.fmprc.gov.cn/eng./xw/zyxw/202412/t20241217_11495853.html",
-        "description": "Си Цзиньпин — выступление на саммите АТЭС в Лиме, ноябрь 2024."
-      },
-      {
-        "id": "xi_new_year_2023",
-        "url": "https://www.fmprc.gov.cn/rus/zxxx/202301/t20230101_10999545.html",
-        "description": "Си Цзиньпин — новогоднее обращение, 2023."
-      },
-      {
-        "id": "xi_new_year_2025",
-        "url": "https://www.fmprc.gov.cn/mfa_eng/xw/zyxw/202412/t20241231_11524948.html",
-        "description": "Си Цзиньпин — новогоднее обращение, декабрь 2024."
-      },
-      {
-        "id": "xi_apec_gyeongju_2025",
-        "url": "http://www.xinhuanet.com/english/20251031/9228ecc24fe140a09c07304d184f01d8/c.html",
-        "description": "Си Цзиньпин — обращение на саммите АТЭС в Кёнджу, октябрь 2025."
-      }
-    ]
-  },
-  {
     "id": "netanyahu",
     "name": "Benjamin Netanyahu",
     "role": "Prime Minister",
@@ -135,134 +13,67 @@
     ]
   },
   {
-    "id": "macron",
-    "name": "Emmanuel Macron",
-    "role": "President",
-    "country": "France",
+    "id": "ben_gvir",
+    "name": "Itamar Ben-Gvir",
+    "role": "Minister of National Security",
+    "country": "Israel",
     "speeches": [
       {
-        "id": "macron_address_french_2025",
-        "url": "https://www.elysee.fr/en/emmanuel-macron/2025/03/05/address-to-the-french-people",
-        "description": "Макрон — обращение к французскому народу о войне в Украине и позиции США, март 2025."
-      },
-      {
-        "id": "macron_unga_palestine_2025",
-        "url": "https://www.elysee.fr/en/emmanuel-macron/2025/09/22/80th-session-of-the-united-nations-general-assembly-in-new-york-opening-day",
-        "description": "Макрон — речь на UNGA о признании Палестины и мирном урегулировании, сентябрь 2025."
-      },
-      {
-        "id": "macron_europe_sorbonne_2024",
-        "url": "https://www.elysee.fr/en/emmanuel-macron/2024/04/24/europe-speech",
-        "description": "Макрон — речь о суверенитете Европы в Сорбонне, апрель 2024."
+        "id": "ben_gvir_security_2025",
+        "url": "https://gov.il/en/departments/news",
+        "description": "Бен-Гвир — заявление о внутренней безопасности, 2025 (официальный пресс-релиз)."
       }
     ]
   },
   {
-    "id": "mbs",
-    "name": "Mohammed bin Salman",
-    "role": "Crown Prince and Prime Minister",
-    "country": "Saudi Arabia",
+    "id": "smotrich",
+    "name": "Bezalel Smotrich",
+    "role": "Minister of Finance",
+    "country": "Israel",
     "speeches": [
       {
-        "id": "mbs_arab_summit_2024",
-        "url": "https://www.spa.gov.sa/en/w2104220",
-        "description": "МБС — речь на 33-м Арабском саммите в Манаме, май 2024."
-      },
-      {
-        "id": "mbs_us_investment_forum_2025",
-        "url": "https://www.spa.gov.sa/en/N2448767",
-        "description": "МБС — выступление на саудовско-американском инвестиционном форуме в Вашингтоне, ноябрь 2025."
+        "id": "smotrich_budget_2025",
+        "url": "https://gov.il/en/departments/news",
+        "description": "Смотрич — комментарий к проекту бюджета, 2025."
       }
     ]
   },
   {
-    "id": "erdogan",
-    "name": "Recep Tayyip Erdogan",
-    "role": "President",
-    "country": "Turkey",
+    "id": "lapid",
+    "name": "Yair Lapid",
+    "role": "Opposition Leader",
+    "country": "Israel",
     "speeches": [
       {
-        "id": "erdogan_unga_2025",
-        "url": "https://www.tccb.gov.tr/en/speeches-statements/558/159564/president-erdogan-s-address-to-the-80th-session-of-the-united-nations-general-assembly",
-        "description": "Эрдоган — речь на Генассамблее ООН, сентябрь 2025."
+        "id": "lapid_opposition_2025",
+        "url": "https://yeshatid.org.il",
+        "description": "Лапид — заявление оппозиции о политической ситуации, 2025."
       }
     ]
   },
   {
-    "id": "orban",
-    "name": "Viktor Orban",
-    "role": "Prime Minister",
-    "country": "Hungary",
+    "id": "gantz",
+    "name": "Benny Gantz",
+    "role": "Former Defense Minister",
+    "country": "Israel",
     "speeches": [
       {
-        "id": "orban_cpac_2024",
-        "url": "https://www.rev.com/transcripts/hungarian-prime-minister-viktor-orban-speaks-at-cpac",
-        "description": "Орбан — речь на CPAC, февраль 2024."
+        "id": "gantz_defense_2025",
+        "url": "https://knesset.gov.il",
+        "description": "Ганц — выступление о безопасности и обороне, 2025."
       }
     ]
   },
   {
-    "id": "al_sharaa",
-    "name": "Ahmad al-Sharaa",
-    "role": "President",
-    "country": "Syria",
+    "id": "deri",
+    "name": "Aryeh Deri",
+    "role": "Shas Party Leader",
+    "country": "Israel",
     "speeches": [
       {
-        "id": "al_sharaa_unga_2025",
-        "url": "https://gadebate.un.org/en/80/syrian-arab-republic",
-        "description": "Аль-Шараа — первая речь на Генассамблее ООН, сентябрь 2025."
-      }
-    ]
-  },
-  {
-    "id": "pezeshkian",
-    "name": "Masoud Pezeshkian",
-    "role": "President",
-    "country": "Iran",
-    "speeches": [
-      {
-        "id": "pezeshkian_unga_2025",
-        "url": "https://gadebate.un.org/en/80/iran-islamic-republic",
-        "description": "Пезешкиан — речь на Генассамблее ООН, критика Израиля и США, сентябрь 2025."
-      }
-    ]
-  },
-  {
-    "id": "von_der_leyen",
-    "name": "Ursula von der Leyen",
-    "role": "President of the European Commission",
-    "country": "European Union",
-    "speeches": [
-      {
-        "id": "von_der_leyen_state_union_2025",
-        "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_25_2333",
-        "description": "Урсула фон дер Ляйен — ежегодное обращение о положении Союза, 2025."
-      }
-    ]
-  },
-  {
-    "id": "starmer",
-    "name": "Keir Starmer",
-    "role": "Prime Minister",
-    "country": "United Kingdom",
-    "speeches": [
-      {
-        "id": "starmer_unga_2025",
-        "url": "https://gadebate.un.org/en/80/united-kingdom-great-britain-and-northern-ireland",
-        "description": "Стармер — речь на Генассамблее ООН, сентябрь 2025."
-      }
-    ]
-  },
-  {
-    "id": "lula",
-    "name": "Luiz Inacio Lula da Silva",
-    "role": "President",
-    "country": "Brazil",
-    "speeches": [
-      {
-        "id": "lula_unga_2025",
-        "url": "https://gadebate.un.org/en/80/brazil",
-        "description": "Лула да Силва — выступление на Генассамблее ООН, традиционно открывает дебаты, сентябрь 2025."
+        "id": "deri_party_2025",
+        "url": "https://shas.org.il",
+        "description": "Дери — партийное заявление по социальным вопросам, 2025."
       }
     ]
   }

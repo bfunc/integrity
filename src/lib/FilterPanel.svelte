@@ -4,21 +4,6 @@
 
   export let items = [];
 
-  const PATTERN_NAMES = {
-    call_to_violence:              'Призыв к насилию',
-    dehumanization:                'Дегуманизация',
-    demonization:                  'Демонизация',
-    existential_threat_accusation: 'Обвинение в угрозе',
-    scapegoating:                  'Козёл отпущения',
-    us_vs_them:                    'Мы против них',
-    appeal_to_fear:                'Апелляция к страху',
-    conspiracy_targeting:          'Конспирология',
-    false_dilemma:                 'Ложная дилемма',
-    whataboutism:                  'Вотэбаутизм',
-    emotional_manipulation:        'Эмоц. манипуляция',
-    group_discrediting:            'Дискредитация группы',
-  };
-
   const SEV_LABELS = {
     mild: 'MILD',
     moderate: 'MODERATE',
@@ -31,7 +16,6 @@
   const REGION_ORDER = ['USA', 'Europe', 'Russia', 'Asia', 'Middle East'];
 
   $: sourceStats         = computeSourceStats(items);
-  $: availableTypes      = computeAvailableTypes(items);
   $: availableSeverities = computeAvailableSeverities(items);
   $: availableRegions    = computeAvailableRegions(items);
 
@@ -47,18 +31,6 @@
     return Object.values(map)
       .map(s => ({ ...s, avgSev: s.totalSev / s.count }))
       .sort((a, b) => b.avgSev - a.avgSev || b.count - a.count);
-  }
-
-  function computeAvailableTypes(items) {
-    const set = new Set();
-    for (const item of items) {
-      for (const p of (item.patterns || [])) {
-        if (PATTERN_NAMES[p.name]) set.add(p.name);
-      }
-    }
-    return [...set].sort((a, b) =>
-      Object.keys(PATTERN_NAMES).indexOf(a) - Object.keys(PATTERN_NAMES).indexOf(b)
-    );
   }
 
   function computeAvailableSeverities(items) {
@@ -97,24 +69,6 @@
         ? s.severities.filter(x => x !== label)
         : [...s.severities, label];
       return { ...s, severities };
-    });
-  }
-
-  function toggleType(name) {
-    filterState.update(s => {
-      const types = s.types.includes(name)
-        ? s.types.filter(x => x !== name)
-        : [...s.types, name];
-      return { ...s, types };
-    });
-  }
-
-  function toggleSourceType(type) {
-    filterState.update(s => {
-      const sourceTypes = s.sourceTypes.includes(type)
-        ? s.sourceTypes.filter(x => x !== type)
-        : [...s.sourceTypes, type];
-      return { ...s, sourceTypes };
     });
   }
 
@@ -166,45 +120,6 @@
         on:click={() => toggleSeverity(sev)}
       >{SEV_LABELS[sev]}</button>
     {/each}
-  </div>
-
-  {#if availableTypes.length > 0}
-    <div class="filter-sep"></div>
-    <div class="filter-group">
-      <span class="group-label">Тип:</span>
-      <button
-        class="pill f-pill"
-        class:active={$filterState.types.length === 0}
-        on:click={() => filterState.update(s => ({ ...s, types: [] }))}
-      >Все</button>
-      {#each availableTypes as type}
-        <button
-          class="pill f-pill"
-          class:active={$filterState.types.includes(type)}
-          on:click={() => toggleType(type)}
-        >{PATTERN_NAMES[type]}</button>
-      {/each}
-    </div>
-  {/if}
-
-  <div class="filter-sep"></div>
-  <div class="filter-group">
-    <span class="group-label">Тип источника:</span>
-    <button
-      class="pill f-pill"
-      class:active={$filterState.sourceTypes.length === 0}
-      on:click={() => filterState.update(s => ({ ...s, sourceTypes: [] }))}
-    >Все</button>
-    <button
-      class="pill f-pill"
-      class:active={$filterState.sourceTypes.includes('article')}
-      on:click={() => toggleSourceType('article')}
-    >RSS</button>
-    <button
-      class="pill f-pill"
-      class:active={$filterState.sourceTypes.includes('speech')}
-      on:click={() => toggleSourceType('speech')}
-    >Речи</button>
   </div>
 
   {#if availableRegions.length > 0}

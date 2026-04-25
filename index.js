@@ -8,7 +8,8 @@ import { scheduleCron } from "./src/agents/crawler.js";
 function cpuPercent() {
   return new Promise((resolve) => {
     const sample = () => {
-      let idle = 0, total = 0;
+      let idle = 0,
+        total = 0;
       for (const cpu of os.cpus()) {
         for (const v of Object.values(cpu.times)) total += v;
         idle += cpu.times.idle;
@@ -18,7 +19,7 @@ function cpuPercent() {
     const a = sample();
     setTimeout(() => {
       const b = sample();
-      const used = (b.total - a.total) - (b.idle - a.idle);
+      const used = b.total - a.total - (b.idle - a.idle);
       resolve(Math.round((used / (b.total - a.total)) * 100));
     }, 200);
   });
@@ -55,7 +56,7 @@ async function main() {
   console.log("Cron scheduled");
 
   createServer(handler).listen(PORT, () => {
-    console.log(`Integrity running on http://localhost:${PORT}`);
+    console.log(`aigregator running on http://localhost:${PORT}`);
   });
 }
 

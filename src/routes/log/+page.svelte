@@ -112,7 +112,7 @@
       console.log('[downloadAll] blob size:', blob.size);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `integrity-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `aigregator-export-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -65,6 +65,6 @@ export const config = {
   },
 
   db: {
-    path: process.env.DB_PATH || "data/integrity.duckdb",
+    path: process.env.DB_PATH || "data/aigregator.duckdb",
   },
 };
