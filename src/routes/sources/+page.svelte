@@ -8,7 +8,7 @@
 
   function formatDate(ts) {
     if (!ts) return "—";
-    return new Date(ts).toLocaleString("ru-RU", {
+    return new Date(ts).toLocaleString("he-IL", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
@@ -31,7 +31,7 @@
     } catch (e) {
       error =
         e?.name === "AbortError"
-          ? "Таймаут запроса API /api/sources"
+          ? "פג זמן ההמתנה לבקשת API /api/sources"
           : e.message;
     } finally {
       clearTimeout(timeout);
@@ -48,11 +48,11 @@
 
 <div class="container">
   <div class="page-header">
-    <h2>Источники</h2>
+    <h2>מקורות</h2>
   </div>
 
   {#if loading}
-    <div class="empty">Загрузка...</div>
+    <div class="empty">טוען...</div>
   {:else}
     {#if error}
       <div class="empty error">{error}</div>
@@ -68,7 +68,7 @@
               >{site.url}</a
             >
             <div class="site-meta">
-              <span>{site.article_count} статей</span>
+              <span>{site.article_count} כתבות</span>
               <span>·</span>
               <span>{formatDate(site.last_crawled)}</span>
             </div>
@@ -79,7 +79,7 @@
 
     {#if leaders.length > 0}
       <section>
-        <div class="section-label">Лидеры</div>
+        <div class="section-label">מנהיגים</div>
         <div class="sites-grid">
           {#each leaders as leader (leader.id)}
             <div class="site-card">
@@ -89,7 +89,7 @@
                 <span>·</span>
                 <span>{leader.country}</span>
                 <span>·</span>
-                <span>{leader.speeches.length} речей</span>
+                <span>{leader.speeches.length} נאומים</span>
               </div>
             </div>
           {/each}

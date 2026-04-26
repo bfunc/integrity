@@ -10,24 +10,24 @@
   };
 
   const PATTERN_NAMES = {
-    call_to_violence: "Призыв к насилию",
-    dehumanization: "Дегуманизация",
-    demonization: "Демонизация",
-    existential_threat_accusation: "Обвинение в экзистенциальной угрозе",
-    scapegoating: "Поиск козла отпущения",
-    us_vs_them: "Мы против них",
-    appeal_to_fear: "Апелляция к страху",
-    conspiracy_targeting: "Конспирологическое обвинение",
-    false_dilemma: "Ложная дилемма",
-    whataboutism: "Вотэбаутизм",
-    emotional_manipulation: "Эмоциональная манипуляция",
-    group_discrediting: "Дискредитация группы",
+    call_to_violence: "קריאה לאלימות",
+    dehumanization: "דה-הומניזציה",
+    demonization: "דמוניזציה",
+    existential_threat_accusation: "האשמת איום קיומי",
+    scapegoating: "שעיר לעזאזל",
+    us_vs_them: "אנחנו נגד הם",
+    appeal_to_fear: "פנייה לפחד",
+    conspiracy_targeting: "האשמה קונספירטיבית",
+    false_dilemma: "דילמה כוזבת",
+    whataboutism: "ווטאבאוטיזם",
+    emotional_manipulation: "מניפולציה רגשית",
+    group_discrediting: "השחרת קבוצה",
   };
 
   const LEVEL_LABELS = {
-    incitement: "Подстрекательство",
-    toxification: "Токсификация",
-    rhetorical_manipulation: "Риторическая манипуляция",
+    incitement: "הסתה",
+    toxification: "טוקסיפיקציה",
+    rhetorical_manipulation: "מניפולציה רטורית",
   };
 
   const CONF_COLOR = {
@@ -69,7 +69,7 @@
 
   function formatDate(ts) {
     if (!ts) return "—";
-    return new Date(ts).toLocaleDateString("ru-RU", {
+    return new Date(ts).toLocaleDateString("he-IL", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
@@ -137,13 +137,13 @@
   role="button"
   tabindex="0"
   on:keypress={(e) => e.key === "Enter" && openModal(e)}
-  aria-label="Открыть детали"
+  aria-label="פתח פרטים"
 >
   <div class="threat-top">
     <span class="src-badge">{item.source}</span>
     {#if attrBadgeRole}
       <span class="attr-badge attr-{attrBadgeRole}">
-        {attrBadgeRole === "originator" ? "МАНИПУЛЯТОР" : "УСИЛИТЕЛЬ"}
+        {attrBadgeRole === "originator" ? "מניפולטור" : "מגביר"}
       </span>
     {/if}
     {#if hasViolations}
@@ -172,7 +172,7 @@
         e.key === "Enter" && (summaryExpanded = !summaryExpanded)}
     >
       {#if item.subtext}
-        <span class="subtext-label">Что скрыто между строк</span>
+        <span class="subtext-label">מה מסתתר בין השורות</span>
         <p class="threat-status">{item.subtext}</p>
       {:else}
         <p class="threat-status">{item.summary_md}</p>
@@ -184,11 +184,11 @@
   <div class="threat-meta">
     {formatDate(item.published_at || item.analyzed_at)}
     {#if item.source_type === "speech"}
-      · речь{/if}
+      · נאום{/if}
     {#if patterns.length > 1}
-      <span class="meta-violations"> · {patterns.length} нарушения</span>
+      <span class="meta-violations"> · {patterns.length} הפרות</span>
     {/if}
-    <span class="expand-hint">↗ подробнее</span>
+    <span class="expand-hint">↗ לפרטים</span>
   </div>
 </div>
 
@@ -216,10 +216,10 @@
             <span class="threat-tag" style={cleanStyle()}>CLEAN</span>
           {/if}
           {#if item.source_type === "speech"}
-            <span class="type-badge">речь</span>
+            <span class="type-badge">נאום</span>
           {/if}
         </div>
-        <button class="modal-close" on:click={closeModal} aria-label="Закрыть"
+        <button class="modal-close" on:click={closeModal} aria-label="סגור"
           >✕</button
         >
       </div>
@@ -230,8 +230,8 @@
       <!-- Attribution tuple -->
       {#if attributionSource}
         <p class="modal-attribution">
-          Источник: {attributionSource}{#if attributionRole}
-            · Роль: {attributionRole}{/if}
+          מקור: {attributionSource}{#if attributionRole}
+            · תפקיד: {attributionRole}{/if}
         </p>
       {/if}
 
@@ -243,7 +243,7 @@
       <!-- Subtext -->
       {#if item.subtext}
         <div class="modal-subtext-section">
-          <span class="modal-subtext-label">Что скрыто между строк</span>
+          <span class="modal-subtext-label">מה מסתתר בין השורות</span>
           <p class="modal-subtext-body">{item.subtext}</p>
         </div>
       {/if}
@@ -251,12 +251,12 @@
       <!-- Violations list -->
       <div class="violations-wrap">
         <div class="violations-header">
-          Выявленные нарушения
+          הפרות שזוהו
           <span class="violations-count">{patterns.length}</span>
         </div>
 
         {#if patterns.length === 0}
-          <p class="no-violations">Нарушения не выявлены</p>
+          <p class="no-violations">לא זוהו הפרות</p>
         {:else}
           {#each sortedPatterns as p, i}
             <div class="violation" style={violBorderStyle(p)}>
@@ -291,14 +291,14 @@
       <!-- Footer -->
       <div class="modal-footer">
         <button class="dispute-btn" on:click={() => (disputeOpen = true)}>
-          Оспорить
+          ערעור
         </button>
         <span class="modal-date"
           >{formatDate(item.published_at || item.analyzed_at)}</span
         >
         {#if item.url}
           <a class="modal-link" href={item.url} target="_blank" rel="noopener">
-            Открыть источник →
+            פתח מקור ←
           </a>
         {/if}
       </div>
@@ -321,10 +321,10 @@
         tabindex="-1"
       >
         <p class="dispute-msg">
-          Функция голосования появится в следующей версии
+          פונקציית ההצבעה תהיה זמינה בגרסה הבאה
         </p>
         <button class="dispute-close" on:click={() => (disputeOpen = false)}
-          >Закрыть</button
+          >סגור</button
         >
       </div>
     </div>

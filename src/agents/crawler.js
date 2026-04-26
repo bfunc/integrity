@@ -21,16 +21,20 @@ import leadersData from "../data-sources/leaders.json" with { type: "json" };
 
 const VARIANTS = {
   netanyahu: ["netanyahu", "נתניהו", "bibi"],
-  ben_gvir:  ["ben-gvir", "ben gvir", "בן גביר"],
-  smotrich:  ["smotrich", "סמוטריץ"],
-  lapid:     ["lapid", "לפיד"],
-  gantz:     ["gantz", "גנץ"],
-  deri:      ["deri", "דרעי"],
+  ben_gvir: ["ben-gvir", "ben gvir", "בן גביר"],
+  smotrich: ["smotrich", "סמוטריץ"],
+  lapid: ["lapid", "לפיד"],
+  gantz: ["gantz", "גנץ"],
+  deri: ["deri", "דרעי"],
 };
 
 export function detectLeader(linzaResult, articleTitle = "") {
   // Pass 1: speaker name from LINZA — most reliable, checked exclusively first
-  const speaker = (linzaResult?.speaker ?? linzaResult?.attributed_to ?? "").toLowerCase();
+  const speaker = (
+    linzaResult?.speaker ??
+    linzaResult?.attributed_to ??
+    ""
+  ).toLowerCase();
   if (speaker) {
     for (const [id, variants] of Object.entries(VARIANTS)) {
       if (variants.some((v) => speaker.includes(v))) return id;
@@ -98,7 +102,9 @@ export async function runPipeline() {
     stopRequested = false;
     await trimEvents();
     await logEvent("info", "Pipeline started");
-    console.log(`Linza config: subtext=${config.linza.subtext} summary=${config.linza.summary}`);
+    console.log(
+      `Linza config: subtext=${config.linza.subtext} summary=${config.linza.summary}`,
+    );
 
     // --- Leaders + Speeches pipeline ---
     for (const leader of leadersData) {
@@ -163,14 +169,17 @@ export async function runPipeline() {
     for (const site of sites) {
       siteIdx++;
       if (stopRequested) break;
-      await logEvent("info", `Источник ${siteIdx} из ${totalSites}: ${site.id}`);
+      await logEvent("info", `מקור ${siteIdx} מתוך ${totalSites}: ${site.id}`);
 
       // Fetch RSS — isolated so parse errors don't mask article-level errors
       let feed;
       try {
         feed = await parser.parseURL(site.url);
       } catch (err) {
-        await logEvent("warning", `RSS fetch failed for ${site.id}: ${err.message}`);
+        await logEvent(
+          "warning",
+          `RSS fetch failed for ${site.id}: ${err.message}`,
+        );
         continue;
       }
 
@@ -210,7 +219,10 @@ export async function runPipeline() {
             await updateArticleStatus(id, "analyzing");
             analysis = await analyzeArticle({ id, title, excerpt });
           } catch (err) {
-            await logEvent("warning", `Analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
+            await logEvent(
+              "warning",
+              `Analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+            );
             await updateArticleStatus(id, "error");
             continue;
           }
@@ -227,7 +239,10 @@ export async function runPipeline() {
                   full_text: fullText,
                 });
               } catch (err) {
-                await logEvent("warning", `Full-text analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
+                await logEvent(
+                  "warning",
+                  `Full-text analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+                );
                 await updateArticleStatus(id, "error");
                 continue;
               }
@@ -250,9 +265,15 @@ export async function runPipeline() {
             attributed_to: speaker,
           });
           await updateArticleStatus(id, "analyzed");
-          await logEvent("info", `Статья ${itemIdx} из ${feedTotal}: ${title.slice(0, 40)}`);
+          await logEvent(
+            "info",
+            `כתבה ${itemIdx} מתוך ${feedTotal}: ${title.slice(0, 40)}`,
+          );
         } catch (err) {
-          await logEvent("warning", `Article error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
+          await logEvent(
+            "warning",
+            `Article error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+          );
           await updateArticleStatus(id, "error").catch(() => {});
         }
       }

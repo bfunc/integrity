@@ -44,7 +44,7 @@ function buildOutputFormat() {
 }
 
 export function buildSystemPrompt() {
-  return `You are ЛИНЗА — a rhetorical manipulation detector specialized in analyzing
+  return `You are LINZA — a rhetorical manipulation detector specialized in analyzing
 speech by heads of state, senior officials, and public figures.
 
 ## CRITICAL CONTEXT

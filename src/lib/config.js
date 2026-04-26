@@ -27,8 +27,8 @@ export const config = {
     // 3 = clear manipulation patterns
     // 4 = strong incitement-level patterns
     // 5 = systematic, textbook dangerous speech
-    threatThreshold: 3, // Угрозы tab: severity >= 3
-    newsThreshold: 2, // Новости tab: severity >= 2
+    threatThreshold: 3, // Threats tab: severity >= 3
+    newsThreshold: 2, // News tab: severity >= 2
     scrapeThreshold: 3, // full text scraping triggered when excerpt severity >= 3
   },
 
@@ -56,7 +56,7 @@ export const config = {
     "horoscope",
   ],
 
-  // Manual pipeline trigger password (UI → Лог tab)
+  // Manual pipeline trigger password (UI -> Log tab)
   manualRunPassword: "k1iak$A",
 
   polling: {

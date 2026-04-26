@@ -28,7 +28,7 @@
 
   function fmtDateTime(ts) {
     if (!ts) return "—";
-    return new Date(ts).toLocaleString("ru-RU");
+    return new Date(ts).toLocaleString("he-IL");
   }
 
   function fmtCost(n) {
@@ -127,7 +127,7 @@
     try {
       const res  = await fetch("/api/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
       const data = await res.json();
-      if (!res.ok) { runStatus = { ok: false, message: data.error || "Ошибка" }; }
+      if (!res.ok) { runStatus = { ok: false, message: data.error || "שגיאה" }; }
       else         { runStatus = { ok: true,  message: data.message }; password = ""; setTimeout(fetchLog, 2000); }
     } catch (e) { runStatus = { ok: false, message: e.message }; }
     finally { runLoading = false; }
@@ -138,19 +138,19 @@
     try {
       const res  = await fetch("/api/stop", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
       const data = await res.json();
-      runStatus = { ok: res.ok, message: data.message || data.error || "Ошибка" };
+      runStatus = { ok: res.ok, message: data.message || data.error || "שגיאה" };
       if (res.ok) setTimeout(fetchLog, 1500);
     } catch (e) { runStatus = { ok: false, message: e.message }; }
     finally { stopLoading = false; }
   }
 
   async function triggerReset() {
-    if (!confirm("Очистить всю базу данных?")) return;
+    if (!confirm("למחוק את כל מסד הנתונים?")) return;
     resetLoading = true; runStatus = null;
     try {
       const res  = await fetch("/api/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
       const data = await res.json();
-      runStatus = { ok: res.ok, message: data.message || data.error || "Ошибка" };
+      runStatus = { ok: res.ok, message: data.message || data.error || "שגיאה" };
       if (res.ok) { password = ""; setTimeout(fetchLog, 500); }
     } catch (e) { runStatus = { ok: false, message: e.message }; }
     finally { resetLoading = false; }
@@ -179,7 +179,7 @@
       form.append("file", fileInput.files[0]);
       const res  = await fetch("/api/import", { method: "POST", body: form });
       const data = await res.json();
-      runStatus = { ok: res.ok, message: data.message || data.error || "Ошибка" };
+      runStatus = { ok: res.ok, message: data.message || data.error || "שגיאה" };
       if (res.ok) { fileInput.value = ""; setTimeout(fetchLog, 500); }
     } catch (e) { runStatus = { ok: false, message: e.message }; }
     finally { importLoading = false; }
@@ -213,7 +213,7 @@
     <div class="section-label">Audit — Claude API</div>
 
     {#if auditLoading}
-      <div class="audit-loading">Загрузка...</div>
+      <div class="audit-loading">טוען...</div>
     {:else if auditStats}
       <div class="audit-bar">
         <div class="audit-col audit-col-label"></div>
@@ -245,8 +245,8 @@
     <!-- Recent calls table -->
     <div class="filter-row">
       <span class="filter-label">Period:</span>
-      <button class="filter-btn" class:active={dateFilter === "today"} on:click={() => setDateFilter("today")}>сегодня</button>
-      <button class="filter-btn" class:active={dateFilter === "all"}   on:click={() => setDateFilter("all")}>всё</button>
+      <button class="filter-btn" class:active={dateFilter === "today"} on:click={() => setDateFilter("today")}>היום</button>
+      <button class="filter-btn" class:active={dateFilter === "all"}   on:click={() => setDateFilter("all")}>הכל</button>
       <span class="filter-sep"></span>
       <span class="filter-label">Agent:</span>
       {#each ["all", "analyst", "advocate", "arbiter"] as ag}
@@ -303,46 +303,46 @@
 
   <!-- ══ PIPELINE ══ -->
   {#if loading}
-    <div class="empty">Загрузка...</div>
+    <div class="empty">טוען...</div>
   {:else if error}
     <div class="empty error-msg">{error}</div>
   {:else}
 
     <div class="dashboard">
       <div class="stat-card">
-        <div class="stat-label">Последний запуск</div>
+        <div class="stat-label">ריצה אחרונה</div>
         <div class="stat-value">{fmtDateTime(stats.lastRun)}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Следующий запуск</div>
+        <div class="stat-label">ריצה הבאה</div>
         <div class="stat-value">{fmtDateTime(stats.nextRun)}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">В очереди</div>
+        <div class="stat-label">בתור</div>
         <div class="stat-value">{stats.queueSize}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Ошибок</div>
+        <div class="stat-label">שגיאות</div>
         <div class="stat-value" class:red={errorCount > 0}>{errorCount}</div>
       </div>
     </div>
 
     <section class="run-section">
-      <div class="section-label">Ручной запуск</div>
+      <div class="section-label">הפעלה ידנית</div>
       <div class="run-form">
         <input
           type="password"
           bind:value={password}
-          placeholder="Пароль"
+          placeholder="סיסמה"
           class="inp"
           on:keydown={(e) => e.key === "Enter" && triggerRun()}
         />
-        <button class="btn-run"  on:click={triggerRun}   disabled={runLoading   || !password}>{runLoading   ? "Запуск..."   : "▶ Запустить"}</button>
-        <button class="btn-stop" on:click={triggerStop}  disabled={stopLoading  || !password || !pipelineRunning}>{stopLoading  ? "Остановка..." : "⏹ Стоп"}</button>
-        <button class="btn-reset" on:click={triggerReset} disabled={resetLoading || !password}>{resetLoading ? "Очистка..."  : "✕ Очистить базу"}</button>
-        <button class="btn-export" on:click={downloadAll} disabled={!password}>↓ Скачать всё</button>
+        <button class="btn-run"  on:click={triggerRun}   disabled={runLoading   || !password}>{runLoading   ? "מפעיל..."   : "▶ הפעלה"}</button>
+        <button class="btn-stop" on:click={triggerStop}  disabled={stopLoading  || !password || !pipelineRunning}>{stopLoading  ? "עוצר..." : "⏹ עצירה"}</button>
+        <button class="btn-reset" on:click={triggerReset} disabled={resetLoading || !password}>{resetLoading ? "מנקה..."  : "✕ ניקוי בסיס הנתונים"}</button>
+        <button class="btn-export" on:click={downloadAll} disabled={!password}>↓ הורד הכל</button>
         <label class="btn-export" class:disabled={!password || importLoading}>
-          {importLoading ? "Загрузка..." : "↑ Загрузить всё"}
+          {importLoading ? "מעלה..." : "↑ העלה הכל"}
           <input bind:this={fileInput} type="file" accept=".json" style="display:none"
             on:change={uploadAll} disabled={!password || importLoading} />
         </label>
@@ -355,14 +355,14 @@
 
     <!-- ── Articles with crawl/analysis status ── -->
     <section>
-      <div class="section-label">Статьи — статус обработки</div>
+      <div class="section-label">כתבות — סטטוס עיבוד</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Заголовок</th>
-              <th>Источник</th>
-              <th>Дата</th>
+              <th>כותרת</th>
+              <th>מקור</th>
+              <th>תאריך</th>
               <th>Crawled</th>
               <th>Analyzed</th>
             </tr>
@@ -383,7 +383,7 @@
               </tr>
             {/each}
             {#if articles.length === 0}
-              <tr><td colspan="5" class="empty-row">Нет статей</td></tr>
+              <tr><td colspan="5" class="empty-row">אין כתבות</td></tr>
             {/if}
           </tbody>
         </table>
@@ -392,11 +392,11 @@
 
     <!-- ── Events log ── -->
     <section>
-      <div class="section-label">События</div>
+      <div class="section-label">אירועים</div>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Время</th><th>Тип</th><th>Сообщение</th></tr>
+            <tr><th>זמן</th><th>סוג</th><th>הודעה</th></tr>
           </thead>
           <tbody>
             {#each events as ev (ev.id)}
@@ -407,7 +407,7 @@
               </tr>
             {/each}
             {#if events.length === 0}
-              <tr><td colspan="3" class="empty-row">Нет событий</td></tr>
+              <tr><td colspan="3" class="empty-row">אין אירועים</td></tr>
             {/if}
           </tbody>
         </table>

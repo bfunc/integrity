@@ -18,19 +18,19 @@
   let pipelineRunning = false;
   let progress = null;
 
-  const PATTERN_NAMES_RU = {
-    call_to_violence: "Призыв к насилию",
-    dehumanization: "Дегуманизация",
-    demonization: "Демонизация",
-    existential_threat_accusation: "Экзистенциальная угроза",
-    scapegoating: "Козёл отпущения",
-    us_vs_them: "Мы против них",
-    appeal_to_fear: "Апелляция к страху",
-    conspiracy_targeting: "Конспирология",
-    false_dilemma: "Ложная дилемма",
-    whataboutism: "Вотэбаутизм",
-    emotional_manipulation: "Эмоциональная манипуляция",
-    group_discrediting: "Дискредитация группы",
+  const PATTERN_NAMES_HE = {
+    call_to_violence: "קריאה לאלימות",
+    dehumanization: "דה-הומניזציה",
+    demonization: "דמוניזציה",
+    existential_threat_accusation: "האשמת איום קיומי",
+    scapegoating: "שעיר לעזאזל",
+    us_vs_them: "אנחנו נגד הם",
+    appeal_to_fear: "פנייה לפחד",
+    conspiracy_targeting: "האשמה קונספירטיבית",
+    false_dilemma: "דילמה כוזבת",
+    whataboutism: "ווטאבאוטיזם",
+    emotional_manipulation: "מניפולציה רגשית",
+    group_discrediting: "השחרת קבוצה",
   };
 
   async function fetchStats() {
@@ -83,11 +83,11 @@
     const d = new Date(ts);
     const now = new Date();
     const isToday = d.toDateString() === now.toDateString();
-    const timeStr = d.toLocaleTimeString("ru-RU", {
+    const timeStr = d.toLocaleTimeString("he-IL", {
       hour: "2-digit",
       minute: "2-digit",
     });
-    return isToday ? `сегодня ${timeStr}` : timeStr;
+    return isToday ? `היום ${timeStr}` : timeStr;
   }
 
   $: systemActive = headerData.last_run
@@ -95,11 +95,11 @@
     : false;
 
   const tabs = [
-    { path: "/threats", label: "Угрозы" },
-    { path: "/news", label: "Новости" },
-    { path: "/leaders", label: "Лидеры" },
-    { path: "/sources", label: "Источники" },
-    { path: "/admin", label: "Admin" },
+    { path: "/threats", label: "איומים" },
+    { path: "/news", label: "חדשות" },
+    { path: "/leaders", label: "מנהיגים" },
+    { path: "/sources", label: "מקורות" },
+    { path: "/admin", label: "ניהול" },
   ];
 </script>
 
@@ -107,7 +107,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <title>aigregator — Анализ манипуляций</title>
+  <title>aigregator — ניתוח מניפולציות</title>
 </svelte:head>
 
 <div class="layout">
@@ -120,14 +120,14 @@
         {#if pipelineRunning && progress}
           ▶ {progress.currentSource}
           {#if progress.total > 0}
-            · {progress.current} / {progress.total} статей ({progress.percent}%)
+            · {progress.current} / {progress.total} כתבות ({progress.percent}%)
           {:else}
-            · загружаю фид...
+            · טוען פיד...
           {/if}
         {:else if pipelineRunning && lastEvent}
           {lastEvent}
         {:else}
-          Анализ манипуляций
+          ניתוח מניפולציות
         {/if}
       </span>
       {#if pipelineRunning && progress?.percent > 0}
@@ -138,14 +138,14 @@
     <!-- PIPELINE COUNTS BAR -->
     <div id="pipeline-bar">
       <div class="cnt">
-        <span class="agg-label">Просканировано:</span>
-        <b>{stats.sitesCount} сайтов</b>
+        <span class="agg-label">נסרק:</span>
+        <b>{stats.sitesCount} אתרים</b>
       </div>
       <div class="cnt">
-        <b>{stats.articlesCount} статей</b>
+        <b>{stats.articlesCount} כתבות</b>
       </div>
       <div class="cnt">
-        <span class="agg-label">Угроз:</span>
+        <span class="agg-label">איומים:</span>
         <b>{stats.threatsCount}</b>
       </div>
 
@@ -164,7 +164,7 @@
         <div class="cnt top-pat">
           <span class="tri">▲</span>
           <span
-            >{PATTERN_NAMES_RU[headerData.top_pattern_today.name] ??
+            >{PATTERN_NAMES_HE[headerData.top_pattern_today.name] ??
               headerData.top_pattern_today.name}</span
           >
           <b>·&nbsp;{headerData.top_pattern_today.count}</b>
@@ -173,18 +173,18 @@
 
       <div class="cnt agg-fresh">
         {#if headerData.last_run}
-          Последний запуск: {formatTime(headerData.last_run)}
+          ריצה אחרונה: {formatTime(headerData.last_run)}
         {:else if formatTime(stats.lastRun)}
-          обновлено: {formatTime(stats.lastRun)}
+          עודכן: {formatTime(stats.lastRun)}
         {:else}
-          pipeline ожидает запуск
+          המערכת ממתינה להפעלה
         {/if}
       </div>
 
       <div class="cnt status-dot-wrap">
         <span class="status-dot {systemActive ? 'active' : 'waiting'}"></span>
         <span class="status-lbl"
-          >{systemActive ? "Система активна" : "Ожидание"}</span
+          >{systemActive ? "המערכת פעילה" : "בהמתנה"}</span
         >
       </div>
     </div>
@@ -238,6 +238,7 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    direction: rtl;
   }
 
   :global(a) {

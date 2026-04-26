@@ -88,7 +88,7 @@
       class="pill src-pill"
       class:active={$filterState.source === null}
       on:click={() => filterState.update((s) => ({ ...s, source: null }))}
-      >Все источники</button
+      >כל המקורות</button
     >
     {#each sourceStats as s}
       {@const color = heatmapColor(s.avgSev)}
@@ -108,12 +108,12 @@
 
 <div class="filter-bar">
   <div class="filter-group">
-    <span class="group-label">Серьёзность:</span>
+    <span class="group-label">חומרה:</span>
     <button
       class="pill f-pill"
       class:active={$filterState.severities.length === 0}
       on:click={() => filterState.update((s) => ({ ...s, severities: [] }))}
-      >Все</button
+      >הכל</button
     >
     {#each availableSeverities as sev}
       <button
@@ -127,12 +127,12 @@
   {#if availableRegions.length > 0}
     <div class="filter-sep"></div>
     <div class="filter-group">
-      <span class="group-label">Регион:</span>
+      <span class="group-label">אזור:</span>
       <button
         class="pill f-pill"
         class:active={$filterState.regions.length === 0}
         on:click={() => filterState.update((s) => ({ ...s, regions: [] }))}
-        >Все</button
+        >הכל</button
       >
       {#each availableRegions as region}
         <button

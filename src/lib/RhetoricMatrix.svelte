@@ -570,7 +570,7 @@
                 class:speech-cell-link={isSpeechRow && cell.score >= 1}
                 style="background:{tone.bg}; opacity:{cellOpacity(src.id)}; outline:{outline}; outline-offset:-1px"
                 onclick={isSpeechRow && cell.score >= 1 ? () => { window.location.href = `/leaders?leader=${l.id}`; } : undefined}
-                title={isSpeechRow && cell.score >= 1 ? `Перейти к ${l.name}` : undefined}
+                title={isSpeechRow && cell.score >= 1 ? `מעבר אל ${l.name}` : undefined}
               >
                 {#if cell.score < 1.0}
                   <span class="score-num score-empty">—</span>

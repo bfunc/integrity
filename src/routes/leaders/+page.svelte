@@ -14,24 +14,24 @@
   };
 
   const PATTERN_NAMES = {
-    call_to_violence: "Призыв к насилию",
-    dehumanization: "Дегуманизация",
-    demonization: "Демонизация",
-    existential_threat_accusation: "Обвинение в экзистенциальной угрозе",
-    scapegoating: "Поиск козла отпущения",
-    us_vs_them: "Мы против них",
-    appeal_to_fear: "Апелляция к страху",
-    conspiracy_targeting: "Конспирологическое обвинение",
-    false_dilemma: "Ложная дилемма",
-    whataboutism: "Вотэбаутизм",
-    emotional_manipulation: "Эмоциональная манипуляция",
-    group_discrediting: "Дискредитация группы",
+    call_to_violence: "קריאה לאלימות",
+    dehumanization: "דה-הומניזציה",
+    demonization: "דמוניזציה",
+    existential_threat_accusation: "האשמת איום קיומי",
+    scapegoating: "שעיר לעזאזל",
+    us_vs_them: "אנחנו נגד הם",
+    appeal_to_fear: "פנייה לפחד",
+    conspiracy_targeting: "האשמה קונספירטיבית",
+    false_dilemma: "דילמה כוזבת",
+    whataboutism: "ווטאבאוטיזם",
+    emotional_manipulation: "מניפולציה רגשית",
+    group_discrediting: "השחרת קבוצה",
   };
 
   const LEVEL_LABELS = {
-    incitement: "Подстрекательство",
-    toxification: "Токсификация",
-    rhetorical_manipulation: "Риторическая манипуляция",
+    incitement: "הסתה",
+    toxification: "טוקסיפיקציה",
+    rhetorical_manipulation: "מניפולציה רטורית",
   };
 
   const CONF_COLOR = {
@@ -49,7 +49,7 @@
 
   function formatDate(ts) {
     if (!ts) return "—";
-    return new Date(ts).toLocaleDateString("ru-RU", {
+    return new Date(ts).toLocaleDateString("he-IL", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
@@ -57,31 +57,15 @@
   }
 
   function formatCaseCount(count) {
-    if (count % 10 === 1 && count % 100 !== 11) return `${count} кейс`;
-    if (
-      count % 10 >= 2 &&
-      count % 10 <= 4 &&
-      (count % 100 < 10 || count % 100 >= 20)
-    ) {
-      return `${count} кейса`;
-    }
-    return `${count} кейсов`;
+    return `${count} מקרים`;
   }
 
   function formatPatternCount(count) {
-    if (count % 10 === 1 && count % 100 !== 11) return `${count} паттерн`;
-    if (
-      count % 10 >= 2 &&
-      count % 10 <= 4 &&
-      (count % 100 < 10 || count % 100 >= 20)
-    ) {
-      return `${count} паттерна`;
-    }
-    return `${count} паттернов`;
+    return `${count} דפוסים`;
   }
 
   function sourceTypeLabel(sourceType) {
-    return sourceType === "speech" ? "речь" : "статья";
+    return sourceType === "speech" ? "נאום" : "כתבה";
   }
 
   async function fetchData() {
@@ -120,15 +104,15 @@
 
 <div class="container">
   <div class="page-header">
-    <h2>Лидеры</h2>
+    <h2>מנהיגים</h2>
   </div>
 
   {#if loading}
-    <div class="empty">Загрузка...</div>
+    <div class="empty">טוען...</div>
   {:else if error}
     <div class="empty error">{error}</div>
   {:else if leaders.length === 0}
-    <div class="empty">Лидеры не добавлены.</div>
+    <div class="empty">לא נוספו מנהיגים.</div>
   {:else}
     <div class="list">
       {#each leaders as leader (leader.id)}
@@ -156,10 +140,10 @@
                   >{formatDate(leader.last_violation_date)}</span
                 >
               {:else if leader.speeches_analyzed > 0}
-                <span class="clean">манипуляций не найдено</span>
+                <span class="clean">לא נמצאו מניפולציות</span>
               {/if}
               <span class="speech-progress"
-                >{leader.speeches_analyzed}/{leader.speeches_total} речей проанализировано</span
+                >{leader.speeches_analyzed}/{leader.speeches_total} נאומים נותחו</span
               >
               {#if leader.violation_count > 0}
                 <span class="chevron">{expanded[leader.id] ? "▲" : "▼"}</span>
@@ -203,7 +187,7 @@
                       {#if summaryExpanded[v.id] && v.subtext}
                         <div class="v-subtext-section">
                           <span class="v-subtext-label"
-                            >Что скрыто между строк</span
+                            >מה מסתתר בין השורות</span
                           >
                           <p class="v-subtext-body">{v.subtext}</p>
                         </div>

@@ -69,11 +69,11 @@
 <FilterPanel {items} />
 
 <div class="page-header">
-  <h2>Новости</h2>
+  <h2>חדשות</h2>
   {#if items.length > 0}
     <span class="count">
       {#if hasFilters}
-        Показано {filteredItems.length} из {items.length}
+        מוצגים {filteredItems.length} מתוך {items.length}
       {:else}
         {items.length}
       {/if}
@@ -82,20 +82,20 @@
   <button
     class="sort-btn"
     class:active={sortByDate}
-    on:click={() => (sortByDate = !sortByDate)}>Последние</button
+    on:click={() => (sortByDate = !sortByDate)}>אחרונים</button
   >
 </div>
 
 {#if loading}
-  <div class="empty">Загрузка...</div>
+  <div class="empty">טוען...</div>
 {:else if error}
   <div class="empty error">{error}</div>
 {:else if items.length === 0}
-  <div class="empty">Нет статей. Pipeline ещё не запускался.</div>
+  <div class="empty">אין כתבות. ה-pipeline עדיין לא הופעל.</div>
 {:else if filteredItems.length === 0}
   <div class="empty">
-    <span>Нет статей по выбранным фильтрам</span>
-    <button class="reset-btn" on:click={resetFilters}>Сбросить фильтры</button>
+    <span>אין כתבות עבור הסינון שנבחר</span>
+    <button class="reset-btn" on:click={resetFilters}>איפוס מסננים</button>
   </div>
 {:else}
   <div class="fluid-grid news-grid">
@@ -162,7 +162,7 @@
   }
 
   .sort-btn {
-    margin-left: auto;
+    margin-inline-start: auto;
     background: none;
     border: 1px solid var(--border);
     color: var(--text3);
