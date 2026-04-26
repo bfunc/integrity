@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { getEvents, getStats } from '../../../db/database.js';
+import { getEvents, getStats, getArticlesWithStatus } from '../../../db/database.js';
 import { config } from '../../../lib/config.js';
 
 // Track scheduler state in memory (prefixed with _ so SvelteKit ignores them as route exports)
@@ -10,7 +10,11 @@ export function _setLastRun(ts) { _lastRunTime = ts; }
 export function _setNextRun(ts) { _nextRunTime = ts; }
 
 export async function GET() {
-  const [events, stats] = await Promise.all([getEvents(200), getStats()]);
+  const [events, stats, articles] = await Promise.all([
+    getEvents(200),
+    getStats(),
+    getArticlesWithStatus(),
+  ]);
 
   return json({
     stats: {
@@ -20,5 +24,9 @@ export async function GET() {
       queueSize: 0,
     },
     events,
+    articles: articles.map((a) => ({
+      ...a,
+      analyzed_count: Number(a.analyzed_count),
+    })),
   });
 }

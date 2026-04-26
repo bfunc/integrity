@@ -4,6 +4,7 @@ import { config } from "../lib/config.js";
 import { buildSystemPrompt, buildUserPrompt } from "../linza/prompt.js";
 import { logEvent } from "../db/database.js";
 import { logUsage } from "../db/usage-db.js";
+import { logClaudeCall } from "../lib/audit.js";
 
 const isLocal = process.env.LOCAL_MODEL === "true";
 
@@ -24,14 +25,16 @@ const systemPrompt = buildSystemPrompt();
 
 const LLM_TIMEOUT_MS = 60_000;
 
-async function callLLM(text, route = "pipeline") {
+async function callLLM(text, route = "pipeline", articleId = null) {
+  const userPrompt = buildUserPrompt(text);
+
   if (isLocal) {
     const response = await localClient.chat.completions.create(
       {
         model: localModel,
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: buildUserPrompt(text) },
+          { role: "user", content: userPrompt },
         ],
         temperature: 0.3,
       },
@@ -39,33 +42,69 @@ async function callLLM(text, route = "pipeline") {
     );
     return response.choices[0].message.content;
   } else {
-    const response = await anthropicClient.messages.create(
-      {
+    const t0 = Date.now();
+    let response;
+    let callError = null;
+    try {
+      response = await anthropicClient.messages.create(
+        {
+          model: config.anthropic.model,
+          max_tokens: config.anthropic.maxTokens,
+          system: [
+            {
+              type: "text",
+              text: systemPrompt,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages: [{ role: "user", content: userPrompt }],
+        },
+        { timeout: LLM_TIMEOUT_MS },
+      );
+    } catch (err) {
+      callError = err;
+      logClaudeCall({
+        agent: 'analyst',
+        article_id: articleId,
         model: config.anthropic.model,
-        max_tokens: config.anthropic.maxTokens,
-        system: [
-          {
-            type: "text",
-            text: systemPrompt,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: [{ role: "user", content: buildUserPrompt(text) }],
-      },
-      { timeout: LLM_TIMEOUT_MS },
-    );
+        input_tokens: 0,
+        output_tokens: 0,
+        input_text: userPrompt,
+        output_text: null,
+        duration_ms: Date.now() - t0,
+        error: err.message,
+      }).catch(() => {});
+      throw err;
+    }
+
+    const duration_ms = Date.now() - t0;
+    const outputText = response.content[0].text;
+
     logUsage({
       route,
       model: response.model,
       input: response.usage?.input_tokens,
       output: response.usage?.output_tokens,
     }).catch(() => {});
-    return response.content[0].text;
+
+    logClaudeCall({
+      agent: 'analyst',
+      article_id: articleId,
+      model: response.model,
+      input_tokens: response.usage?.input_tokens,
+      output_tokens: response.usage?.output_tokens,
+      input_text: userPrompt,
+      output_text: outputText,
+      duration_ms,
+      error: null,
+    }).catch(() => {});
+
+    return outputText;
   }
 }
 
-export async function runLinza(text, route = "pipeline") {
-  const raw = (await callLLM(text, route)).trim();
+export async function runLinza(text, route = "pipeline", articleId = null) {
+  const raw = (await callLLM(text, route, articleId)).trim();
 
   let parsed;
   try {
@@ -85,7 +124,7 @@ export async function runLinza(text, route = "pipeline") {
 export async function analyzeArticle(article) {
   const text = `${article.title}\n\n${article.excerpt || ""}`;
   try {
-    const result = await runLinza(text, "pipeline/article");
+    const result = await runLinza(text, "pipeline/article", article.id);
     await logEvent(
       "info",
       `Analyzed article: ${article.title.slice(0, 80)} → severity ${result.severity}`,
@@ -103,7 +142,7 @@ export async function analyzeArticle(article) {
 export async function analyzeFullText(article) {
   const text = `${article.title}\n\n${article.full_text}`;
   try {
-    const result = await runLinza(text, "pipeline/article-full");
+    const result = await runLinza(text, "pipeline/article-full", article.id);
     await logEvent(
       "info",
       `Re-analyzed full text: ${article.title.slice(0, 80)} → severity ${result.severity}`,
@@ -122,7 +161,7 @@ export async function analyzeSpeech(speech) {
   const label = speech.title || speech.description || speech.id;
   const text = `${label}\n\n${speech.full_text}`;
   try {
-    const result = await runLinza(text, "pipeline/speech");
+    const result = await runLinza(text, "pipeline/speech", speech.id);
     await logEvent(
       "info",
       `Analyzed speech: ${label.slice(0, 80)} → severity ${result.severity}`,

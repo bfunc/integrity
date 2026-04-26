@@ -713,6 +713,27 @@ export async function importData(data) {
   };
 }
 
+export async function getArticlesWithStatus() {
+  return all(`
+    SELECT a.id, a.url, a.title, a.source, a.published_at, a.status,
+      (SELECT COUNT(*) FROM analyses an
+       WHERE an.source_id = a.id AND an.source_type = 'article') AS analyzed_count
+    FROM articles a
+    ORDER BY a.published_at DESC
+    LIMIT 200
+  `);
+}
+
+export async function getArticleTitlesByIds(ids) {
+  if (!ids || ids.length === 0) return {};
+  const placeholders = ids.map(() => '?').join(', ');
+  const rows = await all(
+    `SELECT id, title FROM articles WHERE id IN (${placeholders})`,
+    ids,
+  );
+  return Object.fromEntries(rows.map((r) => [r.id, r.title]));
+}
+
 export async function getRhetoricMatrix() {
   return all(`
     SELECT

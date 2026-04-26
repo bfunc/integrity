@@ -1,4 +1,5 @@
 import taxonomy from "../../external/taxonomy.json" with { type: "json" };
+import { config } from "../lib/config.js";
 
 function buildTaxonomyBlock(taxonomy) {
   return taxonomy.levels
@@ -11,6 +12,38 @@ function buildTaxonomyBlock(taxonomy) {
 ${level.legal_basis.length ? `Legal basis: ${level.legal_basis.join(", ")}\n` : ""}${categories}`;
     })
     .join("\n\n");
+}
+
+function buildOutputFormat() {
+  const optionalFields = [
+    config.linza.summary
+      ? `  "summary_md": "<2-3 sentences>"`
+      : null,
+    config.linza.subtext
+      ? `  "subtext": "<2-4 sentences — what is really happening behind the words. Not a retelling of patterns, but interpretation: whose rhetoric this is, what the real goal is, what is hidden behind the formulations.>"`
+      : null,
+  ].filter(Boolean);
+
+  const trailingSection = optionalFields.length > 0
+    ? `,\n${optionalFields.join(',\n')}`
+    : '';
+
+  return `{
+  "severity": <1-5>,
+  "severity_label": "<none|mild|moderate|high|critical>",
+  "speaker": "<name/role of who said the manipulative words, or null>",
+  "speaker_role": "<originator>",
+  "source_role": "<originator|amplifier|reporter>",
+  "patterns": [
+    {
+      "name": "<category_id>",
+      "level": "<incitement|toxification|rhetorical_manipulation>",
+      "quote": "<direct quote under 20 words>",
+      "confidence": "<low|medium|high>",
+      "explanation": "<one sentence>"
+    }
+  ]${trailingSection}
+}`;
 }
 
 export function buildSystemPrompt() {
@@ -84,24 +117,7 @@ CRITICAL: Never assign source_role based on the outlet's reputation alone. Judge
 
 ## OUTPUT FORMAT
 
-{
-  "severity": <1-5>,
-  "severity_label": "<none|mild|moderate|high|critical>",
-  "speaker": "<name/role of who said the manipulative words, or null>",
-  "speaker_role": "<originator>",
-  "source_role": "<originator|amplifier|reporter>",
-  "patterns": [
-    {
-      "name": "<category_id>",
-      "level": "<incitement|toxification|rhetorical_manipulation>",
-      "quote": "<direct quote under 20 words>",
-      "confidence": "<low|medium|high>",
-      "explanation": "<one sentence>"
-    }
-  ],
-  "summary_md": "<2-3 sentences>",
-  "subtext": "<2-4 sentences — what is really happening behind the words. Not a retelling of patterns, but interpretation: whose rhetoric this is, what the real goal is, what is hidden behind the formulations.>"
-}`;
+${buildOutputFormat()}`;
 }
 
 export function buildUserPrompt(text) {

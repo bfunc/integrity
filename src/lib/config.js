@@ -67,4 +67,9 @@ export const config = {
   db: {
     path: process.env.DB_PATH || "data/aigregator.duckdb",
   },
+
+  linza: {
+    subtext: process.env.LINZA_SUBTEXT === "true", // default false
+    summary: process.env.LINZA_SUMMARY === "true", // default false
+  },
 };

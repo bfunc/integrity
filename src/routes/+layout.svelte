@@ -97,7 +97,7 @@
     { path: "/news", label: "Новости" },
     { path: "/leaders", label: "Лидеры" },
     { path: "/sources", label: "Источники" },
-    { path: "/log", label: "Лог" },
+    { path: "/admin", label: "Admin" },
   ];
 </script>
 

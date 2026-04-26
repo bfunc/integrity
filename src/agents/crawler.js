@@ -92,6 +92,7 @@ export async function runPipeline() {
     stopRequested = false;
     await trimEvents();
     await logEvent("info", "Pipeline started");
+    console.log(`Linza config: subtext=${config.linza.subtext} summary=${config.linza.summary}`);
 
     // --- Articles pipeline ---
     for (const site of sites) {
