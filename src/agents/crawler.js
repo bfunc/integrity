@@ -28,15 +28,21 @@ const VARIANTS = {
   deri:      ["deri", "דרעי"],
 };
 
-export function detectLeader(linzaResult, articleTitle = "", articleText = "") {
-  // linza result uses `speaker`; DB rows use `attributed_to` — accept either
-  const attributed = linzaResult?.speaker ?? linzaResult?.attributed_to ?? "";
-  const haystack = [attributed, articleTitle, articleText.slice(0, 500)]
-    .join(" ")
-    .toLowerCase();
-  for (const [id, variants] of Object.entries(VARIANTS)) {
-    if (variants.some((v) => haystack.includes(v))) return id;
+export function detectLeader(linzaResult, articleTitle = "") {
+  // Pass 1: speaker name from LINZA — most reliable, checked exclusively first
+  const speaker = (linzaResult?.speaker ?? linzaResult?.attributed_to ?? "").toLowerCase();
+  if (speaker) {
+    for (const [id, variants] of Object.entries(VARIANTS)) {
+      if (variants.some((v) => speaker.includes(v))) return id;
+    }
   }
+
+  // Pass 2: article title only — body text excluded (too many incidental mentions)
+  const title = articleTitle.toLowerCase();
+  for (const [id, variants] of Object.entries(VARIANTS)) {
+    if (variants.some((v) => title.includes(v))) return id;
+  }
+
   return null;
 }
 import { invalidateStatsCache } from "../lib/statsCache.js";
@@ -93,6 +99,63 @@ export async function runPipeline() {
     await trimEvents();
     await logEvent("info", "Pipeline started");
     console.log(`Linza config: subtext=${config.linza.subtext} summary=${config.linza.summary}`);
+
+    // --- Leaders + Speeches pipeline ---
+    for (const leader of leadersData) {
+      if (stopRequested) break;
+      try {
+        await upsertLeader(leader);
+      } catch (err) {
+        await logEvent(
+          "warning",
+          `Could not upsert leader ${leader.id}: ${err.message}`,
+        );
+      }
+
+      for (const speech of leader.speeches) {
+        if (stopRequested) break;
+        try {
+          if (await speechExists(speech.id)) continue;
+          await insertSpeech({ ...speech, leader_id: leader.id });
+
+          const fullText = await scrapeText(speech.url, null);
+          if (!fullText) {
+            await updateSpeechStatus(speech.id, "error");
+            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
+            continue;
+          }
+
+          await updateSpeechStatus(speech.id, "analyzed", fullText);
+
+          const analysis = await analyzeSpeech({
+            ...speech,
+            full_text: fullText,
+          });
+
+          await insertAnalysis({
+            source_type: "speech",
+            source_id: speech.id,
+            leader_id: leader.id,
+            severity: analysis.severity,
+            severity_label: analysis.severity_label,
+            patterns: analysis.patterns,
+            summary_md: analysis.summary_md ?? null,
+            subtext: analysis.subtext ?? null,
+            raw_response: analysis.raw_response,
+            attribution_role: "originator",
+            attributed_to: leader.name,
+          });
+        } catch (err) {
+          await logEvent(
+            "warning",
+            `Speech ${speech.id} failed: ${err.message}`,
+          );
+          try {
+            await updateSpeechStatus(speech.id, "error");
+          } catch {}
+        }
+      }
+    }
 
     // --- Articles pipeline ---
     const totalSites = sites.length;
@@ -176,7 +239,7 @@ export async function runPipeline() {
           await insertAnalysis({
             source_type: "article",
             source_id: id,
-            leader_id: detectLeader(analysis, title, excerpt),
+            leader_id: detectLeader(analysis, title),
             severity: analysis.severity,
             severity_label: analysis.severity_label,
             patterns: analysis.patterns,
@@ -191,63 +254,6 @@ export async function runPipeline() {
         } catch (err) {
           await logEvent("warning", `Article error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
           await updateArticleStatus(id, "error").catch(() => {});
-        }
-      }
-    }
-
-    // --- Leaders + Speeches pipeline ---
-    for (const leader of leadersData) {
-      if (stopRequested) break;
-      try {
-        await upsertLeader(leader);
-      } catch (err) {
-        await logEvent(
-          "warning",
-          `Could not upsert leader ${leader.id}: ${err.message}`,
-        );
-      }
-
-      for (const speech of leader.speeches) {
-        if (stopRequested) break;
-        try {
-          if (await speechExists(speech.id)) continue;
-          await insertSpeech({ ...speech, leader_id: leader.id });
-
-          const fullText = await scrapeText(speech.url, null);
-          if (!fullText) {
-            await updateSpeechStatus(speech.id, "error");
-            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
-            continue;
-          }
-
-          await updateSpeechStatus(speech.id, "analyzed", fullText);
-
-          const analysis = await analyzeSpeech({
-            ...speech,
-            full_text: fullText,
-          });
-
-          await insertAnalysis({
-            source_type: "speech",
-            source_id: speech.id,
-            leader_id: leader.id,
-            severity: analysis.severity,
-            severity_label: analysis.severity_label,
-            patterns: analysis.patterns,
-            summary_md: analysis.summary_md ?? null,
-            subtext: analysis.subtext ?? null,
-            raw_response: analysis.raw_response,
-            attribution_role: "originator",
-            attributed_to: leader.name,
-          });
-        } catch (err) {
-          await logEvent(
-            "warning",
-            `Speech ${speech.id} failed: ${err.message}`,
-          );
-          try {
-            await updateSpeechStatus(speech.id, "error");
-          } catch {}
         }
       }
     }

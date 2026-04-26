@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { getRhetoricMatrix, getAnalysesMeta } from '../../../db/database.js';
+import { getRhetoricMatrix, getAnalysesMeta, getLeaderViolationCounts } from '../../../db/database.js';
 
 function scoreToRole(score) {
   if (score >= 7.0) return 'amplifier';
@@ -14,7 +14,11 @@ function formatWeekLabel(isoDate) {
 
 export async function GET() {
   try {
-    const [rows, metaRow] = await Promise.all([getRhetoricMatrix(), getAnalysesMeta()]);
+    const [rows, metaRow, violations] = await Promise.all([
+      getRhetoricMatrix(),
+      getAnalysesMeta(),
+      getLeaderViolationCounts(),
+    ]);
 
     const meta = {
       total_analyses: Number(metaRow.total),
@@ -24,7 +28,7 @@ export async function GET() {
 
     if (rows.length === 0) {
       console.log(`rhetoric-matrix: ${meta.total_analyses} analyses, ${meta.with_leader_id} with leader_id, 0 weeks, 0 sources`);
-      return json({ weeks: [], matrix: {}, meta, generated_at: new Date().toISOString() });
+      return json({ weeks: [], matrix: {}, meta, violations, generated_at: new Date().toISOString() });
     }
 
     // Collect and sort unique week_starts (ISO date strings sort correctly)
@@ -45,13 +49,13 @@ export async function GET() {
 
       if (!matrix[source_id]) matrix[source_id] = {};
       if (!matrix[source_id][leader_id]) matrix[source_id][leader_id] = [];
-      matrix[source_id][leader_id][weekIdx] = { week: weekIdx, score, role };
+      matrix[source_id][leader_id][weekIdx] = { week: weekIdx, score, role, n: Number(row.article_count) };
     }
 
     const sourceCount = Object.keys(matrix).length;
     console.log(`rhetoric-matrix: ${meta.total_analyses} analyses, ${meta.with_leader_id} with leader_id, ${weeks.length} weeks, ${sourceCount} sources`);
 
-    return json({ weeks, matrix, meta, generated_at: new Date().toISOString() });
+    return json({ weeks, matrix, meta, violations, generated_at: new Date().toISOString() });
 
   } catch (err) {
     console.error('rhetoric-matrix error:', err);

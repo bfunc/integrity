@@ -1,5 +1,14 @@
 [
   {
+    "id": "test_feed",
+    "name": "TEST FEED — DO NOT USE IN PROD",
+    "url": "http://localhost:5173/test-feed.xml",
+    "region": "test",
+    "bias": "test",
+    "language": "en",
+    "update_frequency": "manual"
+  },
+  {
     "id": "timesofisrael",
     "name": "Times of Israel",
     "url": "https://www.timesofisrael.com/feed/",
@@ -51,6 +60,15 @@
     "region": "Israel",
     "bias": "center",
     "language": "he",
+    "update_frequency": "very_high"
+  },
+  {
+    "id": "aljazeera",
+    "name": "Al Jazeera",
+    "url": "https://www.aljazeera.com/xml/rss/all.xml",
+    "region": "Qatar",
+    "bias": "center-left",
+    "language": "en",
     "update_frequency": "very_high"
   }
 ]

@@ -303,8 +303,9 @@ export async function upsertLeader(leader) {
 }
 
 export async function speechExists(id) {
-  const rows = await all("SELECT id FROM speeches WHERE id = ?", [id]);
-  return rows.length > 0;
+  // Only skip if already successfully analyzed — retry on error/new/queued
+  const rows = await all("SELECT status FROM speeches WHERE id = ?", [id]);
+  return rows.length > 0 && rows[0].status === 'analyzed';
 }
 
 export async function insertSpeech(speech) {
@@ -734,20 +735,50 @@ export async function getArticleTitlesByIds(ids) {
   return Object.fromEntries(rows.map((r) => [r.id, r.title]));
 }
 
+export async function getLeaderViolationCounts() {
+  const rows = await all(`
+    SELECT leader_id, COUNT(*) AS cnt
+    FROM analyses
+    WHERE severity > 3
+      AND leader_id IS NOT NULL
+      AND leader_id != ''
+    GROUP BY leader_id
+  `);
+  return Object.fromEntries(rows.map((r) => [r.leader_id, Number(r.cnt)]));
+}
+
 export async function getRhetoricMatrix() {
   return all(`
     SELECT
-      a.source_id,
+      ar.source                         AS source_id,
       a.leader_id,
       DATE_TRUNC('week', a.analyzed_at) AS week_start,
       AVG(a.severity)                   AS avg_severity,
       MAX(a.severity)                   AS max_severity,
       COUNT(*)                          AS article_count
     FROM analyses a
-    WHERE a.leader_id IS NOT NULL
+    JOIN articles ar ON ar.id = a.source_id
+    WHERE a.source_type = 'article'
+      AND a.leader_id IS NOT NULL
       AND a.leader_id != ''
-      AND a.source_id IS NOT NULL
-    GROUP BY a.source_id, a.leader_id, week_start
+    GROUP BY ar.source, a.leader_id, week_start
+
+    UNION ALL
+
+    SELECT
+      'speeches'                                                    AS source_id,
+      a.leader_id,
+      DATE_TRUNC('week', COALESCE(s.date::TIMESTAMP, a.analyzed_at)) AS week_start,
+      AVG(a.severity)                                               AS avg_severity,
+      MAX(a.severity)                                               AS max_severity,
+      COUNT(*)                                                      AS article_count
+    FROM analyses a
+    JOIN speeches s ON s.id = a.source_id
+    WHERE a.source_type = 'speech'
+      AND a.leader_id IS NOT NULL
+      AND a.leader_id != ''
+    GROUP BY a.leader_id, DATE_TRUNC('week', COALESCE(s.date::TIMESTAMP, a.analyzed_at))
+
     ORDER BY week_start ASC
   `);
 }

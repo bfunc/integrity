@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+     version="2.0">
+  <channel>
+    <title>Project Integrity Test Feed</title>
+    <atom:link href="http://localhost/static/test-feed.xml" rel="self" type="application/rss+xml"/>
+    <link>http://localhost/</link>
+    <description>Synthetic test feed for LINZA e2e calibration — realistic Israeli political rhetoric</description>
+    <lastBuildDate>Sun, 26 Apr 2026 12:00:00 +0000</lastBuildDate>
+    <language>en-US</language>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+
+    <!-- NETANYAHU: триумфализм, enemy image, victimhood inversion
+         Ожидаемый score: ~6-7/10 x2.0 (PM) → severity HIGH -->
+    <item>
+      <title>Netanyahu: 'The axis of evil is crumbling — history will judge those who doubted us'</title>
+      <link>http://localhost/articles/netanyahu-axis</link>
+      <pubDate>Sun, 26 Apr 2026 08:00:00 +0000</pubDate>
+      <category><![CDATA[ Netanyahu ]]></category>
+      <category><![CDATA[ Iran ]]></category>
+      <category><![CDATA[ Elections 2026 ]]></category>
+      <guid isPermaLink="false">test-netanyahu-001</guid>
+      <description><![CDATA[
+        <p>Prime Minister Benjamin Netanyahu addressed supporters at a Likud party event, declaring that Israel stands at "the hinge of history." He said: "For years they called us warmongers. They said we were paranoid. Now the axis of evil is crumbling before our eyes and history will judge those who doubted us — and those who stabbed us in the back when we needed them most." He accused opposition leaders of "running to foreign capitals to undermine the elected government of the Jewish people," saying their conduct "borders on treason at a time of war." Netanyahu framed the current military campaign as vindicating his entire political career: "Everything I warned about for thirty years is now proven true. Iran. Hezbollah. Hamas. One head, many tentacles. We are cutting them off one by one." He said citizens face a binary choice in the upcoming elections: "Either you stand with Israel or you stand with those who want to destroy it. There is no middle ground when your house is on fire." He dismissed international criticism as "the eternal reflex of those who have always been more comfortable with a weak Jew than a strong one."</p>
+      ]]></description>
+    </item>
+
+    <!-- BEN-GVIR: дегуманизация, eliminationist language, incitement
+         Ожидаемый score: ~8-9/10 x1.5 (Minister) → severity CRITICAL -->
+    <item>
+      <title>Ben-Gvir: 'Gaza must be emptied — those who stay are choosing to be our enemies'</title>
+      <link>http://localhost/articles/ben-gvir-emptied</link>
+      <pubDate>Sun, 26 Apr 2026 08:30:00 +0000</pubDate>
+      <category><![CDATA[ Ben-Gvir ]]></category>
+      <category><![CDATA[ Gaza ]]></category>
+      <category><![CDATA[ National Security ]]></category>
+      <guid isPermaLink="false">test-bengvir-001</guid>
+      <description><![CDATA[
+        <p>National Security Minister Itamar Ben-Gvir told a rally in Jerusalem that the solution in Gaza is "total and unconditional" population transfer, saying: "Gaza must be emptied of those who supported terror. Every civilian who stayed and did not flee is making a choice — they are choosing to be our enemy, and we must treat them accordingly." He described Gaza's remaining population as "a hostile population that cheered when our children were burned alive," adding that "there is no such thing as an innocent bystander in a society that produces human animals." Ben-Gvir called on the government to impose the death penalty "not just for terrorists but for anyone who provides shelter, food, or moral support to those who seek our destruction." He attacked the Supreme Court's recent ruling limiting certain military operations, calling the justices "enemies in robes" who "should be removed from the bench and investigated for aiding terror." He concluded: "The world screams when we defend ourselves. The world was silent when they slaughtered us. We owe the world nothing — we owe our children everything."</p>
+      ]]></description>
+    </item>
+
+    <!-- SMOTRICH: sanitized eliminationism, dehumanization via abstraction
+         Ожидаемый score: ~7-8/10 x1.5 (Minister) → severity HIGH -->
+    <item>
+      <title>Smotrich outlines 'voluntary emigration' plan: 'Two million can leave within 18 months if we create the right conditions'</title>
+      <link>http://localhost/articles/smotrich-emigration</link>
+      <pubDate>Sun, 26 Apr 2026 09:00:00 +0000</pubDate>
+      <category><![CDATA[ Smotrich ]]></category>
+      <category><![CDATA[ Gaza ]]></category>
+      <category><![CDATA[ Finance Ministry ]]></category>
+      <guid isPermaLink="false">test-smotrich-001</guid>
+      <description><![CDATA[
+        <p>Finance Minister Bezalel Smotrich presented what he described as a "rational and humane" framework for resolving the Gaza conflict through what he termed "voluntary demographic normalization." He said: "If we remove all incentives to stay — food assistance, reconstruction funds, international welfare transfers — and simultaneously open corridors to third countries, two million people can be relocated within 18 months. This is not expulsion. This is creating the conditions where the rational choice becomes leaving." He argued that humanitarian aid was "subsidizing hostility" and said the Finance Ministry was preparing a detailed plan to redirect international funds away from Gaza. Smotrich dismissed UN warnings about mass starvation as "calculated political pressure from organizations that have never accepted Israel's right to exist in security." He said countries that refuse to absorb Gaza's population are "hypocrites who cry for Palestinians but won't give a single one a visa." When asked about the legal characterization of such policies, he replied: "International law was written by people who have never faced genocide themselves. We will not be lectured on survival."</p>
+      ]]></description>
+    </item>
+
+    <!-- LAPID: критика evidence-based, без дегуманизации
+         Ожидаемый score: ~2-3/10 → severity LOW
+         ЛИНЗА НЕ должна это флагировать как manipulation -->
+    <item>
+      <title>Lapid: 'Netanyahu is sacrificing the hostages for his own political survival'</title>
+      <link>http://localhost/articles/lapid-hostages</link>
+      <pubDate>Sun, 26 Apr 2026 09:30:00 +0000</pubDate>
+      <category><![CDATA[ Lapid ]]></category>
+      <category><![CDATA[ Hostages ]]></category>
+      <category><![CDATA[ Opposition ]]></category>
+      <guid isPermaLink="false">test-lapid-001</guid>
+      <description><![CDATA[
+        <p>Opposition leader Yair Lapid delivered a speech in Tel Aviv in which he accused Prime Minister Netanyahu of deliberately stalling hostage negotiations to avoid political accountability. "Three deal frameworks were on the table in the past six months," Lapid said, citing specific dates and the names of mediating countries. "Each time the prime minister added new conditions at the last minute. The families of the hostages know this. The intelligence chiefs know this. The records will show this when the state commission of inquiry is finally established." Lapid called on Israelis who support the current military campaign to nonetheless demand that the government pursue a deal: "You can believe in our right to defend ourselves and still believe that 120 hostages should not rot in tunnels while their prime minister calculates his electoral survival." He said he would support any emergency government formed to secure a hostage deal, regardless of its political composition, and called on Gantz and others to join such a framework. He did not attack coalition supporters on ethnic, religious, or personal grounds, limiting his criticism to government decision-making and documented negotiation timelines.</p>
+      ]]></description>
+    </item>
+
+    <!-- GANTZ: умеренная риторика, институциональный фрейм
+         Ожидаемый score: ~3-4/10 → severity LOW-MODERATE -->
+    <item>
+      <title>Gantz warns Israel is 'governed by extremists who have no endgame and no accountability'</title>
+      <link>http://localhost/articles/gantz-extremists</link>
+      <pubDate>Sun, 26 Apr 2026 10:00:00 +0000</pubDate>
+      <category><![CDATA[ Gantz ]]></category>
+      <category><![CDATA[ Coalition ]]></category>
+      <category><![CDATA[ Defense ]]></category>
+      <guid isPermaLink="false">test-gantz-001</guid>
+      <description><![CDATA[
+        <p>Former Defense Minister Benny Gantz said at a press conference that Israel is "paying the price of being governed by people who thrive on perpetual crisis and have no interest in ending it." He said: "Ben-Gvir and Smotrich do not want victory — they want chaos, because chaos keeps them relevant and keeps Netanyahu dependent on them." Gantz, speaking in his capacity as opposition defense spokesman, said the military had presented the cabinet with three viable strategic options for a post-war Gaza framework, all of which had been shelved for political reasons. "I was in those rooms. I saw the documents. The professionals gave the politicians a path — the politicians chose their coalition over their country." He called for the resignation of Ben-Gvir, describing his conduct as "incompatible with the role of a minister in a democratic state," and said the security establishment had lost confidence in the political leadership. Gantz stopped short of calling for immediate elections, saying the priority must be securing the hostages and establishing a credible day-after plan before any political transition.</p>
+      ]]></description>
+    </item>
+
+    <!-- DERI: коалиционный шантаж, религиозная поляризация
+         Ожидаемый score: ~5-6/10 x1.2 → severity MODERATE-HIGH -->
+    <item>
+      <title>Deri: 'If the Torah world is drafted, the state loses its soul — we will bring this government down'</title>
+      <link>http://localhost/articles/deri-draft</link>
+      <pubDate>Sun, 26 Apr 2026 10:30:00 +0000</pubDate>
+      <category><![CDATA[ Deri ]]></category>
+      <category><![CDATA[ Haredi Draft ]]></category>
+      <category><![CDATA[ Shas ]]></category>
+      <guid isPermaLink="false">test-deri-001</guid>
+      <description><![CDATA[
+        <p>Shas leader Aryeh Deri addressed thousands of ultra-Orthodox supporters at a mass gathering in Bnei Brak, warning that any legislation requiring haredi men to serve in the military would be "a declaration of war against the Jewish soul of the state." He said: "They want to send yeshiva students to the front not because they need soldiers but because they want to destroy Torah Judaism. This is a secular crusade against our way of life." Deri accused the Supreme Court of "acting as an occupying force against religious Jewry" and said Shas would bring down the government if the conscription bill moved forward: "We did not enter this coalition to watch the state strip our children of their identity. If that bill passes, this government falls — and we will make sure every voter knows who is responsible for the collapse." He framed the issue as an existential civilizational conflict: "This is not about military service. This is about whether a Jewish state has room for Jews who live as Jews have lived for three thousand years. The secularists want a state without Judaism — we will not let them have it." Critics from across the political spectrum questioned whether the framing was proportionate to the actual legislative proposal.</p>
+      ]]></description>
+    </item>
+
+    <!-- СИСТЕМНЫЙ ТЕСТ — Attribution trap
+         Репортаж о dangerous speech → role=reporter
+         ЛИНЗА должна НЕ наказывать источник -->
+    <item>
+      <title>Analysis: How eliminationist rhetoric entered the Israeli mainstream — a six-month review</title>
+      <link>http://localhost/articles/attribution-trap</link>
+      <pubDate>Sun, 26 Apr 2026 11:00:00 +0000</pubDate>
+      <category><![CDATA[ Media Analysis ]]></category>
+      <category><![CDATA[ Rhetoric ]]></category>
+      <guid isPermaLink="false">test-system-attribution</guid>
+      <description><![CDATA[
+        <p>A research coalition tracking political speech in Israeli media published a report documenting a significant shift in rhetorical norms over the past six months. The report finds that phrases previously confined to fringe movements — including descriptions of Gaza's civilian population as collectively guilty, calls for permanent population transfer, and characterizations of Arab citizens as a fifth column — have appeared with increasing frequency in statements by sitting ministers. The researchers quote Smotrich's statement that "two million people can be relocated within 18 months" as an example of eliminationist framing normalized through administrative language. They also document Ben-Gvir's repeated use of dehumanizing language, tracing its adoption from social media into official press releases. The report does not assess the legality of the statements under Israeli law but notes that several have been flagged by international human rights bodies. The researchers state explicitly that they are documenting the rhetoric in order to create a public record: "When language like this is used by government ministers and then disappears from the discourse without consequence, the baseline shifts. We are here to hold the baseline."</p>
+      ]]></description>
+    </item>
+
+    <!-- СИСТЕМНЫЙ ТЕСТ — Disinformation / Conspiracy
+         Не привязан к конкретному лидеру
+         Ожидаемый score: ~7-8/10 -->
+    <item>
+      <title>Viral claim spreads: 'UN coordinating with Hamas to sabotage Israeli elections'</title>
+      <link>http://localhost/articles/disinfo-un-hamas</link>
+      <pubDate>Sun, 26 Apr 2026 11:30:00 +0000</pubDate>
+      <category><![CDATA[ Disinformation ]]></category>
+      <category><![CDATA[ Elections 2026 ]]></category>
+      <guid isPermaLink="false">test-system-disinfo</guid>
+      <description><![CDATA[
+        <p>A claim alleging that UN agencies are actively coordinating with Hamas operatives to interfere in Israel's upcoming elections has spread widely across social media platforms, accumulating millions of views. The posts cite fabricated internal UN memos and name specific officials as "handlers" for Hamas political operatives working inside Israel. The claim appears to have originated from an anonymous channel with no disclosed authorship before being amplified by several accounts with large followings, including some associated with current political figures. UN spokespersons issued an unambiguous denial, stating the documents cited are fabrications and that none of the named officials exist in their personnel records. Israeli election authorities said they have seen no evidence of the alleged coordination and warned against sharing unverified content during the pre-election period. Fact-checking organizations rated the claims as fabricated. Several politicians who shared the posts initially did not respond to requests for comment; two deleted their posts without explanation.</p>
+      ]]></description>
+    </item>
+
+  </channel>
+</rss>

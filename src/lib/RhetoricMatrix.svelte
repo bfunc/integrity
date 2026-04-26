@@ -57,12 +57,19 @@
   // Static data — never changes after load, plain const avoids Svelte 5 proxy issues
   // with string key lookups in weeklyScores inside $derived
   const leaders = leadersRaw;
-  const sources = sourcesRaw;
+  const SPEECHES_SOURCE = { id: 'speeches', name: 'Speeches', bias: null, language: null, region: null };
+  const sources = [SPEECHES_SOURCE, ...sourcesRaw];
   const speeches = Object.fromEntries(
     leadersRaw.map((l) => [l.id, l.speeches ?? []]),
   );
+
+  // Minimum n to display a score; below threshold → show "?"
+  function getThreshold(srcId) {
+    return srcId === 'speeches' ? 1 : 3;
+  }
   let weeklyScores = $state({});
   let weekLabels = $state([]);
+  let violations = $state({});
   let loading = $state(true);
 
   let selectedWeek = $state(0);
@@ -86,6 +93,7 @@
         }
         weeklyScores = data.matrix;
         weekLabels = data.weeks;
+        violations = data.violations ?? {};
         selectedWeek = Math.max(0, data.weeks.length - 1);
         console.log('[RhetoricMatrix] loaded real data:', data.meta);
         loading = false;
@@ -130,8 +138,8 @@
             return [
               l.id,
               cell
-                ? { score: cell.score, role: cell.role }
-                : { score: 0, role: "neutral" },
+                ? { score: cell.score, role: cell.role, n: cell.n ?? 0 }
+                : { score: 0, role: "neutral", n: 0 },
             ];
           }),
         ),
@@ -335,8 +343,7 @@
       <div class="rm-eyebrow">Rhetoric Audit Matrix</div>
       <div class="rm-title">Israel — Media Coverage × Political Leaders</div>
       <div class="rm-sub">
-        Phase 3 · Weekly time series · {sources.length} sources · {leaders.length}
-        leaders
+        Phase 3 · Weekly time series · {sourcesRaw.length} sources + speeches · {leaders.length} leaders
       </div>
     </div>
     <div class="rm-legend">
@@ -469,9 +476,11 @@
                 >{shortName(l.name)}</span
               >
               <span class="ldr-role">{l.role}</span>
-              <span class="ldr-badge"
-                >{speeches[l.id]?.length ?? 0} speeches</span
-              >
+              {#if (violations[l.id] ?? 0) > 0}
+                <span class="ldr-badge ldr-badge-violation">{violations[l.id]} violations</span>
+              {:else}
+                <span class="ldr-badge ldr-badge-clean">no violations</span>
+              {/if}
             </th>
           {/each}
         </tr>
@@ -481,11 +490,13 @@
       <tbody>
         {#each sources as src}
           {@const rowBg = srcFocusBg(src.id)}
-          <tr>
+          {@const isSpeechRow = src.id === 'speeches'}
+          <tr class:speeches-row={isSpeechRow}>
             <!-- Source label — click to focus row -->
             <td
               class="src-td"
               class:src-sel={focusedSource === src.id}
+              class:src-td-speeches={isSpeechRow}
               style={rowBg ? `background:${rowBg}` : ""}
               onclick={() => toggleSource(src.id)}
             >
@@ -556,10 +567,7 @@
 
             <!-- Score cells -->
             {#each leaders as l}
-              {@const cell = currentScores[src.id]?.[l.id] ?? {
-                score: 0,
-                role: "neutral",
-              }}
+              {@const cell = currentScores[src.id]?.[l.id] ?? { score: 0, role: "neutral", n: 0 }}
               {@const p = pal(cell.score, cell.role)}
               {@const ci = comparedLeaders.indexOf(l.id)}
               {@const outline =
@@ -568,21 +576,23 @@
                   : ci === 1
                     ? "1px solid rgba(236,72,153,0.5)"
                     : "none"}
+              {@const insufficient = cell.score >= 1.0 && cell.n < getThreshold(src.id)}
               <td
                 class="score-td"
-                style="background:{p.bg}; opacity:{cellOpacity(
-                  src.id,
-                )}; outline:{outline}; outline-offset:-1px"
+                style="background:{p.bg}; opacity:{cellOpacity(src.id)}; outline:{outline}; outline-offset:-1px"
               >
-                <span
-                  class="score-num"
-                  style="font-weight:{cell.score >= 7
-                    ? 800
-                    : 500}; color:{p.fg}"
-                >
-                  {cell.score < 1.0 ? "—" : cell.score.toFixed(1)}
-                </span>
-                <span class="role-dot" style="background:{p.dot}"></span>
+                {#if cell.score < 1.0}
+                  <span class="score-num" style="color:{p.fg}">—</span>
+                {:else if insufficient}
+                  <span class="score-num score-insufficient" title="Недостаточно данных (n={cell.n})">?</span>
+                {:else}
+                  <span
+                    class="score-num"
+                    style="font-weight:{cell.score >= 7 ? 800 : 500}; color:{p.fg}"
+                    title="n={cell.n}"
+                  >{cell.score.toFixed(1)}</span>
+                {/if}
+                <span class="role-dot" style="background:{insufficient ? 'transparent' : p.dot}"></span>
               </td>
             {/each}
           </tr>
@@ -887,11 +897,17 @@
     display: inline-block;
     font-size: 0.54rem;
     font-weight: 700;
-    background: rgba(37, 99, 235, 0.12);
-    color: #1d4ed8;
     padding: 1px 5px;
     letter-spacing: 0.03em;
     /* no border-radius */
+  }
+  .ldr-badge-violation {
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+  }
+  .ldr-badge-clean {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text3, #7a8faa);
   }
 
   /* Source label cells */
@@ -1201,5 +1217,26 @@
     color: var(--text3, #7a8faa);
     font-family: "JetBrains Mono", "Fira Code", monospace;
     letter-spacing: 0.04em;
+  }
+
+  /* ── Speeches virtual row ── */
+  .src-td-speeches {
+    background: rgba(124, 58, 237, 0.07);
+  }
+  .src-td-speeches:hover {
+    background: rgba(124, 58, 237, 0.13);
+  }
+  .src-td.src-sel.src-td-speeches {
+    outline-color: #7c3aed;
+  }
+  /* Separator line below speeches row */
+  .speeches-row td {
+    border-bottom: 2px solid var(--border, #d4d9e8);
+  }
+
+  /* ── Insufficient data indicator ── */
+  .score-insufficient {
+    color: var(--text3, #7a8faa);
+    cursor: help;
   }
 </style>
