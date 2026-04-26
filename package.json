@@ -7,7 +7,11 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node index.js"
+    "start": "node index.js",
+    "lint": "svelte-check"
+  },
+  "devDependencies": {
+    "svelte-check": "^4.0.0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

@@ -198,9 +198,11 @@
     <div
       class="modal"
       on:click|stopPropagation
+      on:keydown={e => e.key === 'Escape' && closeModal()}
       role="dialog"
       aria-modal="true"
       aria-label={item.title}
+      tabindex="-1"
     >
       <!-- Header -->
       <div class="modal-head">
@@ -313,8 +315,10 @@
       <div
         class="dispute-modal"
         on:click|stopPropagation
+        on:keydown={e => e.key === 'Escape' && (disputeOpen = false)}
         role="dialog"
         aria-modal="true"
+        tabindex="-1"
       >
         <p class="dispute-msg">
           Функция голосования появится в следующей версии
@@ -402,6 +406,7 @@
   .threat-title {
     display: -webkit-box;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-size: 0.96rem;

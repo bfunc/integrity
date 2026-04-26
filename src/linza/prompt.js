@@ -16,17 +16,14 @@ ${level.legal_basis.length ? `Legal basis: ${level.legal_basis.join(", ")}\n` : 
 
 function buildOutputFormat() {
   const optionalFields = [
-    config.linza.summary
-      ? `  "summary_md": "<2-3 sentences>"`
-      : null,
+    config.linza.summary ? `  "summary_md": "<2-3 sentences>"` : null,
     config.linza.subtext
       ? `  "subtext": "<2-4 sentences — what is really happening behind the words. Not a retelling of patterns, but interpretation: whose rhetoric this is, what the real goal is, what is hidden behind the formulations.>"`
       : null,
   ].filter(Boolean);
 
-  const trailingSection = optionalFields.length > 0
-    ? `,\n${optionalFields.join(',\n')}`
-    : '';
+  const trailingSection =
+    optionalFields.length > 0 ? `,\n${optionalFields.join(",\n")}` : "";
 
   return `{
   "severity": <1-5>,
@@ -40,7 +37,7 @@ function buildOutputFormat() {
       "level": "<incitement|toxification|rhetorical_manipulation>",
       "quote": "<direct quote under 20 words>",
       "confidence": "<low|medium|high>",
-      "explanation": "<one sentence>"
+      "explanation": "<one sentence, max 25 words>"
     }
   ]${trailingSection}
 }`;

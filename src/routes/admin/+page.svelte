@@ -6,6 +6,7 @@
   let recentCalls = [];
   let auditLoading = true;
   let filterAgent = "all";
+  let dateFilter = "today";
 
   // ── Log / pipeline state ──────────────────────────────────────────────────
   let stats = { lastRun: null, nextRun: null, queueSize: 0, sitesCount: 0, articlesCount: 0, threatsCount: 0 };
@@ -28,14 +29,6 @@
   function fmtDateTime(ts) {
     if (!ts) return "—";
     return new Date(ts).toLocaleString("ru-RU");
-  }
-
-  function fmtTime(ts) {
-    if (!ts) return null;
-    const d = new Date(ts);
-    const now = new Date();
-    const timeStr = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-    return d.toDateString() === now.toDateString() ? `сегодня ${timeStr}` : timeStr;
   }
 
   function fmtCost(n) {
@@ -76,10 +69,11 @@
   // ── Article status helpers ────────────────────────────────────────────────
 
   function analyzedBadge(article) {
-    if (article.analyzed_count > 0) return { label: "analyzed", cls: "badge-green" };
-    if (article.status === "error")  return { label: "error",    cls: "badge-red"   };
-    if (article.status === "queued" || article.status === "new")
-      return { label: "pending", cls: "badge-amber" };
+    if (article.analyzed_count > 0)         return { label: "analyzed",  cls: "badge-green"  };
+    if (article.status === "analyzing")      return { label: "analyzing", cls: "badge-yellow" };
+    if (article.status === "error")          return { label: "error",     cls: "badge-red"    };
+    if (article.status === "queued"
+     || article.status === "new")            return { label: "pending",   cls: "badge-amber"  };
     return { label: "—", cls: "badge-gray" };
   }
 
@@ -87,7 +81,7 @@
 
   async function fetchAudit() {
     try {
-      const res = await fetch("/api/audit");
+      const res = await fetch(`/api/audit?filter=${dateFilter}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       auditStats = data.stats;
@@ -97,6 +91,12 @@
     } finally {
       auditLoading = false;
     }
+  }
+
+  async function setDateFilter(f) {
+    dateFilter = f;
+    auditLoading = true;
+    await fetchAudit();
   }
 
   async function fetchLog() {
@@ -244,6 +244,10 @@
 
     <!-- Recent calls table -->
     <div class="filter-row">
+      <span class="filter-label">Period:</span>
+      <button class="filter-btn" class:active={dateFilter === "today"} on:click={() => setDateFilter("today")}>сегодня</button>
+      <button class="filter-btn" class:active={dateFilter === "all"}   on:click={() => setDateFilter("all")}>всё</button>
+      <span class="filter-sep"></span>
       <span class="filter-label">Agent:</span>
       {#each ["all", "analyst", "advocate", "arbiter"] as ag}
         <button
@@ -521,10 +525,13 @@
     padding: 2px 7px; border-radius: 3px;
     text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .badge-green  { background: rgba(22,163,74,0.12);  color: #15803d; }
+  .badge-green  { background: rgba(22,163,74,0.12);   color: #15803d; }
+  .badge-yellow { background: rgba(234,179,8,0.15);  color: #854d0e; }
   .badge-amber  { background: rgba(217,119,6,0.12);  color: #b45309; }
   .badge-red    { background: rgba(239,68,68,0.12);  color: #b91c1c; }
   .badge-gray   { background: rgba(107,114,128,0.1); color: var(--text3); }
+
+  .filter-sep { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
 
   .agent-badge {
     display: inline-block; font-size: 0.62rem; font-weight: 700;

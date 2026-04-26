@@ -2,11 +2,12 @@ import { json } from '@sveltejs/kit';
 import { getAuditStats, getRecentCalls } from '../../../lib/audit.js';
 import { getArticleTitlesByIds } from '../../../db/database.js';
 
-export async function GET() {
+export async function GET({ url }) {
   try {
+    const dateFilter = url.searchParams.get('filter') === 'all' ? 'all' : 'today';
     const [stats, recentCalls] = await Promise.all([
       getAuditStats(),
-      getRecentCalls(50),
+      getRecentCalls(50, dateFilter),
     ]);
 
     // Enrich calls with article titles from aigregator.db

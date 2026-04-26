@@ -95,24 +95,43 @@ export async function runPipeline() {
     console.log(`Linza config: subtext=${config.linza.subtext} summary=${config.linza.summary}`);
 
     // --- Articles pipeline ---
+    const totalSites = sites.length;
+    let siteIdx = 0;
     for (const site of sites) {
+      siteIdx++;
       if (stopRequested) break;
+      await logEvent("info", `Источник ${siteIdx} из ${totalSites}: ${site.id}`);
+
+      // Fetch RSS — isolated so parse errors don't mask article-level errors
+      let feed;
       try {
-        const feed = await parser.parseURL(site.url);
-        for (const item of feed.items || []) {
-          const url = item.link;
-          if (!url) continue;
+        feed = await parser.parseURL(site.url);
+      } catch (err) {
+        await logEvent("warning", `RSS fetch failed for ${site.id}: ${err.message}`);
+        continue;
+      }
 
-          const title = item.title || "";
-          const excerpt = item.contentSnippet || item.summary || "";
-          const publishedAt = item.pubDate
-            ? new Date(item.pubDate).toISOString()
-            : new Date().toISOString();
+      const feedItems = feed.items || [];
+      const feedTotal = feedItems.length;
+      let itemIdx = 0;
 
-          if (isFiltered(title, excerpt)) continue;
-          if (await articleExists(url)) continue;
+      for (const item of feedItems) {
+        itemIdx++;
+        const url = item.link;
+        if (!url) continue;
 
-          const id = randomUUID();
+        const title = item.title || "";
+        const excerpt = item.contentSnippet || item.summary || "";
+        const publishedAt = item.pubDate
+          ? new Date(item.pubDate).toISOString()
+          : new Date().toISOString();
+
+        if (isFiltered(title, excerpt)) continue;
+        if (await articleExists(url)) continue;
+
+        // Per-article try/catch — errors here log with full context, not as RSS failure
+        const id = randomUUID();
+        try {
           await insertArticle({
             id,
             url,
@@ -125,8 +144,10 @@ export async function runPipeline() {
 
           let analysis;
           try {
+            await updateArticleStatus(id, "analyzing");
             analysis = await analyzeArticle({ id, title, excerpt });
-          } catch {
+          } catch (err) {
+            await logEvent("warning", `Analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
             await updateArticleStatus(id, "error");
             continue;
           }
@@ -136,12 +157,14 @@ export async function runPipeline() {
             if (fullText) {
               await updateArticleStatus(id, "queued", fullText);
               try {
+                await updateArticleStatus(id, "analyzing");
                 analysis = await analyzeFullText({
                   id,
                   title,
                   full_text: fullText,
                 });
-              } catch {
+              } catch (err) {
+                await logEvent("warning", `Full-text analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
                 await updateArticleStatus(id, "error");
                 continue;
               }
@@ -157,19 +180,18 @@ export async function runPipeline() {
             severity: analysis.severity,
             severity_label: analysis.severity_label,
             patterns: analysis.patterns,
-            summary_md: analysis.summary_md,
-            subtext: analysis.subtext,
+            summary_md: analysis.summary_md ?? null,
+            subtext: analysis.subtext ?? null,
             raw_response: analysis.raw_response,
             attribution_role: attrRole,
             attributed_to: speaker,
           });
           await updateArticleStatus(id, "analyzed");
+          await logEvent("info", `Статья ${itemIdx} из ${feedTotal}: ${title.slice(0, 40)}`);
+        } catch (err) {
+          await logEvent("warning", `Article error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`);
+          await updateArticleStatus(id, "error").catch(() => {});
         }
-      } catch (err) {
-        await logEvent(
-          "warning",
-          `RSS fetch failed for ${site.id}: ${err.message}`,
-        );
       }
     }
 
@@ -212,8 +234,8 @@ export async function runPipeline() {
             severity: analysis.severity,
             severity_label: analysis.severity_label,
             patterns: analysis.patterns,
-            summary_md: analysis.summary_md,
-            subtext: analysis.subtext,
+            summary_md: analysis.summary_md ?? null,
+            subtext: analysis.subtext ?? null,
             raw_response: analysis.raw_response,
             attribution_role: "originator",
             attributed_to: leader.name,

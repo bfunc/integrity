@@ -138,15 +138,19 @@ export async function getAuditStats() {
   }
 }
 
-export async function getRecentCalls(limit = 50) {
+export async function getRecentCalls(limit = 50, dateFilter = 'today') {
   try {
     await ensureReady();
+    const where = dateFilter === 'today'
+      ? 'WHERE called_at >= CURRENT_DATE'
+      : '';
     const rows = await _all(
       `SELECT id, called_at, agent, article_id, model,
          input_tokens, output_tokens,
          CAST(cost_usd AS DOUBLE) as cost_usd,
          duration_ms, error
        FROM claude_calls
+       ${where}
        ORDER BY called_at DESC
        LIMIT ?`,
       [limit],

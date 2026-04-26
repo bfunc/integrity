@@ -16,6 +16,7 @@
   };
   let lastEvent = null;
   let pipelineRunning = false;
+  let progress = null;
 
   const PATTERN_NAMES_RU = {
     call_to_violence: "Призыв к насилию",
@@ -38,6 +39,7 @@
       if (res.ok) {
         const data = await res.json();
         stats = data.stats;
+        progress = data.progress ?? null;
         const latest = data.events?.[0];
         if (latest) {
           lastEvent = latest.message;
@@ -115,12 +117,22 @@
       <div id="conn-dot" class="wait"></div>
       <a href="/" id="logo">aigregator</a>
       <span id="header-sub">
-        {#if pipelineRunning && lastEvent}
+        {#if pipelineRunning && progress}
+          ▶ {progress.currentSource}
+          {#if progress.total > 0}
+            · {progress.current} / {progress.total} статей ({progress.percent}%)
+          {:else}
+            · загружаю фид...
+          {/if}
+        {:else if pipelineRunning && lastEvent}
           {lastEvent}
         {:else}
           Анализ манипуляций
         {/if}
       </span>
+      {#if pipelineRunning && progress?.percent > 0}
+        <div class="progress-line" style="width:{progress.percent}%"></div>
+      {/if}
     </div>
 
     <!-- PIPELINE COUNTS BAR -->
@@ -253,6 +265,18 @@
     padding: 14px 24px;
     background: #0038b8;
     border-bottom: 1px solid #002a8a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: #60a5fa;
+    transition: width 1.2s ease;
+    pointer-events: none;
   }
 
   #logo {

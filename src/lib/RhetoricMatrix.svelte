@@ -397,6 +397,7 @@
     <div
       class="slider-wrap"
       role="slider"
+      tabindex="0"
       aria-valuemin="0"
       aria-valuemax={WEEKS - 1}
       aria-valuenow={selectedWeek}
