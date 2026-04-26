@@ -2,7 +2,7 @@
   {
     "id": "test_feed",
     "name": "TEST FEED — DO NOT USE IN PROD",
-    "url": "http://localhost:5173/test-feed.xml",
+    "url": "https://icy-kissee-integrity-fb5fb250.koyeb.app/test-feed.xml",
     "region": "test",
     "bias": "test",
     "language": "en",
