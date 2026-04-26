@@ -145,9 +145,7 @@ export async function initDb() {
   await _run(
     `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS attributed_to TEXT`,
   );
-  await _run(
-    `ALTER TABLE analyses ADD COLUMN IF NOT EXISTS subtext TEXT`,
-  );
+  await _run(`ALTER TABLE analyses ADD COLUMN IF NOT EXISTS subtext TEXT`);
 
   const [dbStateRow] = await _all(`
     SELECT
@@ -305,7 +303,7 @@ export async function upsertLeader(leader) {
 export async function speechExists(id) {
   // Only skip if already successfully analyzed — retry on error/new/queued
   const rows = await all("SELECT status FROM speeches WHERE id = ?", [id]);
-  return rows.length > 0 && rows[0].status === 'analyzed';
+  return rows.length > 0 && rows[0].status === "analyzed";
 }
 
 export async function insertSpeech(speech) {
@@ -412,9 +410,12 @@ export async function getSpeechesAnalyzedByLeader() {
 
 export async function getLeaderViolations(leaderId) {
   return all(
-    `SELECT a.*, s.title as speech_title, s.date as speech_date
+    `SELECT a.*, 
+            s.title as speech_title, s.date as speech_date,
+            ar.title as article_title, ar.source as article_source, ar.published_at as article_published_at
      FROM analyses a
-     LEFT JOIN speeches s ON a.source_id = s.id
+     LEFT JOIN speeches s ON a.source_type = 'speech' AND a.source_id = s.id
+     LEFT JOIN articles ar ON a.source_type = 'article' AND a.source_id = ar.id
      WHERE a.leader_id = ? AND lower(a.severity_label) != 'none' AND a.severity >= 2
      ORDER BY a.analyzed_at DESC`,
     [leaderId],
@@ -423,9 +424,12 @@ export async function getLeaderViolations(leaderId) {
 
 export async function getAllLeaderViolations() {
   return all(
-    `SELECT a.*, s.title as speech_title, s.date as speech_date
+    `SELECT a.*, 
+            s.title as speech_title, s.date as speech_date,
+            ar.title as article_title, ar.source as article_source, ar.published_at as article_published_at
      FROM analyses a
-     LEFT JOIN speeches s ON a.source_id = s.id
+     LEFT JOIN speeches s ON a.source_type = 'speech' AND a.source_id = s.id
+     LEFT JOIN articles ar ON a.source_type = 'article' AND a.source_id = ar.id
      WHERE a.leader_id IS NOT NULL AND lower(a.severity_label) != 'none' AND a.severity >= 2
      ORDER BY a.leader_id, a.analyzed_at DESC`,
   );
@@ -727,7 +731,7 @@ export async function getArticlesWithStatus() {
 
 export async function getArticleTitlesByIds(ids) {
   if (!ids || ids.length === 0) return {};
-  const placeholders = ids.map(() => '?').join(', ');
+  const placeholders = ids.map(() => "?").join(", ");
   const rows = await all(
     `SELECT id, title FROM articles WHERE id IN (${placeholders})`,
     ids,
@@ -739,7 +743,8 @@ export async function getLeaderViolationCounts() {
   const rows = await all(`
     SELECT leader_id, COUNT(*) AS cnt
     FROM analyses
-    WHERE severity > 3
+    WHERE severity >= 2
+      AND lower(severity_label) != 'none'
       AND leader_id IS NOT NULL
       AND leader_id != ''
     GROUP BY leader_id
@@ -753,7 +758,6 @@ export async function getRhetoricMatrix() {
       ar.source                         AS source_id,
       a.leader_id,
       DATE_TRUNC('week', a.analyzed_at) AS week_start,
-      AVG(a.severity)                   AS avg_severity,
       MAX(a.severity)                   AS max_severity,
       COUNT(*)                          AS article_count
     FROM analyses a
@@ -769,7 +773,6 @@ export async function getRhetoricMatrix() {
       'speeches'                                                    AS source_id,
       a.leader_id,
       DATE_TRUNC('week', COALESCE(s.date::TIMESTAMP, a.analyzed_at)) AS week_start,
-      AVG(a.severity)                                               AS avg_severity,
       MAX(a.severity)                                               AS max_severity,
       COUNT(*)                                                      AS article_count
     FROM analyses a
@@ -781,6 +784,51 @@ export async function getRhetoricMatrix() {
 
     ORDER BY week_start ASC
   `);
+}
+
+export async function getRhetoricMatrixItems({
+  leaderId,
+  sourceId,
+  weekStart,
+}) {
+  if (!leaderId || !sourceId || !weekStart) return [];
+
+  if (sourceId === "speeches") {
+    return all(
+      `SELECT a.*, 
+              'Speeches' as source,
+              s.title as speech_title,
+              s.date as speech_date,
+              s.url as speech_url,
+              l.name as leader_name,
+              l.role as leader_role
+       FROM analyses a
+       JOIN speeches s ON a.source_id = s.id AND a.source_type = 'speech'
+       LEFT JOIN leaders l ON a.leader_id = l.id
+       WHERE a.leader_id = ?
+         AND DATE_TRUNC('week', COALESCE(s.date::TIMESTAMP, a.analyzed_at)) = CAST(? AS DATE)
+       ORDER BY a.severity DESC, a.analyzed_at DESC`,
+      [leaderId, weekStart],
+    );
+  }
+
+  return all(
+    `SELECT a.*, 
+            ar.title as article_title,
+            ar.source,
+            ar.url as article_url,
+            ar.published_at,
+            l.name as leader_name,
+            l.role as leader_role
+     FROM analyses a
+     JOIN articles ar ON a.source_id = ar.id AND a.source_type = 'article'
+     LEFT JOIN leaders l ON a.leader_id = l.id
+     WHERE a.leader_id = ?
+       AND ar.source = ?
+       AND DATE_TRUNC('week', a.analyzed_at) = CAST(? AS DATE)
+     ORDER BY a.severity DESC, a.analyzed_at DESC`,
+    [leaderId, sourceId, weekStart],
+  );
 }
 
 export async function getAnalysesMeta() {

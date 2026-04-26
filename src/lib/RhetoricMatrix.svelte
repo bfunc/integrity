@@ -1,4 +1,6 @@
 <script>
+  import Card from "./Card.svelte";
+
   /**
    * RhetoricMatrix — Phase 2
    * Weekly time-series, custom slider, leader/source focus modes,
@@ -12,23 +14,12 @@
 
   let WEEKS = $derived(weekLabels.length || 1);
 
-  // Phase 1 color palette — preserved unchanged
-  const PALETTE = {
-    amplifier: [
-      { bg: "rgba(245,158,11,0.06)", fg: "#92400e", dot: "#92400e" },
-      { bg: "rgba(245,158,11,0.14)", fg: "#b45309", dot: "#b45309" },
-      { bg: "rgba(245,158,11,0.26)", fg: "#92400e", dot: "#d97706" },
-    ],
-    reporter: [
-      { bg: "rgba(37,99,235,0.05)", fg: "#1e40af", dot: "#1e40af" },
-      { bg: "rgba(37,99,235,0.12)", fg: "#1d4ed8", dot: "#2563eb" },
-      { bg: "rgba(37,99,235,0.22)", fg: "#1e40af", dot: "#2563eb" },
-    ],
-    neutral: [
-      { bg: "transparent", fg: "#6b7280", dot: "#9ca3af" },
-      { bg: "rgba(107,114,128,0.07)", fg: "#4b5563", dot: "#6b7280" },
-      { bg: "rgba(107,114,128,0.14)", fg: "#374151", dot: "#4b5563" },
-    ],
+  const SEVERITY_PALETTE = {
+    1: { bg: "rgba(239,68,68,0.06)", fg: "#7f1d1d" },
+    2: { bg: "rgba(239,68,68,0.12)", fg: "#991b1b" },
+    3: { bg: "rgba(239,68,68,0.18)", fg: "#b91c1c" },
+    4: { bg: "rgba(239,68,68,0.24)", fg: "#b91c1c" },
+    5: { bg: "rgba(239,68,68,0.34)", fg: "#991b1b" },
   };
 
   const BIAS_META = {
@@ -63,14 +54,13 @@
     leadersRaw.map((l) => [l.id, l.speeches ?? []]),
   );
 
-  // Minimum n to display a score; below threshold → show "?"
-  function getThreshold(srcId) {
-    return srcId === 'speeches' ? 1 : 3;
-  }
   let weeklyScores = $state({});
   let weekLabels = $state([]);
+  let weekKeys = $state([]);
   let violations = $state({});
   let loading = $state(true);
+  let selectedItems = $state([]);
+  let selectedItemsLoading = $state(false);
 
   let selectedWeek = $state(0);
   let comparedLeaders = $state([]); // string[] max 2 — comparison mode
@@ -93,6 +83,7 @@
         }
         weeklyScores = data.matrix;
         weekLabels = data.weeks;
+        weekKeys = data.weekKeys ?? [];
         violations = data.violations ?? {};
         selectedWeek = Math.max(0, data.weeks.length - 1);
         console.log('[RhetoricMatrix] loaded real data:', data.meta);
@@ -190,6 +181,9 @@
   let sliderPct = $derived(WEEKS <= 1 ? 0 : (selectedWeek / (WEEKS - 1)) * 100);
 
   let inComparisonMode = $derived(comparedLeaders.length === 2);
+  let selectedLeaderId = $derived(comparedLeaders.length === 1 ? comparedLeaders[0] : null);
+  let selectedWeekKey = $derived(weekKeys[selectedWeek] ?? null);
+  let hasSelectionDetails = $derived(Boolean(selectedLeaderId && focusedSource && selectedWeekKey));
 
   // Auto-detect anomaly: highest amplifier score in week 7 with delta > 0.8 vs week 0.
   // Fallback (no cell clears delta threshold): use highest amplifier score regardless.
@@ -227,6 +221,33 @@
     const avg = overallAvg; // tracked
     if (!leaders.length) return;
     console.log(`Week selected: ${w + 1}, avg severity: ${avg}`);
+  });
+
+  $effect(() => {
+    const leaderId = selectedLeaderId;
+    const sourceId = focusedSource;
+    const weekStart = selectedWeekKey;
+
+    if (!leaderId || !sourceId || !weekStart) {
+      selectedItems = [];
+      selectedItemsLoading = false;
+      return;
+    }
+
+    selectedItemsLoading = true;
+    const params = new URLSearchParams({ leaderId, sourceId, weekStart });
+    fetch(`/api/rhetoric-matrix?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        selectedItems = data.items ?? [];
+      })
+      .catch((err) => {
+        console.error('rhetoric-matrix selection fetch error:', err);
+        selectedItems = [];
+      })
+      .finally(() => {
+        selectedItemsLoading = false;
+      });
   });
 
   // ── Slider event handlers (pointer capture — handles mouse + touch) ────────
@@ -283,9 +304,9 @@
 
   // ── Helper functions ───────────────────────────────────────────────────────
 
-  function pal(score, role) {
-    const tier = score >= 7 ? 2 : score >= 4 ? 1 : 0;
-    return (PALETTE[role] ?? PALETTE.neutral)[tier];
+  function severityTone(score) {
+    if (score < 1) return { bg: "transparent", fg: "#6b7280" };
+    return SEVERITY_PALETTE[Math.max(1, Math.min(5, Math.round(score)))];
   }
 
   // Source row background in single-leader mode (not comparison)
@@ -334,6 +355,16 @@
     const p = name.trim().split(/\s+/);
     return p.length > 1 ? p.slice(-1)[0] : p[0];
   }
+
+  function formatViolationCount(count) {
+    return count === 1 ? '1 violation' : `${count} violations`;
+  }
+
+  function selectionHeading() {
+    const leaderName = leaders.find((l) => l.id === selectedLeaderId)?.name ?? selectedLeaderId;
+    const sourceName = sources.find((s) => s.id === focusedSource)?.name ?? focusedSource;
+    return `${sourceName} × ${leaderName}`;
+  }
 </script>
 
 <div class="rm-page">
@@ -347,18 +378,18 @@
       </div>
     </div>
     <div class="rm-legend">
-      <span class="leg-label">Role</span>
+      <span class="leg-label">Severity</span>
       <span class="leg-item"
-        ><span class="leg-dot" style="background:#f59e0b"></span>amplifier</span
+        ><span class="leg-dot" style="background:rgba(239,68,68,0.12)"></span>low</span
       >
       <span class="leg-item"
-        ><span class="leg-dot" style="background:#3b82f6"></span>reporter</span
+        ><span class="leg-dot" style="background:rgba(239,68,68,0.22)"></span>medium</span
       >
       <span class="leg-item"
-        ><span class="leg-dot" style="background:#4b5563"></span>neutral</span
+        ><span class="leg-dot" style="background:rgba(239,68,68,0.34)"></span>high</span
       >
       <span class="leg-sep">|</span>
-      <span class="leg-muted">0–3 light · 4–6 medium · 7–10 bold</span>
+      <span class="leg-muted">1 pale · 5 strongest</span>
     </div>
   </div>
 
@@ -435,7 +466,7 @@
               >
               <span class="ldr-role">{l.role}</span>
               {#if (violations[l.id] ?? 0) > 0}
-                <span class="ldr-badge ldr-badge-violation">{violations[l.id]} violations</span>
+                <span class="ldr-badge ldr-badge-violation">{formatViolationCount(violations[l.id])}</span>
               {:else}
                 <span class="ldr-badge ldr-badge-clean">no violations</span>
               {/if}
@@ -526,7 +557,7 @@
             <!-- Score cells -->
             {#each leaders as l}
               {@const cell = currentScores[src.id]?.[l.id] ?? { score: 0, role: "neutral", n: 0 }}
-              {@const p = pal(cell.score, cell.role)}
+              {@const tone = severityTone(cell.score)}
               {@const ci = comparedLeaders.indexOf(l.id)}
               {@const outline =
                 ci === 0
@@ -534,23 +565,22 @@
                   : ci === 1
                     ? "1px solid rgba(236,72,153,0.5)"
                     : "none"}
-              {@const insufficient = cell.score >= 1.0 && cell.n < getThreshold(src.id)}
               <td
                 class="score-td"
-                style="background:{p.bg}; opacity:{cellOpacity(src.id)}; outline:{outline}; outline-offset:-1px"
+                class:speech-cell-link={isSpeechRow && cell.score >= 1}
+                style="background:{tone.bg}; opacity:{cellOpacity(src.id)}; outline:{outline}; outline-offset:-1px"
+                onclick={isSpeechRow && cell.score >= 1 ? () => { window.location.href = `/leaders?leader=${l.id}`; } : undefined}
+                title={isSpeechRow && cell.score >= 1 ? `Перейти к ${l.name}` : undefined}
               >
                 {#if cell.score < 1.0}
-                  <span class="score-num" style="color:{p.fg}">—</span>
-                {:else if insufficient}
-                  <span class="score-num score-insufficient" title="Недостаточно данных (n={cell.n})">?</span>
+                  <span class="score-num score-empty">—</span>
                 {:else}
                   <span
                     class="score-num"
-                    style="font-weight:{cell.score >= 7 ? 800 : 500}; color:{p.fg}"
+                    style="font-weight:{cell.score >= 4 ? 800 : 600}; color:{tone.fg}"
                     title="n={cell.n}"
-                  >{cell.score.toFixed(1)}</span>
+                  >{Math.round(cell.score)}</span>
                 {/if}
-                <span class="role-dot" style="background:{insufficient ? 'transparent' : p.dot}"></span>
               </td>
             {/each}
           </tr>
@@ -571,17 +601,17 @@
               {@const delta = +(avgA - avgB).toFixed(1)}
               {@const deltaColor = Math.abs(delta) > 1 ? "#dc2626" : "#16a34a"}
               <span class="foot-cmp" style="color:#6366f1"
-                >{shortName(nameA)} {avgA.toFixed(1)}</span
+                >{shortName(nameA)} {Math.round(avgA)}</span
               >
               <span class="foot-cmp-sep">vs</span>
               <span class="foot-cmp" style="color:#ec4899"
-                >{shortName(nameB)} {avgB.toFixed(1)}</span
+                >{shortName(nameB)} {Math.round(avgB)}</span
               >
               <span class="foot-cmp-delta" style="color:{deltaColor}"
-                >{delta > 0 ? "+" : ""}{delta}</span
+                >{delta > 0 ? "+" : ""}{Math.round(delta)}</span
               >
             {:else}
-              <span>Avg</span>
+              <span>Peak</span>
               <span class="foot-vs">vs Week 1</span>
             {/if}
           </td>
@@ -592,10 +622,10 @@
             {@const cmpClr = ci === 0 ? "#6366f1" : ci === 1 ? "#ec4899" : null}
             <td class="foot-cell">
               <span class="foot-score" style={cmpClr ? `color:${cmpClr}` : ""}
-                >{avg.toFixed(1)}</span
+                >{Math.round(avg)}</span
               >
               <span class="foot-esc" style="color:{esc.color}">
-                {esc.arrow}{esc.delta > 0 ? "+" : ""}{esc.delta}
+                {esc.arrow}{esc.delta > 0 ? "+" : ""}{Math.round(esc.delta)}
               </span>
             </td>
           {/each}
@@ -603,6 +633,30 @@
       </tfoot>
     </table>
   </div>
+
+  {#if hasSelectionDetails}
+    <section class="selection-section">
+      <div class="selection-header">
+        <div>
+          <div class="selection-eyebrow">Selected Coverage</div>
+          <div class="selection-title">{selectionHeading()}</div>
+        </div>
+        <div class="selection-week">Week of {weekLabels[selectedWeek] ?? '—'}</div>
+      </div>
+
+      {#if selectedItemsLoading}
+        <div class="selection-empty">Loading matching articles…</div>
+      {:else if selectedItems.length === 0}
+        <div class="selection-empty">No articles for this source and leader in the selected week.</div>
+      {:else}
+        <div class="selection-list">
+          {#each selectedItems as item (item.id)}
+            <Card {item} />
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
 
   <!-- ══ TIME SLIDER ══ -->
   <div class="slider-section">
@@ -653,11 +707,7 @@
 <style>
   /* ── Page ── */
   .rm-page {
-    background: var(--bg, #f4f6fb);
-    color: var(--text, #1a1f2e);
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    padding: 28px 32px 56px;
+
   }
 
   /* ── Header ── */
@@ -721,6 +771,49 @@
   .leg-muted {
     color: var(--text3, #7a8faa);
     font-size: 0.58rem;
+  }
+
+  .selection-section {
+    margin: 18px 0;
+    background: var(--bg2, #ffffff);
+    border: 1px solid var(--border, #d4d9e8);
+    padding: 16px 18px 18px;
+  }
+  .selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border2, #dde1ea);
+  }
+  .selection-eyebrow {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3, #7a8faa);
+    margin-bottom: 4px;
+  }
+  .selection-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text, #1a1f2e);
+  }
+  .selection-week {
+    font-size: 0.74rem;
+    color: var(--text3, #7a8faa);
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+  }
+  .selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .selection-empty {
+    font-size: 0.82rem;
+    color: var(--text3, #7a8faa);
   }
 
   /* ── Slider ── */
@@ -962,19 +1055,22 @@
     border-right: 1px solid var(--border2, #dde1ea);
     transition: opacity 0.15s;
   }
+  .speech-cell-link {
+    cursor: pointer;
+  }
+  .speech-cell-link:hover {
+    outline: 2px solid rgba(239,68,68,0.5) !important;
+    outline-offset: -2px !important;
+  }
   /* col-hi removed — outline now applied inline per comparison slot */
   .score-num {
     display: block;
     font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
     font-size: 0.9rem;
     line-height: 1;
-    margin-bottom: 3px;
   }
-  .role-dot {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
+  .score-empty {
+    color: var(--text3, #7a8faa);
   }
 
   /* Footer */
@@ -1232,11 +1328,5 @@
   /* Separator line below speeches row */
   .speeches-row td {
     border-bottom: 2px solid var(--border, #d4d9e8);
-  }
-
-  /* ── Insufficient data indicator ── */
-  .score-insufficient {
-    color: var(--text3, #7a8faa);
-    cursor: help;
   }
 </style>

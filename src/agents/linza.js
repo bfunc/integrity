@@ -64,7 +64,7 @@ async function callLLM(text, route = "pipeline", articleId = null) {
     } catch (err) {
       callError = err;
       logClaudeCall({
-        agent: 'analyst',
+        agent: "analyst",
         article_id: articleId,
         model: config.anthropic.model,
         input_tokens: 0,
@@ -88,7 +88,7 @@ async function callLLM(text, route = "pipeline", articleId = null) {
     }).catch(() => {});
 
     logClaudeCall({
-      agent: 'analyst',
+      agent: "analyst",
       article_id: articleId,
       model: response.model,
       input_tokens: response.usage?.input_tokens,
@@ -157,9 +157,16 @@ export async function analyzeFullText(article) {
   }
 }
 
+function trimSpeechText(fullText, maxChars = 8000) {
+  const normalized = (fullText || "").replace(/\s+/g, " ").trim();
+  if (normalized.length <= maxChars) return normalized;
+  return `${normalized.slice(0, maxChars)}…`;
+}
+
 export async function analyzeSpeech(speech) {
   const label = speech.title || speech.description || speech.id;
-  const text = `${label}\n\n${speech.full_text}`;
+  const trimmedText = trimSpeechText(speech.full_text);
+  const text = `${label}\n\n${trimmedText}`;
   try {
     const result = await runLinza(text, "pipeline/speech", speech.id);
     await logEvent(

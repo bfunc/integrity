@@ -56,6 +56,34 @@
     });
   }
 
+  function formatCaseCount(count) {
+    if (count % 10 === 1 && count % 100 !== 11) return `${count} кейс`;
+    if (
+      count % 10 >= 2 &&
+      count % 10 <= 4 &&
+      (count % 100 < 10 || count % 100 >= 20)
+    ) {
+      return `${count} кейса`;
+    }
+    return `${count} кейсов`;
+  }
+
+  function formatPatternCount(count) {
+    if (count % 10 === 1 && count % 100 !== 11) return `${count} паттерн`;
+    if (
+      count % 10 >= 2 &&
+      count % 10 <= 4 &&
+      (count % 100 < 10 || count % 100 >= 20)
+    ) {
+      return `${count} паттерна`;
+    }
+    return `${count} паттернов`;
+  }
+
+  function sourceTypeLabel(sourceType) {
+    return sourceType === "speech" ? "речь" : "статья";
+  }
+
   async function fetchData() {
     try {
       const res = await fetch("/api/leaders");
@@ -74,7 +102,17 @@
   }
 
   onMount(() => {
-    fetchData();
+    const params = new URLSearchParams(window.location.search);
+    const targetLeader = params.get('leader');
+    fetchData().then(() => {
+      if (targetLeader) {
+        expanded = { ...expanded, [targetLeader]: true };
+        setTimeout(() => {
+          const el = document.getElementById(`leader-${targetLeader}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    });
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   });
@@ -94,7 +132,7 @@
   {:else}
     <div class="list">
       {#each leaders as leader (leader.id)}
-        <div class="card">
+        <div class="card" id="leader-{leader.id}">
           <button
             class="card-head"
             class:no-expand={leader.violation_count === 0}
@@ -109,7 +147,11 @@
                 <span class="sev-tag" style={sevStyle(leader.max_severity)}>
                   {leader.max_severity}/5
                 </span>
-                <span class="v-count">{leader.violation_count} нарушений</span>
+                <span class="v-count">
+                  {formatCaseCount(leader.violation_count)}
+                  <span class="v-count-sep">·</span>
+                  {formatPatternCount(leader.pattern_count ?? 0)}
+                </span>
                 <span class="v-date"
                   >{formatDate(leader.last_violation_date)}</span
                 >
@@ -117,7 +159,7 @@
                 <span class="clean">манипуляций не найдено</span>
               {/if}
               <span class="speech-progress"
-                >{leader.speeches_analyzed}/{leader.speeches_total} речей</span
+                >{leader.speeches_analyzed}/{leader.speeches_total} речей проанализировано</span
               >
               {#if leader.violation_count > 0}
                 <span class="chevron">{expanded[leader.id] ? "▲" : "▼"}</span>
@@ -132,6 +174,7 @@
                   <div class="v-head">
                     <span class="v-d">{formatDate(v.date)}</span>
                     <span class="v-t">{v.title}</span>
+                    <span class="v-src">{sourceTypeLabel(v.source_type)} · {v.source_name}</span>
                     {#if v.severity}
                       <span class="sev-tag" style={sevStyle(v.severity)}
                         >{v.severity_label ?? v.severity + "/5"}</span
@@ -300,6 +343,10 @@
     font-size: 0.75rem;
     color: var(--text2);
   }
+  .v-count-sep {
+    margin: 0 6px;
+    color: var(--text3);
+  }
   .v-date {
     font-size: 0.72rem;
     color: var(--text3);
@@ -354,6 +401,14 @@
     font-weight: 600;
     flex: 1;
     min-width: 0;
+  }
+  .v-src {
+    font-size: 0.7rem;
+    color: var(--text3);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    padding: 2px 8px;
   }
   .v-summary-wrap {
     cursor: pointer;
