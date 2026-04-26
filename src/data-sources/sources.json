@@ -1,7 +1,7 @@
 [
   {
     "id": "test_feed",
-    "name": "TEST FEED — DO NOT USE IN PROD",
+    "name": "TEST FEED",
     "url": "https://icy-kissee-integrity-fb5fb250.koyeb.app/test-feed.xml",
     "region": "test",
     "bias": "test",
