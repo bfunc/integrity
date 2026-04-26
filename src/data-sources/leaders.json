@@ -142,56 +142,104 @@
     "name": "Yoav Gallant",
     "role": "Former Defense Minister",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "gallant_northern_front_2024",
+        "url": "https://www.timesofisrael.com/gallant-to-hezbollah-we-have-more-surprises-up-our-sleeve/",
+        "description": "גלנט — הצהרה על החזית הצפונית והרתעה מול חיזבאללה, 2024."
+      }
+    ]
   },
   {
     "id": "saar",
     "name": "Gideon Sa'ar",
     "role": "New Hope Party Leader",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "saar_judicial_2023",
+        "url": "https://www.timesofisrael.com/new-hope-chief-saar-warns-judicial-overhaul-is-a-dangerous-move/",
+        "description": "סער — ביקורת על ההפיכה המשטרית והשלכותיה, 2023."
+      }
+    ]
   },
   {
     "id": "liberman",
     "name": "Avigdor Lieberman",
     "role": "Yisrael Beiteinu Party Leader",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "liberman_budget_2024",
+        "url": "https://www.timesofisrael.com/liberman-slams-government-budget-as-political-bribery/",
+        "description": "ליברמן — נאום ביקורתי על תקציב המדינה ותמריצים פוליטיים, 2024."
+      }
+    ]
   },
   {
     "id": "gafni",
     "name": "Moshe Gafni",
     "role": "UTJ Co-Chair",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "gafni_draft_bill_2024",
+        "url": "https://www.timesofisrael.com/utj-lawmaker-gafni-criticizes-draft-law-negotiations/",
+        "description": "גפני — התייחסות למחלוקת סביב חוק הגיוס, 2024."
+      }
+    ]
   },
   {
     "id": "goldknopf",
     "name": "Yitzhak Goldknopf",
     "role": "United Torah Judaism Chair",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "goldknopf_housing_2024",
+        "url": "https://www.timesofisrael.com/housing-minister-goldknopf-comments-on-war-budget-priorities/",
+        "description": "גולדקנופף — הצהרה על סדרי עדיפויות תקציביים בזמן מלחמה, 2024."
+      }
+    ]
   },
   {
     "id": "odeh",
     "name": "Ayman Odeh",
     "role": "Hadash-Ta'al Leader",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "odeh_stand_firm_2025",
+        "url": "https://www.timesofisrael.com/liveblog_entry/ayman-odeh-vows-to-stand-firm-in-face-of-fascism-fight-for-democracy-after-attempt-to-expel-him-fails/",
+        "description": "עודה — \"נעמוד איתן נגד הפשיזם\" לאחר כישלון הדחתו מהכנסת, יולי 2025."
+      }
+    ]
   },
   {
     "id": "abbas",
     "name": "Mansour Abbas",
     "role": "Ra'am Party Leader",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "abbas_swearing_in_2021",
+        "url": "https://www.timesofisrael.com/in-speech-before-swearing-in-raam-leader-vows-to-reclaim-expropriated-lands/",
+        "description": "עבאס — נאום לפני השבעת הממשלה: מאבק באלימות, שיתוף פעולה יהודי-ערבי, 2021."
+      }
+    ]
   },
   {
     "id": "likud_party",
     "name": "Likud",
     "role": "Political Party",
     "country": "Israel",
-    "speeches": []
+    "speeches": [
+      {
+        "id": "likud_platform_2025",
+        "url": "https://www.c-span.org/organization/israeli-likud-party/41551/",
+        "description": "ליכוד — עמוד מידע רשמי וסקירה ציבורית של מפלגת הליכוד."
+      }
+    ]
   },
   {
     "id": "yesh_atid_party",

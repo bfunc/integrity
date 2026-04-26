@@ -720,12 +720,16 @@ export async function importData(data) {
 
 export async function getArticlesWithStatus() {
   return all(`
-    SELECT a.id, a.url, a.title, a.source, a.published_at, a.status,
+    SELECT a.id, a.url, a.title, a.source, a.published_at, a.fetched_at, a.status,
       (SELECT COUNT(*) FROM analyses an
-       WHERE an.source_id = a.id AND an.source_type = 'article') AS analyzed_count
+       WHERE an.source_id = a.id AND an.source_type = 'article') AS analyzed_count,
+      COALESCE((
+        SELECT MAX(an.severity) FROM analyses an
+        WHERE an.source_id = a.id AND an.source_type = 'article'
+      ), 0) AS max_severity
     FROM articles a
-    ORDER BY a.published_at DESC
-    LIMIT 200
+    ORDER BY COALESCE(a.published_at, a.fetched_at) DESC
+    LIMIT 500
   `);
 }
 

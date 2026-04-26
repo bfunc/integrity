@@ -53,10 +53,16 @@ function parseProgress(events) {
 
 export async function GET() {
   const [events, stats, articles] = await Promise.all([
-    getEvents(200),
+    getEvents(100),
     getStats(),
     getArticlesWithStatus(),
   ]);
+
+  const cutoffMs = Date.now() - 24 * 60 * 60 * 1000;
+  const recentArticles = articles.filter((a) => {
+    const ts = Date.parse(a.published_at || a.fetched_at || "");
+    return Number.isFinite(ts) && ts >= cutoffMs;
+  });
 
   return json({
     stats: {
@@ -66,9 +72,11 @@ export async function GET() {
       queueSize: 0,
     },
     events,
-    articles: articles.map((a) => ({
+    articles: recentArticles.map((a) => ({
       ...a,
       analyzed_count: Number(a.analyzed_count),
+      max_severity: Number(a.max_severity ?? 0),
+      interesting: Number(a.max_severity ?? 0) >= 3,
     })),
     progress: parseProgress(events),
   });

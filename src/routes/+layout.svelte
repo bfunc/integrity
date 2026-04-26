@@ -114,7 +114,7 @@
   <div id="topbar">
     <!-- HEADER -->
     <div id="header">
-      <div id="conn-dot" class="wait"></div>
+      <div id="conn-dot" class="wait {pipelineRunning ? 'running' : ''}"></div>
       <a href="/" id="logo">aigregator</a>
       <span id="header-sub">
         {#if pipelineRunning && progress}
@@ -305,6 +305,8 @@
   }
   :global(#conn-dot.wait) {
     background: var(--amber);
+  }
+  :global(#conn-dot.running) {
     animation: blink 1s infinite;
   }
 

@@ -127,7 +127,10 @@ export async function runPipeline() {
           const fullText = await scrapeText(speech.url, null);
           if (!fullText) {
             await updateSpeechStatus(speech.id, "error");
-            await logEvent("warning", `Could not scrape speech: ${speech.id}`);
+            await logEvent(
+              "warning",
+              `Could not scrape speech: ${speech.id} (${speech.url})`,
+            );
             continue;
           }
 
@@ -178,7 +181,7 @@ export async function runPipeline() {
       } catch (err) {
         await logEvent(
           "warning",
-          `RSS fetch failed for ${site.id}: ${err.message}`,
+          `RSS fetch/parse failed for ${site.id} (${site.url}): ${err.message}`,
         );
         continue;
       }
@@ -221,7 +224,7 @@ export async function runPipeline() {
           } catch (err) {
             await logEvent(
               "warning",
-              `Analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+              `Analysis error in ${site.id} (${url}) — "${title.slice(0, 40)}": ${err.message}`,
             );
             await updateArticleStatus(id, "error");
             continue;
@@ -241,7 +244,7 @@ export async function runPipeline() {
               } catch (err) {
                 await logEvent(
                   "warning",
-                  `Full-text analysis error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+                  `Full-text analysis error in ${site.id} (${url}) — "${title.slice(0, 40)}": ${err.message}`,
                 );
                 await updateArticleStatus(id, "error");
                 continue;
@@ -272,7 +275,7 @@ export async function runPipeline() {
         } catch (err) {
           await logEvent(
             "warning",
-            `Article error in ${site.id} — "${title.slice(0, 40)}": ${err.message}`,
+            `Article error in ${site.id} (${url}) — "${title.slice(0, 40)}": ${err.message}`,
           );
           await updateArticleStatus(id, "error").catch(() => {});
         }

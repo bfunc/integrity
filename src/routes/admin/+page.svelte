@@ -77,6 +77,13 @@
     return { label: "—", cls: "badge-gray" };
   }
 
+  function interestingBadge(article) {
+    const sev = Number(article.max_severity ?? 0);
+    if (sev >= 4) return { label: "high risk", cls: "badge-red" };
+    if (sev >= 3) return { label: "interesting", cls: "badge-violet" };
+    return null;
+  }
+
   // ── Data fetchers ─────────────────────────────────────────────────────────
 
   async function fetchAudit() {
@@ -370,6 +377,7 @@
           <tbody>
             {#each articles as a (a.id)}
               {@const ab = analyzedBadge(a)}
+              {@const ib = interestingBadge(a)}
               <tr>
                 <td class="article-title">
                   <a href={a.url} target="_blank" rel="noopener" title={a.title}>
@@ -377,9 +385,14 @@
                   </a>
                 </td>
                 <td class="source-cell">{a.source ?? "—"}</td>
-                <td class="ts">{fmtDateTime(a.published_at)}</td>
+                <td class="ts">{fmtDateTime(a.published_at || a.fetched_at)}</td>
                 <td><span class="badge badge-green">crawled</span></td>
-                <td><span class="badge {ab.cls}">{ab.label}</span></td>
+                <td>
+                  <span class="badge {ab.cls}">{ab.label}</span>
+                  {#if ib}
+                    <span class="badge {ib.cls}">{ib.label}</span>
+                  {/if}
+                </td>
               </tr>
             {/each}
             {#if articles.length === 0}
@@ -530,6 +543,7 @@
   .badge-amber  { background: rgba(217,119,6,0.12);  color: #b45309; }
   .badge-red    { background: rgba(239,68,68,0.12);  color: #b91c1c; }
   .badge-gray   { background: rgba(107,114,128,0.1); color: var(--text3); }
+  .badge-violet { background: rgba(124,58,237,0.12); color: #6d28d9; }
 
   .filter-sep { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
 
