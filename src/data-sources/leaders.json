@@ -136,5 +136,68 @@
         "description": "דרעי/ש״ס — רטוריקה חריפה תוך הימנעות מפיזור הכנסת, 2024."
       }
     ]
+  },
+  {
+    "id": "gallant",
+    "name": "Yoav Gallant",
+    "role": "Former Defense Minister",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "saar",
+    "name": "Gideon Sa'ar",
+    "role": "New Hope Party Leader",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "liberman",
+    "name": "Avigdor Lieberman",
+    "role": "Yisrael Beiteinu Party Leader",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "gafni",
+    "name": "Moshe Gafni",
+    "role": "UTJ Co-Chair",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "goldknopf",
+    "name": "Yitzhak Goldknopf",
+    "role": "United Torah Judaism Chair",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "odeh",
+    "name": "Ayman Odeh",
+    "role": "Hadash-Ta'al Leader",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "abbas",
+    "name": "Mansour Abbas",
+    "role": "Ra'am Party Leader",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "likud_party",
+    "name": "Likud",
+    "role": "Political Party",
+    "country": "Israel",
+    "speeches": []
+  },
+  {
+    "id": "yesh_atid_party",
+    "name": "Yesh Atid",
+    "role": "Political Party",
+    "country": "Israel",
+    "speeches": []
   }
 ]
