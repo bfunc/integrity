@@ -1,5 +1,32 @@
 [
   {
+    "id": "timesofisrael",
+    "name": "Times of Israel",
+    "url": "https://www.timesofisrael.com/feed/",
+    "region": "Israel",
+    "bias": "center",
+    "language": "en",
+    "update_frequency": "very_high"
+  },
+  {
+    "id": "jpost",
+    "name": "Jerusalem Post",
+    "url": "https://www.jpost.com/Rss/RssFeedsHeadlines.aspx",
+    "region": "Israel",
+    "bias": "center-right",
+    "language": "en",
+    "update_frequency": "high"
+  },
+  {
+    "id": "arutz7",
+    "name": "Arutz Sheva",
+    "url": "https://www.israelnationalnews.com/rss",
+    "region": "Israel",
+    "bias": "right",
+    "language": "en",
+    "update_frequency": "high"
+  },
+  {
     "id": "zman",
     "name": "Zman Israel",
     "url": "https://www.zman.co.il/feed/",
@@ -25,14 +52,5 @@
     "bias": "center",
     "language": "he",
     "update_frequency": "very_high"
-  },
-  {
-    "id": "jpost",
-    "name": "Jerusalem Post",
-    "url": "https://www.jpost.com/Rss/RssFeedsHeadlines.aspx",
-    "region": "Israel",
-    "bias": "center-right",
-    "language": "en",
-    "update_frequency": "high"
   }
 ]

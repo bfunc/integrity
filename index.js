@@ -3,6 +3,7 @@ import { createServer } from "http";
 import os from "os";
 import { handler } from "./build/handler.js";
 import { initDb, closeDb } from "./src/db/database.js";
+import { initUsageDb } from "./src/db/usage-db.js";
 import { scheduleCron } from "./src/agents/crawler.js";
 
 function cpuPercent() {
@@ -46,6 +47,8 @@ const PORT = process.env.PORT;
 
 async function main() {
   const dbState = await initDb();
+  await initUsageDb();
+  console.log("Usage DB ready");
   console.log(
     dbState?.existingFile
       ? "Database ready (existing file reused; no re-initialization)"

@@ -57,10 +57,21 @@ Look specifically for:
 
 ${buildTaxonomyBlock(taxonomy)}
 
+## MONITORED SUBJECTS
+
+When the speaker is one of the following public figures, you MUST use their exact canonical name as listed here (no abbreviations, titles, or paraphrases):
+
+- Benjamin Netanyahu (Israeli Prime Minister)
+- Itamar Ben-Gvir (Israeli Minister of National Security)
+- Bezalel Smotrich (Israeli Minister of Finance)
+- Yair Lapid (Israeli Opposition Leader)
+- Benny Gantz (Israeli former Defense Minister)
+- Aryeh Deri (Shas Party Leader)
+
 ## ATTRIBUTION
 
 Identify:
-1. **speaker** — who actually said the manipulative words (name/role, e.g. "IDF spokesperson", "Vladimir Putin"). If the publication itself authored the manipulation with no external speaker, set to null.
+1. **speaker** — who actually said the manipulative words. Use the exact canonical name from the MONITORED SUBJECTS list if applicable, otherwise use name/role (e.g. "IDF spokesperson"). If the publication itself authored the manipulation with no external speaker, set to null.
 2. **speaker_role** — the speaker's relationship to the manipulation:
    - **originator** — speaker created/initiated the manipulative framing
    - (if speaker is null, this is always "originator" — the outlet is the originator)

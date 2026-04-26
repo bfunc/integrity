@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { config } from "../lib/config.js";
 import { buildSystemPrompt, buildUserPrompt } from "../linza/prompt.js";
 import { logEvent } from "../db/database.js";
+import { logUsage } from "../db/usage-db.js";
 
 const isLocal = process.env.LOCAL_MODEL === "true";
 
@@ -23,7 +24,7 @@ const systemPrompt = buildSystemPrompt();
 
 const LLM_TIMEOUT_MS = 60_000;
 
-async function callLLM(text) {
+async function callLLM(text, route = "pipeline") {
   if (isLocal) {
     const response = await localClient.chat.completions.create(
       {
@@ -53,12 +54,18 @@ async function callLLM(text) {
       },
       { timeout: LLM_TIMEOUT_MS },
     );
+    logUsage({
+      route,
+      model: response.model,
+      input: response.usage?.input_tokens,
+      output: response.usage?.output_tokens,
+    }).catch(() => {});
     return response.content[0].text;
   }
 }
 
-export async function runLinza(text) {
-  const raw = (await callLLM(text)).trim();
+export async function runLinza(text, route = "pipeline") {
+  const raw = (await callLLM(text, route)).trim();
 
   let parsed;
   try {
@@ -78,7 +85,7 @@ export async function runLinza(text) {
 export async function analyzeArticle(article) {
   const text = `${article.title}\n\n${article.excerpt || ""}`;
   try {
-    const result = await runLinza(text);
+    const result = await runLinza(text, "pipeline/article");
     await logEvent(
       "info",
       `Analyzed article: ${article.title.slice(0, 80)} → severity ${result.severity}`,
@@ -96,7 +103,7 @@ export async function analyzeArticle(article) {
 export async function analyzeFullText(article) {
   const text = `${article.title}\n\n${article.full_text}`;
   try {
-    const result = await runLinza(text);
+    const result = await runLinza(text, "pipeline/article-full");
     await logEvent(
       "info",
       `Re-analyzed full text: ${article.title.slice(0, 80)} → severity ${result.severity}`,
@@ -115,7 +122,7 @@ export async function analyzeSpeech(speech) {
   const label = speech.title || speech.description || speech.id;
   const text = `${label}\n\n${speech.full_text}`;
   try {
-    const result = await runLinza(text);
+    const result = await runLinza(text, "pipeline/speech");
     await logEvent(
       "info",
       `Analyzed speech: ${label.slice(0, 80)} → severity ${result.severity}`,

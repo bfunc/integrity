@@ -6,9 +6,24 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "netanyahu_unga_2025",
-        "url": "https://embassies.gov.il/dubai/en/news/pm-netanyahu-s-statement-president-donald-trump-white-house-29-sep-2025",
-        "description": "Нетаньяху — заявление после встречи с Трампом в Белом доме, сентябрь 2025."
+        "id": "netanyahu_congress_2024",
+        "url": "https://www.timesofisrael.com/were-protecting-you-full-text-of-netanyahus-address-to-congress/",
+        "description": "Нетаньяху — полный текст выступления перед Конгрессом США, июль 2024."
+      },
+      {
+        "id": "netanyahu_unga_2024",
+        "url": "https://www.timesofisrael.com/full-text-of-netanyahus-un-speech-enough-is-enough-he-says-of-hezbollah-also-warns-iran/",
+        "description": "Нетаньяху — полный текст речи на Генассамблее ООН, сентябрь 2024."
+      },
+      {
+        "id": "netanyahu_gallant_2024",
+        "url": "https://www.timesofisrael.com/full-text-of-netanyahu-speech-i-fired-gallant-amid-crisis-of-faith-that-helped-enemies/",
+        "description": "Нетаньяху — полный текст речи об увольнении Галанта, ноябрь 2024."
+      },
+      {
+        "id": "netanyahu_sinwar_2024",
+        "url": "https://www.timesofisrael.com/full-text-of-netanyahus-address-after-killing-of-hamas-terror-chief-yahya-sinwar/",
+        "description": "Нетаньяху — обращение после ликвидации Яхьи Синвара, октябрь 2024."
       }
     ]
   },
@@ -19,9 +34,19 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "ben_gvir_security_2025",
-        "url": "https://gov.il/en/departments/news",
-        "description": "Бен-Гвир — заявление о внутренней безопасности, 2025 (официальный пресс-релиз)."
+        "id": "ben_gvir_emigration_2024",
+        "url": "https://www.timesofisrael.com/ben-gvir-calls-to-encourage-emigration-resettle-gaza-at-ultra-nationalist-rally/",
+        "description": "Бен-Гвир — выступление на ультраправом митинге о выселении Газы, май 2024."
+      },
+      {
+        "id": "ben_gvir_deadline_2024",
+        "url": "https://www.timesofisrael.com/ben-gvir-says-he-gave-pm-deadline-to-dismantle-hamas-enact-death-penalty-for-terrorists/",
+        "description": "Бен-Гвир — ультиматум Нетаньяху о ХАМАСе и смертной казни для террористов, 2024."
+      },
+      {
+        "id": "ben_gvir_ceasefire_2024",
+        "url": "https://www.timesofisrael.com/ben-gvir-says-party-to-quit-government-if-cabinet-approves-hostage-ceasefire-deal/",
+        "description": "Бен-Гвир — угроза выйти из правительства при одобрении сделки о заложниках, 2024."
       }
     ]
   },
@@ -32,9 +57,19 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "smotrich_budget_2025",
-        "url": "https://gov.il/en/departments/news",
-        "description": "Смотрич — комментарий к проекту бюджета, 2025."
+        "id": "smotrich_starve_2024",
+        "url": "https://www.timesofisrael.com/smotrich-it-may-be-justified-to-starve-2-million-gazans-but-world-wont-let-us/",
+        "description": "Смотрич — заявление об оправданности голода 2 млн жителей Газы, 2024."
+      },
+      {
+        "id": "smotrich_emigration_2024",
+        "url": "https://www.timesofisrael.com/smotrich-says-half-of-gazans-can-be-encouraged-to-leave-within-two-years/",
+        "description": "Смотрич — план «поощрения» эмиграции половины жителей Газы, ноябрь 2024."
+      },
+      {
+        "id": "smotrich_occupy_2024",
+        "url": "https://www.timesofisrael.com/smotrich-urges-pm-to-order-the-idf-to-prepare-for-the-full-occupation-of-gaza/",
+        "description": "Смотрич — призыв к полной оккупации Газы, 2024."
       }
     ]
   },
@@ -45,9 +80,19 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "lapid_opposition_2025",
-        "url": "https://yeshatid.org.il",
-        "description": "Лапид — заявление оппозиции о политической ситуации, 2025."
+        "id": "lapid_government_2024",
+        "url": "https://www.timesofisrael.com/lapid-says-he-would-join-government-headed-by-likuds-edelstein-urges-gantz-to-bolt/",
+        "description": "Лапид — призыв сформировать новое правительство без Нетаньяху, январь 2024."
+      },
+      {
+        "id": "lapid_iran_2024",
+        "url": "https://www.timesofisrael.com/israeli-opposition-leaders-rally-behind-government-as-israel-and-us-strike-iran/",
+        "description": "Лапид — поддержка правительства в ходе ударов по Ирану, 2024."
+      },
+      {
+        "id": "lapid_judicial_2023",
+        "url": "https://www.timesofisrael.com/lapid-president-considering-my-idea-to-set-up-panel-for-balanced-judicial-reform/",
+        "description": "Лапид — инициатива по судебной реформе, 2023."
       }
     ]
   },
@@ -58,9 +103,19 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "gantz_defense_2025",
-        "url": "https://knesset.gov.il",
-        "description": "Ганц — выступление о безопасности и обороне, 2025."
+        "id": "gantz_hostage_govt_2024",
+        "url": "https://www.timesofisrael.com/gantz-urges-netanyahu-lapid-liberman-to-form-temporary-hostage-redemption-government/",
+        "description": "Ганц — призыв сформировать временное правительство для освобождения заложников, 2024."
+      },
+      {
+        "id": "gantz_iran_2024",
+        "url": "https://www.timesofisrael.com/israeli-opposition-leaders-rally-behind-government-as-israel-and-us-strike-iran/",
+        "description": "Ганц — поддержка правительства в ходе ударов по Ирану, 2024."
+      },
+      {
+        "id": "gantz_judicial_2023",
+        "url": "https://www.timesofisrael.com/gantz-on-coalitions-judicial-overhaul-its-a-political-coup-lapid-vows-to-nix-it/",
+        "description": "Ганц — осуждение судебной реформы коалиции как политического переворота, 2023."
       }
     ]
   },
@@ -71,9 +126,14 @@
     "country": "Israel",
     "speeches": [
       {
-        "id": "deri_party_2025",
-        "url": "https://shas.org.il",
-        "description": "Дери — партийное заявление по социальным вопросам, 2025."
+        "id": "deri_haredi_draft_2024",
+        "url": "https://www.timesofisrael.com/shass-deri-threatens-to-topple-government-over-ultra-orthodox-conscription-bill/",
+        "description": "Дери — угроза обрушить правительство из-за закона о призыве ультраортодоксов, 2024."
+      },
+      {
+        "id": "deri_shas_coalition_2024",
+        "url": "https://www.timesofisrael.com/despite-harsh-rhetoric-shas-still-seeks-to-avoid-dissolution-of-knesset/",
+        "description": "Дери/Шас — жёсткая риторика при уклонении от роспуска Кнессета, 2024."
       }
     ]
   }

@@ -202,22 +202,22 @@
   }
 
   :global(:root) {
-    --bg: #0c0e14;
-    --bg2: #131720;
-    --bg3: #1a1f2e;
-    --border: #252d3e;
-    --border2: #1e2840;
-    --text: #dde4f0;
-    --text2: #8899b4;
-    --text3: #4d5e7a;
-    --red: #ef4444;
-    --red-bg: #1a0808;
-    --red-b: #3d1010;
-    --green: #22c55e;
-    --blue: #60a5fa;
-    --purple: #a78bfa;
-    --orange: #f97316;
-    --amber: #f59e0b;
+    --bg: #f4f6fb;
+    --bg2: #ffffff;
+    --bg3: #eaecf3;
+    --border: #d4d9e8;
+    --border2: #dde1ea;
+    --text: #1a1f2e;
+    --text2: #3d4f6e;
+    --text3: #7a8faa;
+    --red: #dc2626;
+    --red-bg: #fff0f0;
+    --red-b: #fecaca;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --purple: #7c3aed;
+    --orange: #ea6c00;
+    --amber: #d97706;
     --radius: 10px;
   }
 
@@ -251,8 +251,8 @@
     align-items: center;
     gap: 12px;
     padding: 14px 24px;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
+    background: #0038b8;
+    border-bottom: 1px solid #002a8a;
   }
 
   #logo {
@@ -260,7 +260,7 @@
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #f0f4ff;
+    color: #ffffff;
     text-decoration: none;
   }
 
@@ -295,7 +295,7 @@
 
   #header-sub {
     font-size: 0.78rem;
-    color: var(--text3);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   #pipeline-bar {
@@ -443,5 +443,6 @@
     flex: 1;
     padding: 20px 24px 28px;
     width: 100%;
+    overflow-x: clip;
   }
 </style>

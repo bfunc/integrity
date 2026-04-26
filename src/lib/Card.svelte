@@ -2,11 +2,11 @@
   export let item;
 
   const SEV_COLOR = {
-    1: { bg: "#0f172a", border: "#1e232e", text: "#818cf8" },
-    2: { bg: "#0f172a", border: "#1e232e", text: "#818cf8" },
-    3: { bg: "#1c0f00", border: "#4a2500", text: "#fb923c" },
-    4: { bg: "#1a0808", border: "#3d1010", text: "#fca5a5" },
-    5: { bg: "#1a0808", border: "#5a0e0e", text: "#ef4444" },
+    1: { bg: "#eff1ff", border: "#c7d2fe", text: "#4f46e5" },
+    2: { bg: "#eff1ff", border: "#c7d2fe", text: "#4f46e5" },
+    3: { bg: "#fff7ed", border: "#fed7aa", text: "#ea580c" },
+    4: { bg: "#fff1f2", border: "#fecdd3", text: "#dc2626" },
+    5: { bg: "#fff1f2", border: "#fca5a5", text: "#b91c1c" },
   };
 
   const PATTERN_NAMES = {
@@ -51,15 +51,15 @@
 
   function sevStyle(s) {
     const c = SEV_COLOR[s] || {
-      bg: "#0f172a",
-      border: "#1e293b",
-      text: "#818cf8",
+      bg: "#eff1ff",
+      border: "#c7d2fe",
+      text: "#4f46e5",
     };
     return `background:${c.bg};border-color:${c.border};color:${c.text}`;
   }
 
   function cleanStyle() {
-    return "background:#052e1a;border-color:#166534;color:#86efac";
+    return "background:#f0fdf4;border-color:#86efac;color:#15803d";
   }
 
   function violBorderStyle(p) {
@@ -156,7 +156,9 @@
   </div>
 
   <a class="threat-title" href={item.url || "#"} target="_blank" rel="noopener">
-    {item.title}{#if topPattern}<span class="title-pattern-tag">{PATTERN_NAMES[topPattern.name] ?? topPattern.name}</span>{/if}
+    {item.title}{#if topPattern}<span class="title-pattern-tag"
+        >{PATTERN_NAMES[topPattern.name] ?? topPattern.name}</span
+      >{/if}
   </a>
 
   {#if item.subtext || item.summary_md}
@@ -166,7 +168,8 @@
       on:click|stopPropagation={() => (summaryExpanded = !summaryExpanded)}
       role="button"
       tabindex="0"
-      on:keypress={(e) => e.key === 'Enter' && (summaryExpanded = !summaryExpanded)}
+      on:keypress={(e) =>
+        e.key === "Enter" && (summaryExpanded = !summaryExpanded)}
     >
       {#if item.subtext}
         <span class="subtext-label">Что скрыто между строк</span>
@@ -174,7 +177,7 @@
       {:else}
         <p class="threat-status">{item.summary_md}</p>
       {/if}
-      <span class="summary-chevron">{summaryExpanded ? '▴' : '▾'}</span>
+      <span class="summary-chevron">{summaryExpanded ? "▴" : "▾"}</span>
     </div>
   {/if}
 
@@ -327,11 +330,7 @@
 <style>
   /* ── CARD ── */
   .threat-card {
-    background: linear-gradient(
-      180deg,
-      rgba(22, 27, 38, 0.96) 0%,
-      rgba(18, 22, 31, 0.96) 100%
-    );
+    background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
@@ -348,7 +347,7 @@
 
   .threat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   .threat-top {
@@ -380,12 +379,12 @@
     flex-shrink: 0;
   }
   .attr-originator {
-    background: #3d1010;
-    color: #ef4444;
+    background: #fff1f2;
+    color: #dc2626;
   }
   .attr-amplifier {
-    background: #431407;
-    color: #f97316;
+    background: #fff7ed;
+    color: #ea580c;
   }
 
   .threat-tag {
@@ -408,7 +407,7 @@
     font-size: 0.96rem;
     font-weight: 650;
     line-height: 1.4;
-    color: #eef2fb;
+    color: var(--text);
     margin-bottom: 10px;
   }
 
@@ -471,14 +470,14 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #3d5470;
+    color: var(--text3);
     margin-bottom: 4px;
   }
 
   .subtext-body {
     font-size: 0.78rem;
     line-height: 1.55;
-    color: #8a96a8;
+    color: var(--text2);
   }
 
   /* Feature 5: 2-line clamp on grid card summary */
@@ -553,7 +552,7 @@
   .modal {
     width: 100%;
     max-width: 720px;
-    background: linear-gradient(160deg, #151a28 0%, #0f1320 100%);
+    background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 24px 28px 28px;
@@ -591,7 +590,7 @@
     font-weight: 700;
     padding: 3px 8px;
     border-radius: 5px;
-    background: #1a1f2e;
+    background: #f3f0ff;
     color: var(--purple);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -626,7 +625,7 @@
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.4;
-    color: #eef2fb;
+    color: var(--text);
     margin-bottom: 6px;
   }
 
@@ -650,8 +649,8 @@
   .modal-subtext-section {
     margin-bottom: 24px;
     padding: 14px 16px;
-    background: #0d1420;
-    border: 1px solid #1e2d42;
+    background: var(--bg3);
+    border: 1px solid var(--border);
     border-radius: 8px;
   }
 
@@ -661,14 +660,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: #5b7fa6;
+    color: var(--text3);
     margin-bottom: 8px;
   }
 
   .modal-subtext-body {
     font-size: 0.86rem;
     line-height: 1.6;
-    color: #8a96a8;
+    color: var(--text2);
   }
 
   /* ── VIOLATIONS ── */
@@ -689,7 +688,7 @@
   }
 
   .violations-count {
-    background: #1e2d4a;
+    background: #e8eef8;
     color: var(--blue);
     font-size: 0.65rem;
     font-weight: 700;

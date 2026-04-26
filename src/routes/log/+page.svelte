@@ -16,9 +16,11 @@
   let password = "";
   let runStatus = null;
   let runLoading = false;
+  let stopLoading = false;
   let resetLoading = false;
   let importLoading = false;
   let fileInput;
+  let pipelineRunning = false;
 
   function formatDateTime(ts) {
     if (!ts) return "—";
@@ -38,10 +40,35 @@
       const data = await res.json();
       stats = data.stats;
       events = data.events;
+      const latest = data.events?.[0];
+      pipelineRunning =
+        !!latest &&
+        !latest.message.startsWith("Pipeline completed") &&
+        !latest.message.startsWith("Pipeline stopped") &&
+        data.events.some((e) => e.message === "Pipeline started");
     } catch (e) {
       error = e.message;
     } finally {
       loading = false;
+    }
+  }
+
+  async function triggerStop() {
+    stopLoading = true;
+    runStatus = null;
+    try {
+      const res = await fetch("/api/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      runStatus = { ok: res.ok, message: data.message || data.error || "Ошибка" };
+      if (res.ok) setTimeout(fetchData, 1500);
+    } catch (e) {
+      runStatus = { ok: false, message: e.message };
+    } finally {
+      stopLoading = false;
     }
   }
 
@@ -197,6 +224,13 @@
           {runLoading ? "Запуск..." : "▶ Запустить"}
         </button>
         <button
+          class="btn-stop"
+          on:click={triggerStop}
+          disabled={stopLoading || !password || !pipelineRunning}
+        >
+          {stopLoading ? "Остановка..." : "⏹ Стоп"}
+        </button>
+        <button
           class="btn-reset"
           on:click={triggerReset}
           disabled={resetLoading || !password}
@@ -221,6 +255,9 @@
             disabled={!password || importLoading}
           />
         </label>
+        <a href="/admin/usage.csv" class="btn-export" download>
+          📊 Usage CSV
+        </a>
       </div>
       {#if runStatus}
         <div
@@ -358,6 +395,25 @@
     color: #5ab45a;
   }
   .btn-run:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .btn-stop {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text3);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-stop:hover:not(:disabled) {
+    border-color: #f97316;
+    color: #f97316;
+  }
+  .btn-stop:disabled {
     opacity: 0.4;
     cursor: default;
   }

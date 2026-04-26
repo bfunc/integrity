@@ -1,58 +1,58 @@
 <script>
-  import { filterState } from './filterStore.js';
-  import { siteMap, regionMap } from './siteData.js';
+  import { filterState } from "./filterStore.js";
+  import { siteMap, regionMap } from "./siteData.js";
 
   export let items = [];
 
   const SEV_LABELS = {
-    mild: 'MILD',
-    moderate: 'MODERATE',
-    high: 'HIGH',
-    critical: 'CRITICAL',
+    mild: "MILD",
+    moderate: "MODERATE",
+    high: "HIGH",
+    critical: "CRITICAL",
   };
 
-  const SEV_ORDER = ['mild', 'moderate', 'high', 'critical'];
+  const SEV_ORDER = ["mild", "moderate", "high", "critical"];
 
-  const REGION_ORDER = ['USA', 'Europe', 'Russia', 'Asia', 'Middle East'];
+  const REGION_ORDER = ["USA", "Europe", "Russia", "Asia", "Middle East"];
 
-  $: sourceStats         = computeSourceStats(items);
+  $: sourceStats = computeSourceStats(items);
   $: availableSeverities = computeAvailableSeverities(items);
-  $: availableRegions    = computeAvailableRegions(items);
+  $: availableRegions = computeAvailableRegions(items);
 
   function computeSourceStats(items) {
     const map = {};
     for (const item of items) {
-      if (item.source_type !== 'article') continue;
+      if (item.source_type !== "article") continue;
       const src = item.source;
       if (!map[src]) map[src] = { id: src, count: 0, totalSev: 0 };
       map[src].count++;
       map[src].totalSev += item.severity;
     }
     return Object.values(map)
-      .map(s => ({ ...s, avgSev: s.totalSev / s.count }))
+      .map((s) => ({ ...s, avgSev: s.totalSev / s.count }))
       .sort((a, b) => b.avgSev - a.avgSev || b.count - a.count);
   }
 
   function computeAvailableSeverities(items) {
-    const set = new Set(items.map(i => i.severity_label).filter(Boolean));
-    return SEV_ORDER.filter(s => set.has(s));
+    const set = new Set(items.map((i) => i.severity_label).filter(Boolean));
+    return SEV_ORDER.filter((s) => set.has(s));
   }
 
   function computeAvailableRegions(items) {
     const set = new Set();
     for (const item of items) {
-      if (item.source_type !== 'article') continue;
+      if (item.source_type !== "article") continue;
       const region = regionMap[item.source];
       if (region) set.add(region);
     }
-    return REGION_ORDER.filter(r => set.has(r));
+    return REGION_ORDER.filter((r) => set.has(r));
   }
 
   function heatmapColor(avgSev) {
-    if (avgSev >= 4) return '#E5383B';
-    if (avgSev >= 3) return '#E8621A';
-    if (avgSev >= 2) return '#F5A623';
-    return '#6B7280';
+    if (avgSev >= 4) return "#E5383B";
+    if (avgSev >= 3) return "#E8621A";
+    if (avgSev >= 2) return "#F5A623";
+    return "#6B7280";
   }
 
   function sourceName(id) {
@@ -60,22 +60,22 @@
   }
 
   function toggleSource(id) {
-    filterState.update(s => ({ ...s, source: s.source === id ? null : id }));
+    filterState.update((s) => ({ ...s, source: s.source === id ? null : id }));
   }
 
   function toggleSeverity(label) {
-    filterState.update(s => {
+    filterState.update((s) => {
       const severities = s.severities.includes(label)
-        ? s.severities.filter(x => x !== label)
+        ? s.severities.filter((x) => x !== label)
         : [...s.severities, label];
       return { ...s, severities };
     });
   }
 
   function toggleRegion(region) {
-    filterState.update(s => {
+    filterState.update((s) => {
       const regions = s.regions.includes(region)
-        ? s.regions.filter(x => x !== region)
+        ? s.regions.filter((x) => x !== region)
         : [...s.regions, region];
       return { ...s, regions };
     });
@@ -87,8 +87,9 @@
     <button
       class="pill src-pill"
       class:active={$filterState.source === null}
-      on:click={() => filterState.update(s => ({ ...s, source: null }))}
-    >Все источники</button>
+      on:click={() => filterState.update((s) => ({ ...s, source: null }))}
+      >Все источники</button
+    >
     {#each sourceStats as s}
       {@const color = heatmapColor(s.avgSev)}
       <button
@@ -111,14 +112,15 @@
     <button
       class="pill f-pill"
       class:active={$filterState.severities.length === 0}
-      on:click={() => filterState.update(s => ({ ...s, severities: [] }))}
-    >Все</button>
+      on:click={() => filterState.update((s) => ({ ...s, severities: [] }))}
+      >Все</button
+    >
     {#each availableSeverities as sev}
       <button
         class="pill f-pill sev-{sev}"
         class:active={$filterState.severities.includes(sev)}
-        on:click={() => toggleSeverity(sev)}
-      >{SEV_LABELS[sev]}</button>
+        on:click={() => toggleSeverity(sev)}>{SEV_LABELS[sev]}</button
+      >
     {/each}
   </div>
 
@@ -129,14 +131,15 @@
       <button
         class="pill f-pill"
         class:active={$filterState.regions.length === 0}
-        on:click={() => filterState.update(s => ({ ...s, regions: [] }))}
-      >Все</button>
+        on:click={() => filterState.update((s) => ({ ...s, regions: [] }))}
+        >Все</button
+      >
       {#each availableRegions as region}
         <button
           class="pill f-pill"
           class:active={$filterState.regions.includes(region)}
-          on:click={() => toggleRegion(region)}
-        >{region}</button>
+          on:click={() => toggleRegion(region)}>{region}</button
+        >
       {/each}
     </div>
   {/if}
@@ -200,7 +203,10 @@
     font-size: 0.68rem;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.12s, color 0.12s, background 0.12s;
+    transition:
+      border-color 0.12s,
+      color 0.12s,
+      background 0.12s;
     white-space: nowrap;
     font-family: inherit;
     line-height: 1.4;
@@ -212,7 +218,7 @@
   }
 
   .src-pill.active {
-    border-color: #fff;
+    border-color: var(--text);
     color: var(--text);
   }
 
@@ -224,20 +230,36 @@
   }
 
   .src-count {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.07);
     border-radius: 6px;
     padding: 0 5px;
     font-size: 0.62rem;
   }
 
   .f-pill.active {
-    background: #1a2d4a;
+    background: #e8eef8;
     border-color: var(--blue);
     color: var(--blue);
   }
 
-  .f-pill.sev-mild.active     { background: #131726; border-color: #818cf8; color: #818cf8; }
-  .f-pill.sev-moderate.active { background: #1c1400; border-color: #f59e0b; color: #f59e0b; }
-  .f-pill.sev-high.active     { background: #1c0f00; border-color: #fb923c; color: #fb923c; }
-  .f-pill.sev-critical.active { background: #1a0808; border-color: #ef4444; color: #ef4444; }
+  .f-pill.sev-mild.active {
+    background: #eff1ff;
+    border-color: #4f46e5;
+    color: #4f46e5;
+  }
+  .f-pill.sev-moderate.active {
+    background: #fffbeb;
+    border-color: #d97706;
+    color: #d97706;
+  }
+  .f-pill.sev-high.active {
+    background: #fff7ed;
+    border-color: #ea580c;
+    color: #ea580c;
+  }
+  .f-pill.sev-critical.active {
+    background: #fff1f2;
+    border-color: #dc2626;
+    color: #dc2626;
+  }
 </style>

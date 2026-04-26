@@ -24,6 +24,15 @@ const parser = new Parser({ timeout: 10000 });
 
 const sites = sitesData;
 let pipelinePromise = null;
+let stopRequested = false;
+
+export function requestPipelineStop() {
+  stopRequested = true;
+}
+
+export function isPipelineStopRequested() {
+  return stopRequested;
+}
 
 function isFiltered(title, excerpt) {
   const text = `${title} ${excerpt || ""}`.toLowerCase();
@@ -59,11 +68,13 @@ export async function runPipeline() {
   }
 
   pipelinePromise = (async () => {
+    stopRequested = false;
     await trimEvents();
     await logEvent("info", "Pipeline started");
 
     // --- Articles pipeline ---
     for (const site of sites) {
+      if (stopRequested) break;
       try {
         const feed = await parser.parseURL(site.url);
         for (const item of feed.items || []) {
@@ -142,6 +153,7 @@ export async function runPipeline() {
 
     // --- Leaders + Speeches pipeline ---
     for (const leader of leadersData) {
+      if (stopRequested) break;
       try {
         await upsertLeader(leader);
       } catch (err) {
@@ -152,6 +164,7 @@ export async function runPipeline() {
       }
 
       for (const speech of leader.speeches) {
+        if (stopRequested) break;
         try {
           if (await speechExists(speech.id)) continue;
           await insertSpeech({ ...speech, leader_id: leader.id });
@@ -195,7 +208,12 @@ export async function runPipeline() {
       }
     }
 
-    await logEvent("info", "Pipeline completed");
+    if (stopRequested) {
+      await logEvent("warning", "Pipeline stopped by user");
+    } else {
+      await logEvent("info", "Pipeline completed");
+    }
+    stopRequested = false;
     invalidateStatsCache();
   })();
 

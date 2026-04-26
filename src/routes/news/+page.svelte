@@ -1,9 +1,9 @@
 <script>
-  import { onMount } from 'svelte';
-  import Card from '$lib/Card.svelte';
-  import FilterPanel from '$lib/FilterPanel.svelte';
-  import { filterState, resetFilters } from '$lib/filterStore.js';
-  import { regionMap } from '$lib/siteData.js';
+  import { onMount } from "svelte";
+  import Card from "$lib/Card.svelte";
+  import FilterPanel from "$lib/FilterPanel.svelte";
+  import { filterState, resetFilters } from "$lib/filterStore.js";
+  import { regionMap } from "$lib/siteData.js";
 
   let items = [];
   let loading = true;
@@ -12,7 +12,7 @@
 
   async function fetchData() {
     try {
-      const res = await fetch('/api/feed?tab=news');
+      const res = await fetch("/api/feed?tab=news");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       items = data.items;
@@ -39,16 +39,28 @@
     $filterState.regions.length > 0;
 
   function applyFilters(items, f, byDate) {
-    const filtered = items.filter(item => {
+    const filtered = items.filter((item) => {
       if (f.source && item.source !== f.source) return false;
-      if (f.severities.length > 0 && !f.severities.includes(item.severity_label)) return false;
-      if (f.types.length > 0 && !item.patterns?.some(p => f.types.includes(p.name))) return false;
-      if (f.sourceTypes.length > 0 && !f.sourceTypes.includes(item.source_type)) return false;
-      if (f.regions.length > 0 && !f.regions.includes(regionMap[item.source])) return false;
+      if (
+        f.severities.length > 0 &&
+        !f.severities.includes(item.severity_label)
+      )
+        return false;
+      if (
+        f.types.length > 0 &&
+        !item.patterns?.some((p) => f.types.includes(p.name))
+      )
+        return false;
+      if (f.sourceTypes.length > 0 && !f.sourceTypes.includes(item.source_type))
+        return false;
+      if (f.regions.length > 0 && !f.regions.includes(regionMap[item.source]))
+        return false;
       return true;
     });
     if (byDate) {
-      return filtered.sort((a, b) => new Date(b.analyzed_at) - new Date(a.analyzed_at));
+      return filtered.sort(
+        (a, b) => new Date(b.analyzed_at) - new Date(a.analyzed_at),
+      );
     }
     return filtered.sort((a, b) => b.severity - a.severity);
   }
@@ -70,8 +82,8 @@
   <button
     class="sort-btn"
     class:active={sortByDate}
-    on:click={() => (sortByDate = !sortByDate)}
-  >Последние</button>
+    on:click={() => (sortByDate = !sortByDate)}>Последние</button
+  >
 </div>
 
 {#if loading}
@@ -108,7 +120,7 @@
     color: var(--text3);
   }
   .count {
-    background: #1e2d4a;
+    background: #e8eef8;
     color: var(--blue);
     font-size: 0.65rem;
     font-weight: 700;
@@ -131,7 +143,9 @@
     color: var(--text3);
     font-size: 0.95rem;
   }
-  .empty.error { color: #f87171; }
+  .empty.error {
+    color: #f87171;
+  }
   .reset-btn {
     background: none;
     border: 1px solid var(--border);
@@ -143,7 +157,9 @@
     cursor: pointer;
     transition: background 0.12s;
   }
-  .reset-btn:hover { background: #1e2d4a; }
+  .reset-btn:hover {
+    background: #e8eef8;
+  }
 
   .sort-btn {
     margin-left: auto;
@@ -156,11 +172,17 @@
     padding: 3px 12px;
     border-radius: 20px;
     cursor: pointer;
-    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    transition:
+      background 0.12s,
+      color 0.12s,
+      border-color 0.12s;
   }
-  .sort-btn:hover { color: var(--text2); border-color: var(--text3); }
+  .sort-btn:hover {
+    color: var(--text2);
+    border-color: var(--text3);
+  }
   .sort-btn.active {
-    background: #1e2d4a;
+    background: #e8eef8;
     border-color: var(--blue);
     color: var(--blue);
   }

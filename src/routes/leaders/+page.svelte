@@ -8,9 +8,9 @@
   let summaryExpanded = {};
 
   const SEV_STYLE = {
-    3: "background:#1c0f00;border:1px solid #4a2500;color:#fb923c",
-    4: "background:#1a0808;border:1px solid #3d1010;color:#fca5a5",
-    5: "background:#1a0808;border:1px solid #5a0e0e;color:#ef4444",
+    3: "background:#fff7ed;border:1px solid #fed7aa;color:#ea580c",
+    4: "background:#fff1f2;border:1px solid #fecdd3;color:#dc2626",
+    5: "background:#fff1f2;border:1px solid #fca5a5;color:#b91c1c",
   };
 
   const PATTERN_NAMES = {
@@ -43,7 +43,7 @@
   function sevStyle(s) {
     return (
       SEV_STYLE[s] ||
-      "background:#0f172a;border:1px solid #1e293b;color:#818cf8"
+      "background:#eff1ff;border:1px solid #c7d2fe;color:#4f46e5"
     );
   }
 
@@ -142,19 +142,32 @@
                     <div
                       class="v-summary-wrap"
                       class:expanded={summaryExpanded[v.id]}
-                      on:click|stopPropagation={() => (summaryExpanded = { ...summaryExpanded, [v.id]: !summaryExpanded[v.id] })}
+                      on:click|stopPropagation={() =>
+                        (summaryExpanded = {
+                          ...summaryExpanded,
+                          [v.id]: !summaryExpanded[v.id],
+                        })}
                       role="button"
                       tabindex="0"
-                      on:keypress={(e) => e.key === 'Enter' && (summaryExpanded = { ...summaryExpanded, [v.id]: !summaryExpanded[v.id] })}
+                      on:keypress={(e) =>
+                        e.key === "Enter" &&
+                        (summaryExpanded = {
+                          ...summaryExpanded,
+                          [v.id]: !summaryExpanded[v.id],
+                        })}
                     >
                       <p class="v-s">{v.summary_md}</p>
                       {#if summaryExpanded[v.id] && v.subtext}
                         <div class="v-subtext-section">
-                          <span class="v-subtext-label">Что скрыто между строк</span>
+                          <span class="v-subtext-label"
+                            >Что скрыто между строк</span
+                          >
                           <p class="v-subtext-body">{v.subtext}</p>
                         </div>
                       {/if}
-                      <span class="v-summary-chevron">{summaryExpanded[v.id] ? '▴' : '▾'}</span>
+                      <span class="v-summary-chevron"
+                        >{summaryExpanded[v.id] ? "▴" : "▾"}</span
+                      >
                     </div>
                   {/if}
                   {#if v.patterns?.length > 0}
