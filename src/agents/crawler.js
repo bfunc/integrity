@@ -16,8 +16,29 @@ import {
   trimEvents,
 } from "../db/database.js";
 import { analyzeArticle, analyzeFullText, analyzeSpeech } from "./linza.js";
-import sitesData from "../data-sources/sites.json" with { type: "json" };
+import sitesData from "../data-sources/sources.json" with { type: "json" };
 import leadersData from "../data-sources/leaders.json" with { type: "json" };
+
+const VARIANTS = {
+  netanyahu: ["netanyahu", "נתניהו", "bibi"],
+  ben_gvir:  ["ben-gvir", "ben gvir", "בן גביר"],
+  smotrich:  ["smotrich", "סמוטריץ"],
+  lapid:     ["lapid", "לפיד"],
+  gantz:     ["gantz", "גנץ"],
+  deri:      ["deri", "דרעי"],
+};
+
+export function detectLeader(linzaResult, articleTitle = "", articleText = "") {
+  // linza result uses `speaker`; DB rows use `attributed_to` — accept either
+  const attributed = linzaResult?.speaker ?? linzaResult?.attributed_to ?? "";
+  const haystack = [attributed, articleTitle, articleText.slice(0, 500)]
+    .join(" ")
+    .toLowerCase();
+  for (const [id, variants] of Object.entries(VARIANTS)) {
+    if (variants.some((v) => haystack.includes(v))) return id;
+  }
+  return null;
+}
 import { invalidateStatsCache } from "../lib/statsCache.js";
 
 const parser = new Parser({ timeout: 10000 });
@@ -131,7 +152,7 @@ export async function runPipeline() {
           await insertAnalysis({
             source_type: "article",
             source_id: id,
-            leader_id: null,
+            leader_id: detectLeader(analysis, title, excerpt),
             severity: analysis.severity,
             severity_label: analysis.severity_label,
             patterns: analysis.patterns,

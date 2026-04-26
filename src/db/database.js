@@ -713,6 +713,35 @@ export async function importData(data) {
   };
 }
 
+export async function getRhetoricMatrix() {
+  return all(`
+    SELECT
+      a.source_id,
+      a.leader_id,
+      DATE_TRUNC('week', a.analyzed_at) AS week_start,
+      AVG(a.severity)                   AS avg_severity,
+      MAX(a.severity)                   AS max_severity,
+      COUNT(*)                          AS article_count
+    FROM analyses a
+    WHERE a.leader_id IS NOT NULL
+      AND a.leader_id != ''
+      AND a.source_id IS NOT NULL
+    GROUP BY a.source_id, a.leader_id, week_start
+    ORDER BY week_start ASC
+  `);
+}
+
+export async function getAnalysesMeta() {
+  const rows = await all(`
+    SELECT
+      COUNT(*) AS total,
+      COUNT(leader_id) AS with_leader,
+      SUM(CASE WHEN leader_id IS NULL OR leader_id = '' THEN 1 ELSE 0 END) AS null_leader
+    FROM analyses
+  `);
+  return rows[0] ?? { total: 0, with_leader: 0, null_leader: 0 };
+}
+
 export async function closeDb() {
   const dbPath = config.db.path;
   const isFileBacked = dbPath && dbPath !== ":memory:";

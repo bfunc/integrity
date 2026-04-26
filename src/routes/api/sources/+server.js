@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { getSources } from "../../../db/database.js";
-import sitesData from "../../../data-sources/sites.json" with { type: "json" };
+import sitesData from "../../../data-sources/sources.json" with { type: "json" };
 import leadersData from "../../../data-sources/leaders.json" with { type: "json" };
 
 export async function GET() {
