@@ -1,14 +1,5 @@
 [
   {
-    "id": "test_feed",
-    "name": "TEST FEED",
-    "url": "https://icy-kissee-integrity-fb5fb250.koyeb.app/test-feed.xml",
-    "region": "test",
-    "bias": "test",
-    "language": "en",
-    "update_frequency": "manual"
-  },
-  {
     "id": "timesofisrael",
     "name": "Times of Israel",
     "url": "https://www.timesofisrael.com/feed/",
