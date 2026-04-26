@@ -393,48 +393,6 @@
     </div>
   {/if}
 
-  <!-- ══ TIME SLIDER ══ -->
-  <div class="slider-section">
-    <div class="slider-hdr">
-      <span class="sl-eyebrow">Timeline</span>
-      <span class="sl-current">Week of {weekLabels[selectedWeek] ?? '—'}</span>
-    </div>
-
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div
-      class="slider-wrap"
-      role="slider"
-      tabindex="0"
-      aria-valuemin="0"
-      aria-valuemax={WEEKS - 1}
-      aria-valuenow={selectedWeek}
-      onpointerdown={startDrag}
-      onpointermove={onDrag}
-      onpointerup={endDrag}
-      onpointercancel={endDrag}
-    >
-      <!-- Track + fill + handle -->
-      <div class="sl-track">
-        <div class="sl-fill" style="width:{sliderPct}%"></div>
-        <div
-          class="sl-handle"
-          class:dragging={isDragging}
-          style="left:calc({sliderPct}% - 7px)"
-        ></div>
-      </div>
-
-      <!-- Tick marks + labels -->
-      <div class="sl-ticks">
-        {#each weekLabels as lbl, i}
-          <div class="sl-tick" class:active={i === selectedWeek}>
-            <div class="sl-bar"></div>
-            <div class="sl-lbl">{lbl}</div>
-          </div>
-        {/each}
-      </div>
-    </div>
-  </div>
-
   <!-- ══ MATRIX ══ -->
   {#if loading}
     <div class="loading-overlay">Loading real data…</div>
@@ -644,6 +602,48 @@
         </tr>
       </tfoot>
     </table>
+  </div>
+
+  <!-- ══ TIME SLIDER ══ -->
+  <div class="slider-section">
+    <div class="slider-hdr">
+      <span class="sl-eyebrow">Timeline</span>
+      <span class="sl-current">Week of {weekLabels[selectedWeek] ?? '—'}</span>
+    </div>
+
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="slider-wrap"
+      role="slider"
+      tabindex="0"
+      aria-valuemin="0"
+      aria-valuemax={WEEKS - 1}
+      aria-valuenow={selectedWeek}
+      onpointerdown={startDrag}
+      onpointermove={onDrag}
+      onpointerup={endDrag}
+      onpointercancel={endDrag}
+    >
+      <!-- Track + fill + handle -->
+      <div class="sl-track">
+        <div class="sl-fill" style="width:{sliderPct}%"></div>
+        <div
+          class="sl-handle"
+          class:dragging={isDragging}
+          style="left:calc({sliderPct}% - 7px)"
+        ></div>
+      </div>
+
+      <!-- Tick marks + labels -->
+      <div class="sl-ticks">
+        {#each weekLabels as lbl, i}
+          <div class="sl-tick" class:active={i === selectedWeek}>
+            <div class="sl-bar"></div>
+            <div class="sl-lbl">{lbl}</div>
+          </div>
+        {/each}
+      </div>
+    </div>
   </div>
 
   <!-- Footer note -->
